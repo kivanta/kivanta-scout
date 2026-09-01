@@ -1,10 +1,22 @@
 import { assessGitHubSource } from "./assessGitHubSource.js";
 import { runCheck1 } from "./runCheck1.js";
+import { runCheck2 } from "./runCheck2.js";
+import { runCheck3 } from "./runCheck3.js";
+import { runCheck4 } from "./runCheck4.js";
+import { runCheck5 } from "./runCheck5.js";
+import { aggregateMethodologyResult } from "./aggregateMethodologyResult.js";
 
 export async function runMethodology(
   owner,
   repo,
-  { sourceAssessor = assessGitHubSource, check1Runner = runCheck1 } = {},
+  {
+    sourceAssessor = assessGitHubSource,
+    check1Runner = runCheck1,
+    check2Runner = runCheck2,
+    check3Runner = runCheck3,
+    check4Runner = runCheck4,
+    check5Runner = runCheck5,
+  } = {},
 ) {
   const sourceAssessment = await sourceAssessor(owner, repo);
 
@@ -17,7 +29,7 @@ export async function runMethodology(
     };
   }
 
-  const check1 = await check1Runner({
+  const sharedInput = {
     owner: owner,
     repo: repo,
 
@@ -32,12 +44,55 @@ export async function runMethodology(
     technocoreEvidence: sourceAssessment.technocoreEvidence,
 
     toolIdentity: sourceAssessment.toolIdentity,
+  };
+
+  const check1 = await check1Runner(sharedInput);
+
+  const check2 = await check2Runner(sharedInput);
+
+  const check3 = await check3Runner(sharedInput);
+
+  const check4 = await check4Runner(sharedInput);
+
+  const priorChecks = [check1, check2, check3, check4];
+
+  const check5 = await check5Runner({
+    sourceAssessment: sourceAssessment,
+
+    priorChecks: priorChecks,
   });
+
+  const checks = [check1, check2, check3, check4, check5];
+
+  const aggregation = aggregateMethodologyResult(checks);
 
   return {
     status: "methodology_run",
+
+    executionStatus: aggregation.executionStatus,
+
+    resultStatus: aggregation.resultStatus,
+
     sourceAssessment: sourceAssessment,
 
-    checks: [check1],
+    checks: checks,
+
+    aggregation: {
+      status: aggregation.status,
+
+      counts: aggregation.counts || null,
+
+      unknownChecks: aggregation.unknownChecks || [],
+
+      cautionChecks: aggregation.cautionChecks || [],
+
+      notApplicableChecks: aggregation.notApplicableChecks || [],
+
+      partialChecks: aggregation.partialChecks || [],
+
+      failedChecks: aggregation.failedChecks || [],
+
+      notRunChecks: aggregation.notRunChecks || [],
+    },
   };
 }
