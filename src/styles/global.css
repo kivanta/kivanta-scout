@@ -1,0 +1,1317 @@
+/* =========================================================
+   KIVANTA SCOUT
+   GLOBAL STYLES
+========================================================= */
+
+
+/* =========================================================
+   1. BASE / RESET
+========================================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --mouse-glow-x: 0px;
+  --mouse-glow-y: 0px;
+}
+
+html {
+  background: #071016;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  background: #071016;
+
+  color: #f5f7f8;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  position: relative;
+}
+
+
+/* =========================================================
+   2. AMBIENT BACKGROUND LIGHT
+========================================================= */
+
+
+/* ---------------------------------------------------------
+   PRIMARY GREEN / CYAN LIGHT
+   Mouse influenced through scout.js
+--------------------------------------------------------- */
+
+body::before {
+  content: "";
+
+  position: fixed;
+
+  width: 900px;
+  height: 900px;
+
+  top: -280px;
+  left: -200px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(70, 255, 200, 0.19) 0%,
+      rgba(31, 210, 177, 0.115) 26%,
+      rgba(15, 145, 150, 0.06) 48%,
+      rgba(10, 85, 110, 0.025) 62%,
+      transparent 74%
+    );
+
+  filter: blur(44px);
+
+  pointer-events: none;
+
+  z-index: 0;
+
+  translate:
+    var(--mouse-glow-x)
+    var(--mouse-glow-y);
+
+  animation:
+    ambientGlowOne 16s ease-in-out infinite alternate;
+
+  will-change:
+    transform,
+    translate;
+}
+
+
+/* ---------------------------------------------------------
+   SECONDARY BLUE / CYAN LIGHT
+--------------------------------------------------------- */
+
+body::after {
+  content: "";
+
+  position: fixed;
+
+  width: 1000px;
+  height: 1000px;
+
+  right: -340px;
+  bottom: -450px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(65, 210, 255, 0.13) 0%,
+      rgba(33, 175, 195, 0.08) 30%,
+      rgba(22, 115, 145, 0.04) 50%,
+      transparent 72%
+    );
+
+  filter: blur(55px);
+
+  pointer-events: none;
+
+  z-index: 0;
+
+  animation:
+    ambientGlowTwo 20s ease-in-out infinite alternate;
+
+  will-change: transform;
+}
+
+
+/* ---------------------------------------------------------
+   AMBIENT LIGHT MOVEMENT
+--------------------------------------------------------- */
+
+@keyframes ambientGlowOne {
+
+  0% {
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+
+  35% {
+    transform:
+      translate3d(180px, 130px, 0)
+      scale(1.1);
+  }
+
+  70% {
+    transform:
+      translate3d(380px, 70px, 0)
+      scale(0.96);
+  }
+
+  100% {
+    transform:
+      translate3d(520px, 190px, 0)
+      scale(1.05);
+  }
+
+}
+
+
+@keyframes ambientGlowTwo {
+
+  0% {
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+
+  35% {
+    transform:
+      translate3d(-170px, -120px, 0)
+      scale(1.08);
+  }
+
+  70% {
+    transform:
+      translate3d(-360px, -220px, 0)
+      scale(0.94);
+  }
+
+  100% {
+    transform:
+      translate3d(-520px, -130px, 0)
+      scale(1.04);
+  }
+
+}
+
+
+/* =========================================================
+   3. PAGE CONTENT LAYER
+========================================================= */
+
+header,
+main {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* =========================================================
+   4. ACCESSIBILITY
+========================================================= */
+
+.sr-only {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+
+  clip: rect(0, 0, 0, 0);
+
+  white-space: nowrap;
+
+  border: 0;
+}
+
+
+/* =========================================================
+   5. NAVBAR
+========================================================= */
+
+.navbar {
+  width: min(1200px, calc(100% - 48px));
+
+  margin: 18px auto 0;
+  padding: 14px 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 32px;
+
+  background: rgba(10, 22, 28, 0.72);
+
+  border: 1px solid rgba(130, 255, 210, 0.12);
+  border-radius: 16px;
+
+  backdrop-filter: blur(18px);
+
+  position: relative;
+  z-index: 10;
+}
+
+
+/* ---------------------------------------------------------
+   NAVBAR BRAND
+--------------------------------------------------------- */
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  letter-spacing: -0.02em;
+}
+
+
+/* Navbar Scout Sensor */
+
+.navbar__brand::before {
+  content: "";
+
+  width: 10px;
+  height: 10px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #70ffce;
+
+  box-shadow:
+    0 0 8px rgba(112, 255, 206, 0.7),
+    0 0 18px rgba(112, 255, 206, 0.25);
+}
+
+
+/* ---------------------------------------------------------
+   NAVBAR NAVIGATION
+--------------------------------------------------------- */
+
+.navbar__nav {
+  display: flex;
+  align-items: center;
+
+  gap: 32px;
+}
+
+.navbar__nav a {
+  color: #9fb0b7;
+
+  text-decoration: none;
+
+  font-size: 14px;
+
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+}
+
+.navbar__nav a:hover {
+  color: #d8fff1;
+
+  text-shadow:
+    0 0 14px rgba(112, 255, 206, 0.35);
+}
+
+
+/* ---------------------------------------------------------
+   NAVBAR CTA
+--------------------------------------------------------- */
+
+.navbar__cta {
+  padding: 10px 16px;
+
+  border: 1px solid rgba(112, 255, 206, 0.24);
+  border-radius: 10px;
+
+  background: rgba(112, 255, 206, 0.04);
+
+  color: #eafff7;
+
+  text-decoration: none;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.navbar__cta:hover {
+  background: rgba(112, 255, 206, 0.09);
+
+  border-color: rgba(112, 255, 206, 0.42);
+
+  box-shadow:
+    0 0 24px rgba(112, 255, 206, 0.08);
+}
+
+
+/* =========================================================
+   6. HERO LAYOUT
+========================================================= */
+
+.hero {
+  width: min(1200px, calc(100% - 48px));
+
+  min-height: 720px;
+
+  margin: 0 auto;
+  padding: 120px 0 110px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1.08fr)
+    minmax(390px, 0.92fr);
+
+  align-items: center;
+
+  gap: 65px;
+
+  position: relative;
+}
+
+
+/* =========================================================
+   7. HERO LEFT CONTENT
+========================================================= */
+
+.hero__content {
+  max-width: 690px;
+
+  position: relative;
+  z-index: 3;
+}
+
+
+/* =========================================================
+   8. HERO BADGE
+========================================================= */
+
+.hero__badge {
+  width: fit-content;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 7px 12px;
+
+  margin-bottom: 26px;
+
+  border: 1px solid rgba(112, 255, 206, 0.16);
+  border-radius: 999px;
+
+  background: rgba(112, 255, 206, 0.035);
+
+  color: #9eb8ae;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  letter-spacing: 0.01em;
+
+  backdrop-filter: blur(10px);
+}
+
+
+/* Hero Badge Sensor */
+
+.hero__badge-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #70ffce;
+
+  box-shadow:
+    0 0 8px rgba(112, 255, 206, 0.75),
+    0 0 14px rgba(112, 255, 206, 0.25);
+}
+
+
+/* =========================================================
+   9. HERO HEADING
+========================================================= */
+
+.hero__title {
+  max-width: 690px;
+
+  color: #f7fbfa;
+
+  font-size: clamp(58px, 5.2vw, 82px);
+  font-weight: 700;
+
+  line-height: 0.98;
+
+  letter-spacing: -0.055em;
+
+  text-align: left;
+}
+
+.hero__title span {
+  display: block;
+
+  margin-top: 8px;
+
+  color: #b8cdc6;
+}
+
+
+/* =========================================================
+   10. HERO DESCRIPTION
+========================================================= */
+
+.hero__description {
+  max-width: 620px;
+
+  margin-top: 28px;
+
+  color: #91a2a8;
+
+  font-size: 17px;
+
+  line-height: 1.65;
+
+  text-align: left;
+}
+
+
+/* =========================================================
+   11. SCOUT INPUT AREA
+========================================================= */
+
+.hero__input-wrapper {
+  width: 100%;
+
+  max-width: 640px;
+
+  margin-top: 38px;
+}
+
+
+/* ---------------------------------------------------------
+   INPUT CONTAINER
+--------------------------------------------------------- */
+
+.scout-input {
+  width: 100%;
+
+  padding: 7px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  background: rgba(11, 25, 30, 0.82);
+
+  border: 1px solid rgba(112, 255, 206, 0.18);
+  border-radius: 16px;
+
+  box-shadow:
+    0 16px 50px rgba(0, 0, 0, 0.25),
+    0 0 50px rgba(112, 255, 206, 0.025);
+
+  backdrop-filter: blur(18px);
+}
+
+
+/* Scout Input Field */
+
+.scout-input input {
+  min-width: 0;
+
+  flex: 1;
+
+  padding: 15px 16px;
+
+  background: transparent;
+
+  border: 0;
+  outline: 0;
+
+  color: #f5fffb;
+
+  font-family: inherit;
+
+  font-size: 15px;
+}
+
+.scout-input input::placeholder {
+  color: #60747b;
+}
+
+
+/* Scout Button */
+
+.scout-input button {
+  padding: 14px 21px;
+
+  flex-shrink: 0;
+
+  border: 1px solid rgba(112, 255, 206, 0.28);
+  border-radius: 11px;
+
+  background: #d9fff1;
+
+  color: #092018;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.scout-input button:hover {
+  transform: translateY(-1px);
+
+  background: #edfff8;
+
+  box-shadow:
+    0 0 24px rgba(112, 255, 206, 0.16);
+}
+
+
+/* =========================================================
+   12. SUPPORTED INPUT TYPES
+========================================================= */
+
+.hero__supported {
+  margin-top: 15px;
+
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+.hero__supported span {
+  padding: 5px 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  border-radius: 7px;
+
+  background: rgba(6, 16, 21, 0.4);
+
+  color: #62777e;
+
+  font-size: 11px;
+
+  letter-spacing: 0.02em;
+}
+
+
+/* =========================================================
+   13. HERO TRUST SIGNALS
+========================================================= */
+
+.hero__trust {
+  margin-top: 18px;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 18px;
+
+  color: #748a90;
+
+  font-size: 12px;
+}
+
+.hero__trust > span {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.hero__trust-check {
+  color: #70ffce;
+
+  font-size: 11px;
+
+  text-shadow:
+    0 0 10px rgba(112, 255, 206, 0.28);
+}
+
+
+/* =========================================================
+   14. HERO RIGHT VISUAL
+========================================================= */
+
+.hero__visual {
+  min-height: 540px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+
+  pointer-events: none;
+}
+
+
+/* Soft Light Behind Scout */
+
+.hero__visual::before {
+  content: "";
+
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(57, 255, 196, 0.12) 0%,
+      rgba(26, 177, 161, 0.06) 36%,
+      transparent 70%
+    );
+
+  filter: blur(26px);
+
+  animation:
+    scoutVisualGlow 7s ease-in-out infinite alternate;
+}
+
+
+@keyframes scoutVisualGlow {
+
+  from {
+    transform: scale(0.9);
+
+    opacity: 0.55;
+  }
+
+  to {
+    transform: scale(1.08);
+
+    opacity: 0.95;
+  }
+
+}
+
+
+/* =========================================================
+   15. SCOUT ORBIT SYSTEM
+========================================================= */
+
+.scout-orbit {
+  width: 460px;
+  height: 460px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+
+  animation:
+    scoutOrbitFloat 8s ease-in-out infinite alternate;
+}
+
+
+/* ---------------------------------------------------------
+   ORBIT RINGS
+--------------------------------------------------------- */
+
+.scout-orbit__ring {
+  position: absolute;
+
+  border-radius: 50%;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.1);
+}
+
+
+/* Outer Orbit */
+
+.scout-orbit__ring--outer {
+  width: 430px;
+  height: 430px;
+
+  border-color:
+    rgba(112, 255, 206, 0.07);
+
+  animation:
+    orbitRotate 28s linear infinite;
+}
+
+
+/* Middle Orbit */
+
+.scout-orbit__ring--middle {
+  width: 315px;
+  height: 315px;
+
+  border-color:
+    rgba(112, 255, 206, 0.1);
+
+  animation:
+    orbitRotateReverse 20s linear infinite;
+}
+
+
+/* Inner Orbit */
+
+.scout-orbit__ring--inner {
+  width: 205px;
+  height: 205px;
+
+  border-color:
+    rgba(112, 255, 206, 0.14);
+
+  animation:
+    orbitRotate 14s linear infinite;
+}
+
+
+/* Orbit Sensor Points */
+
+.scout-orbit__ring--outer::before,
+.scout-orbit__ring--middle::before,
+.scout-orbit__ring--inner::before {
+  content: "";
+
+  position: absolute;
+
+  width: 6px;
+  height: 6px;
+
+  top: -3px;
+  left: 50%;
+
+  border-radius: 50%;
+
+  background: #70ffce;
+
+  box-shadow:
+    0 0 10px rgba(112, 255, 206, 0.65);
+}
+
+
+/* =========================================================
+   16. SCOUT PROBE
+========================================================= */
+
+.scout-probe {
+  width: 175px;
+  height: 175px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+
+  z-index: 2;
+
+  animation:
+    scoutDrift 12s ease-in-out infinite;
+}
+
+
+/* ---------------------------------------------------------
+   PROBE OUTER RING
+--------------------------------------------------------- */
+
+.scout-probe__ring {
+  position: absolute;
+
+  width: 155px;
+  height: 155px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.22);
+
+  border-radius: 50%;
+
+  box-shadow:
+    inset 0 0 28px rgba(112, 255, 206, 0.025),
+    0 0 28px rgba(112, 255, 206, 0.04);
+
+  animation:
+    probeRingRotate 10s linear infinite;
+}
+
+
+/* Probe Sensor Point */
+
+.scout-probe__ring::before {
+  content: "";
+
+  position: absolute;
+
+  width: 8px;
+  height: 8px;
+
+  top: 8px;
+  left: 73px;
+
+  border-radius: 50%;
+
+  background: #70ffce;
+
+  box-shadow:
+    0 0 12px rgba(112, 255, 206, 0.8);
+}
+
+
+/* ---------------------------------------------------------
+   PROBE BODY
+--------------------------------------------------------- */
+
+.scout-probe__body {
+  width: 84px;
+  height: 84px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.26);
+
+  border-radius: 25px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(18, 45, 46, 0.96),
+      rgba(6, 21, 26, 0.96)
+    );
+
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.3),
+    0 0 40px rgba(112, 255, 206, 0.09);
+
+  transform: rotate(45deg);
+
+  animation:
+    probeBodyFloat 4s ease-in-out infinite alternate;
+}
+
+
+/* ---------------------------------------------------------
+   PROBE CORE
+--------------------------------------------------------- */
+
+.scout-probe__core {
+  width: 21px;
+  height: 21px;
+
+  border-radius: 50%;
+
+  background: #70ffce;
+
+  box-shadow:
+    0 0 10px rgba(112, 255, 206, 1),
+    0 0 27px rgba(112, 255, 206, 0.58),
+    0 0 60px rgba(112, 255, 206, 0.24);
+
+  animation:
+    probeCorePulse 2.8s ease-in-out infinite;
+}
+
+
+/* ---------------------------------------------------------
+   PROBE SCANNING PULSE
+--------------------------------------------------------- */
+
+.scout-probe__pulse {
+  position: absolute;
+
+  width: 150px;
+  height: 150px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.22);
+
+  border-radius: 50%;
+
+  opacity: 0;
+
+  animation:
+    probeScanPulse 4.5s ease-out infinite;
+}
+
+
+/* =========================================================
+   17. SCOUT ANIMATIONS
+========================================================= */
+
+@keyframes scoutOrbitFloat {
+
+  from {
+    transform:
+      translate3d(0, -8px, 0);
+  }
+
+  to {
+    transform:
+      translate3d(0, 12px, 0);
+  }
+
+}
+
+
+@keyframes orbitRotate {
+
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+@keyframes orbitRotateReverse {
+
+  from {
+    transform:
+      rotate(360deg);
+  }
+
+  to {
+    transform:
+      rotate(0deg);
+  }
+
+}
+
+
+@keyframes scoutDrift {
+
+  0% {
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+  25% {
+    transform:
+      translate3d(16px, -12px, 0);
+  }
+
+  50% {
+    transform:
+      translate3d(-10px, 15px, 0);
+  }
+
+  75% {
+    transform:
+      translate3d(12px, 10px, 0);
+  }
+
+  100% {
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+}
+
+
+@keyframes probeRingRotate {
+
+  from {
+    transform:
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      rotate(360deg);
+  }
+
+}
+
+
+@keyframes probeBodyFloat {
+
+  from {
+    transform:
+      rotate(45deg)
+      scale(0.96);
+  }
+
+  to {
+    transform:
+      rotate(45deg)
+      scale(1.04);
+  }
+
+}
+
+
+@keyframes probeCorePulse {
+
+  0%,
+  100% {
+    opacity: 0.72;
+
+    transform:
+      scale(0.86);
+  }
+
+  50% {
+    opacity: 1;
+
+    transform:
+      scale(1.2);
+  }
+
+}
+
+
+@keyframes probeScanPulse {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(0.6);
+  }
+
+  15% {
+    opacity: 0.28;
+  }
+
+  70% {
+    opacity: 0;
+
+    transform:
+      scale(2.1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      scale(2.1);
+  }
+
+}
+
+
+/* =========================================================
+   18. TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .navbar {
+    width:
+      calc(100% - 32px);
+  }
+
+  .navbar__nav {
+    display: none;
+  }
+
+
+  .hero {
+    width:
+      calc(100% - 32px);
+
+    grid-template-columns: 1fr;
+
+    gap: 50px;
+
+    padding-top: 100px;
+  }
+
+
+  .hero__content {
+    max-width: 720px;
+  }
+
+
+  .hero__title {
+    max-width: 720px;
+
+    font-size:
+      clamp(52px, 9vw, 72px);
+  }
+
+
+  .hero__visual {
+    min-height: 430px;
+  }
+
+
+  .scout-orbit {
+    transform:
+      scale(0.9);
+  }
+
+}
+
+
+/* =========================================================
+   19. MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .navbar {
+    margin-top: 12px;
+
+    padding:
+      12px 14px;
+  }
+
+
+  .navbar__brand {
+    font-size: 16px;
+  }
+
+
+  .navbar__cta {
+    padding:
+      9px 12px;
+
+    font-size: 12px;
+  }
+
+
+  .hero {
+    padding:
+      80px 0 70px;
+
+    gap: 35px;
+  }
+
+
+  .hero__title {
+    font-size:
+      clamp(44px, 13vw, 58px);
+  }
+
+
+  .hero__description {
+    font-size: 15px;
+  }
+
+
+  .hero__input-wrapper {
+    margin-top: 32px;
+  }
+
+
+  .scout-input {
+    padding: 6px;
+  }
+
+
+  .scout-input input {
+    padding:
+      13px 11px;
+
+    font-size: 14px;
+  }
+
+
+  .scout-input button {
+    padding:
+      12px 14px;
+
+    font-size: 13px;
+  }
+
+
+  .hero__trust {
+    gap:
+      10px 14px;
+
+    font-size: 11px;
+  }
+
+
+  .hero__visual {
+    min-height: 320px;
+  }
+
+
+  .scout-orbit {
+    width: 320px;
+    height: 320px;
+
+    transform:
+      scale(0.7);
+  }
+
+}
+
+
+/* =========================================================
+   20. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  html {
+    scroll-behavior: auto;
+  }
+
+
+  body::before,
+  body::after {
+    animation: none;
+
+    translate: 0 0;
+  }
+
+
+  .hero__visual::before,
+  .scout-orbit,
+  .scout-orbit__ring,
+  .scout-probe,
+  .scout-probe__ring,
+  .scout-probe__body,
+  .scout-probe__core,
+  .scout-probe__pulse {
+    animation: none;
+  }
+
+}

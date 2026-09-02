@@ -1,0 +1,1126 @@
+/* =========================================================
+   KIVANTA SCOUT
+   CLOSING CTA + FOOTER
+   + FINAL DESKTOP VIEWPORT TUNING
+========================================================= */
+
+
+/* =========================================================
+   1. DESKTOP HERO VIEWPORT REFINEMENT
+========================================================= */
+
+/*
+   GOAL:
+
+   Move the Hero upward slightly so the visitor can see:
+
+   Badge
+   Heading
+   Description
+   Input
+   Supported inputs
+   Trust signals
+
+   all comfortably inside the first viewport.
+
+   We keep enough breathing room underneath before the
+   live Technocore activity strip begins.
+*/
+
+@media (min-width: 901px) {
+
+  .hero {
+    min-height:
+      calc(100svh - 105px);
+
+    padding:
+      clamp(62px, 7vh, 82px)
+      0
+      clamp(52px, 6vh, 68px);
+
+    align-items:
+      center;
+  }
+
+
+  /* Slightly reduce unnecessary visual height */
+
+  .hero__visual {
+    min-height:
+      470px;
+  }
+
+}
+
+
+/* =========================================================
+   2. SHORTER DESKTOP HERO SCREENS
+========================================================= */
+
+/*
+   On shorter laptop screens we compress things
+   one additional step.
+*/
+
+@media
+  (min-width: 901px)
+  and (max-height: 820px) {
+
+  .hero {
+    min-height:
+      calc(100svh - 95px);
+
+    padding:
+      48px
+      0
+      44px;
+  }
+
+
+  .hero__visual {
+    min-height:
+      430px;
+  }
+
+
+  .hero__input-wrapper {
+    margin-top:
+      30px;
+  }
+
+
+  .hero__trust {
+    margin-top:
+      14px;
+  }
+
+}
+
+
+/* =========================================================
+   3. CLOSING CTA
+========================================================= */
+
+/*
+   GOAL:
+
+   The closing CTA should feel like a final invitation,
+   not another Hero.
+
+   It shares the final viewport with the Footer.
+*/
+
+.closing-cta {
+  width:
+    100%;
+
+  padding:
+    62px
+    24px
+    46px;
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  z-index:
+    2;
+}
+
+
+/* ---------------------------------------------------------
+   CTA AMBIENT LIGHT
+--------------------------------------------------------- */
+
+.closing-cta::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  width:
+    650px;
+
+  height:
+    400px;
+
+  left:
+    50%;
+
+  bottom:
+    -280px;
+
+  transform:
+    translateX(-50%);
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(52, 230, 184, 0.065) 0%,
+      rgba(28, 143, 152, 0.025) 45%,
+      transparent 72%
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   4. CTA INNER
+========================================================= */
+
+.closing-cta__inner {
+  width:
+    min(1200px, 100%);
+
+  min-height:
+    270px;
+
+  margin:
+    0 auto;
+
+  padding:
+    38px
+    48px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    180px;
+
+  align-items:
+    center;
+
+  gap:
+    56px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.1);
+
+  border-radius:
+    22px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(12, 29, 34, 0.86),
+      rgba(7, 18, 23, 0.72)
+    );
+
+  box-shadow:
+    0 24px 65px rgba(0, 0, 0, 0.15),
+    0 0 50px rgba(112, 255, 206, 0.02);
+
+  backdrop-filter:
+    blur(18px);
+
+  position:
+    relative;
+
+  z-index:
+    1;
+}
+
+
+/* =========================================================
+   5. CTA CONTENT
+========================================================= */
+
+.closing-cta__content {
+  max-width:
+    720px;
+
+  grid-column:
+    1;
+
+  grid-row:
+    1;
+}
+
+
+/* ---------------------------------------------------------
+   CTA EYEBROW
+--------------------------------------------------------- */
+
+.closing-cta
+.section-eyebrow {
+  margin-bottom:
+    13px;
+}
+
+
+/* =========================================================
+   6. CTA TITLE
+========================================================= */
+
+.closing-cta__title {
+  max-width:
+    720px;
+
+  color:
+    #f5faf8;
+
+  font-size:
+    clamp(38px, 3.8vw, 54px);
+
+  font-weight:
+    700;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    -0.05em;
+}
+
+
+.closing-cta__title span {
+  display:
+    block;
+
+  margin-top:
+    4px;
+
+  color:
+    #a8bdb6;
+}
+
+
+/* =========================================================
+   7. CTA DESCRIPTION
+========================================================= */
+
+.closing-cta__description {
+  max-width:
+    560px;
+
+  margin-top:
+    15px;
+
+  color:
+    #7f9399;
+
+  font-size:
+    13px;
+
+  line-height:
+    1.55;
+}
+
+
+/* =========================================================
+   8. CTA BUTTON
+========================================================= */
+
+.closing-cta__button {
+  width:
+    fit-content;
+
+  margin-top:
+    20px;
+
+  padding:
+    12px
+    16px;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    14px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.25);
+
+  border-radius:
+    10px;
+
+  background:
+    #d9fff1;
+
+  color:
+    #092018;
+
+  text-decoration:
+    none;
+
+  font-size:
+    13px;
+
+  font-weight:
+    700;
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+
+.closing-cta__button span {
+  font-size:
+    11px;
+}
+
+
+.closing-cta__button:hover {
+  transform:
+    translateY(-2px);
+
+  background:
+    #edfff8;
+
+  box-shadow:
+    0 0 24px rgba(112, 255, 206, 0.13);
+}
+
+
+/* =========================================================
+   9. CTA SCOUT SIGNAL
+========================================================= */
+
+.closing-cta__signal {
+  width:
+    150px;
+
+  height:
+    150px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  position:
+    relative;
+
+  justify-self:
+    end;
+
+  grid-column:
+    2;
+
+  grid-row:
+    1;
+}
+
+
+/* Outer Ring */
+
+.closing-cta__signal-ring {
+  position:
+    absolute;
+
+  width:
+    124px;
+
+  height:
+    124px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.1);
+
+  border-radius:
+    50%;
+
+  animation:
+    closingSignalBreathe
+    5s
+    ease-in-out
+    infinite
+    alternate;
+}
+
+
+/* Inner Ring */
+
+.closing-cta__signal-ring::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  inset:
+    26px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.15);
+
+  border-radius:
+    50%;
+}
+
+
+/* Signal Core */
+
+.closing-cta__signal-core {
+  width:
+    20px;
+
+  height:
+    20px;
+
+  border-radius:
+    50%;
+
+  background:
+    #70ffce;
+
+  box-shadow:
+    0 0 12px rgba(112, 255, 206, 0.9),
+    0 0 32px rgba(112, 255, 206, 0.27),
+    0 0 65px rgba(112, 255, 206, 0.11);
+
+  animation:
+    closingCorePulse
+    2.8s
+    ease-in-out
+    infinite;
+}
+
+
+/* =========================================================
+   10. CTA ANIMATIONS
+========================================================= */
+
+@keyframes closingSignalBreathe {
+
+  from {
+    transform:
+      scale(0.94);
+
+    opacity:
+      0.55;
+  }
+
+  to {
+    transform:
+      scale(1.06);
+
+    opacity:
+      1;
+  }
+
+}
+
+
+@keyframes closingCorePulse {
+
+  0%,
+  100% {
+    transform:
+      scale(0.9);
+  }
+
+  50% {
+    transform:
+      scale(1.15);
+  }
+
+}
+
+
+/* =========================================================
+   11. FOOTER
+========================================================= */
+
+/*
+   Quiet, compact Footer.
+
+   The small amount of padding beneath the final row
+   deliberately creates a visual "end of story."
+*/
+
+.footer {
+  width:
+    100%;
+
+  padding:
+    0
+    24px
+    38px;
+
+  position:
+    relative;
+
+  z-index:
+    2;
+}
+
+
+/* =========================================================
+   12. FOOTER INNER
+========================================================= */
+
+.footer__inner {
+  width:
+    min(1200px, 100%);
+
+  margin:
+    0 auto;
+
+  padding-top:
+    24px;
+
+  border-top:
+    1px solid rgba(112, 255, 206, 0.08);
+}
+
+
+/* =========================================================
+   13. FOOTER TOP
+========================================================= */
+
+.footer__top {
+  padding-bottom:
+    22px;
+
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  justify-content:
+    space-between;
+
+  gap:
+    65px;
+}
+
+
+/* =========================================================
+   14. FOOTER BRAND
+========================================================= */
+
+.footer__brand {
+  max-width:
+    300px;
+}
+
+
+.footer__logo {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    8px;
+
+  color:
+    #eaf4f0;
+
+  text-decoration:
+    none;
+
+  font-size:
+    15px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    -0.025em;
+}
+
+
+/* Scout Dot */
+
+.footer__logo::before {
+  content:
+    "";
+
+  width:
+    7px;
+
+  height:
+    7px;
+
+  border-radius:
+    50%;
+
+  background:
+    #70ffce;
+
+  box-shadow:
+    0 0 8px rgba(112, 255, 206, 0.7);
+}
+
+
+.footer__brand p {
+  margin-top:
+    9px;
+
+  color:
+    #64787e;
+
+  font-size:
+    10px;
+
+  line-height:
+    1.5;
+}
+
+
+/* =========================================================
+   15. FOOTER LINKS
+========================================================= */
+
+.footer__links {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, minmax(125px, 1fr));
+
+  gap:
+    55px;
+}
+
+
+/* Footer Column */
+
+.footer__column {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  align-items:
+    flex-start;
+
+  gap:
+    7px;
+}
+
+
+/* Column Heading */
+
+.footer__column-title {
+  margin-bottom:
+    2px;
+
+  color:
+    #4f6761;
+
+  font-size:
+    8px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.12em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* Footer Links */
+
+.footer__column a,
+.footer__pending-link {
+  color:
+    #7c9096;
+
+  text-decoration:
+    none;
+
+  font-size:
+    10px;
+}
+
+
+.footer__column a {
+  transition:
+    color 0.2s ease;
+}
+
+
+.footer__column a:hover {
+  color:
+    #cce4db;
+}
+
+
+/* Reserved Links */
+
+.footer__pending-link {
+  opacity:
+    0.6;
+}
+
+
+/* =========================================================
+   16. FOOTER BOTTOM
+========================================================= */
+
+.footer__bottom {
+  min-height:
+    44px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  align-items:
+    center;
+
+  gap:
+    22px;
+
+  border-top:
+    1px solid rgba(255, 255, 255, 0.04);
+
+  color:
+    #52666c;
+}
+
+
+/* =========================================================
+   17. FOOTER STATUS
+========================================================= */
+
+.footer__status {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  color:
+    #637b75;
+
+  font-size:
+    8px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.08em;
+
+  text-transform:
+    uppercase;
+}
+
+
+.footer__status-dot {
+  width:
+    5px;
+
+  height:
+    5px;
+
+  border-radius:
+    50%;
+
+  background:
+    #70ffce;
+
+  box-shadow:
+    0 0 7px rgba(112, 255, 206, 0.5);
+}
+
+
+/* =========================================================
+   18. FOOTER DISCLAIMER
+========================================================= */
+
+.footer__bottom p {
+  color:
+    #52666c;
+
+  font-size:
+    8px;
+
+  text-align:
+    center;
+}
+
+
+/* =========================================================
+   19. BACK TO TOP
+========================================================= */
+
+.footer__back-to-top {
+  width:
+    28px;
+
+  height:
+    28px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.09);
+
+  border-radius:
+    8px;
+
+  color:
+    #76928a;
+
+  text-decoration:
+    none;
+
+  font-size:
+    10px;
+
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+
+.footer__back-to-top:hover {
+  transform:
+    translateY(-2px);
+
+  color:
+    #bde3d5;
+
+  border-color:
+    rgba(112, 255, 206, 0.2);
+}
+
+
+/* =========================================================
+   20. TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .closing-cta {
+    padding:
+      80px
+      16px
+      65px;
+  }
+
+
+  .closing-cta__inner {
+    min-height:
+      auto;
+
+    padding:
+      42px;
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      34px;
+  }
+
+
+  .closing-cta__content {
+    grid-column:
+      1;
+
+    grid-row:
+      1;
+  }
+
+
+  .closing-cta__signal {
+    width:
+      140px;
+
+    height:
+      140px;
+
+    justify-self:
+      start;
+
+    grid-column:
+      1;
+
+    grid-row:
+      2;
+  }
+
+
+  .closing-cta__signal-ring {
+    width:
+      115px;
+
+    height:
+      115px;
+  }
+
+
+  .footer {
+    padding:
+      0
+      16px
+      32px;
+  }
+
+
+  .footer__top {
+    flex-direction:
+      column;
+
+    gap:
+      30px;
+  }
+
+}
+
+
+/* =========================================================
+   21. MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .closing-cta {
+    padding:
+      65px
+      16px
+      55px;
+  }
+
+
+  .closing-cta__inner {
+    padding:
+      30px
+      23px;
+
+    border-radius:
+      20px;
+  }
+
+
+  .closing-cta__title {
+    font-size:
+      clamp(36px, 10.5vw, 48px);
+  }
+
+
+  .closing-cta__description {
+    font-size:
+      13px;
+  }
+
+
+  .closing-cta__signal {
+    width:
+      115px;
+
+    height:
+      115px;
+  }
+
+
+  .closing-cta__signal-ring {
+    width:
+      95px;
+
+    height:
+      95px;
+  }
+
+
+  .closing-cta__signal-ring::before {
+    inset:
+      22px;
+  }
+
+
+  .footer__links {
+    width:
+      100%;
+
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    gap:
+      26px;
+  }
+
+
+  .footer__bottom {
+    padding-top:
+      16px;
+
+    grid-template-columns:
+      1fr
+      auto;
+
+    gap:
+      12px;
+  }
+
+
+  .footer__bottom p {
+    grid-column:
+      1 / -1;
+
+    grid-row:
+      2;
+
+    text-align:
+      left;
+  }
+
+}
+
+
+/* =========================================================
+   22. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .closing-cta__signal-ring,
+  .closing-cta__signal-core {
+    animation:
+      none;
+  }
+
+
+  .closing-cta__button,
+  .footer__back-to-top {
+    transition:
+      none;
+  }
+
+}

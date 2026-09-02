@@ -1,0 +1,804 @@
+/* =========================================================
+   KIVANTA SCOUT
+   METHODOLOGY
+========================================================= */
+
+
+/* =========================================================
+   1. SECTION
+========================================================= */
+
+/*
+   DESKTOP GOAL:
+
+   Methodology should compose itself within roughly
+   one viewport.
+
+   LEFT
+   Intro + status language
+
+   RIGHT
+   All five checks visible together
+*/
+
+.methodology {
+  width: 100%;
+
+  min-height: 100svh;
+
+  padding:
+    clamp(54px, 6vh, 76px)
+    24px;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+  z-index: 2;
+}
+
+
+/* ---------------------------------------------------------
+   SECTION AMBIENT LIGHT
+--------------------------------------------------------- */
+
+.methodology::before {
+  content: "";
+
+  position: absolute;
+
+  width: 760px;
+  height: 760px;
+
+  right: -220px;
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(52, 204, 190, 0.055) 0%,
+      rgba(32, 132, 158, 0.025) 42%,
+      transparent 70%
+    );
+
+  pointer-events: none;
+
+  z-index: 0;
+}
+
+
+/* =========================================================
+   2. INNER LAYOUT
+========================================================= */
+
+.methodology__inner {
+  width:
+    min(1200px, 100%);
+
+  margin:
+    0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(300px, 0.82fr)
+    minmax(520px, 1.18fr);
+
+  align-items: center;
+
+  gap:
+    clamp(60px, 7vw, 100px);
+
+  position: relative;
+
+  z-index: 1;
+}
+
+
+/* =========================================================
+   3. LEFT INTRO
+========================================================= */
+
+.methodology__intro {
+  max-width:
+    440px;
+}
+
+
+/* =========================================================
+   4. EYEBROW
+========================================================= */
+
+.methodology
+.section-eyebrow {
+  margin-bottom:
+    18px;
+}
+
+
+/* =========================================================
+   5. TITLE
+========================================================= */
+
+.methodology__title {
+  color:
+    #f5faf8;
+
+  font-size:
+    clamp(44px, 4.5vw, 64px);
+
+  font-weight:
+    700;
+
+  line-height:
+    1.01;
+
+  letter-spacing:
+    -0.05em;
+}
+
+
+.methodology__title span {
+  display: block;
+
+  margin-top:
+    5px;
+
+  color:
+    #a8bdb6;
+}
+
+
+/* =========================================================
+   6. DESCRIPTION
+========================================================= */
+
+.methodology__description {
+  max-width:
+    420px;
+
+  margin-top:
+    22px;
+
+  color:
+    #81949b;
+
+  font-size:
+    15px;
+
+  line-height:
+    1.68;
+}
+
+
+/* =========================================================
+   7. METHODOLOGY BOUNDARY
+========================================================= */
+
+.methodology__boundary {
+  margin-top:
+    28px;
+
+  padding:
+    16px;
+
+  display:
+    flex;
+
+  align-items:
+    flex-start;
+
+  gap:
+    12px;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.09);
+
+  border-radius:
+    14px;
+
+  background:
+    rgba(10, 24, 29, 0.6);
+}
+
+
+/* Info Icon */
+
+.methodology__boundary-icon {
+  width:
+    28px;
+
+  height:
+    28px;
+
+  flex-shrink:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.14);
+
+  border-radius:
+    8px;
+
+  background:
+    rgba(112, 255, 206, 0.035);
+
+  color:
+    #70ffce;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+}
+
+
+/* Boundary Text */
+
+.methodology__boundary p {
+  color:
+    #74898f;
+
+  font-size:
+    12px;
+
+  line-height:
+    1.55;
+}
+
+
+.methodology__boundary strong {
+  color:
+    #c5ddd4;
+
+  font-weight:
+    700;
+}
+
+
+/* =========================================================
+   8. STATUS LEGEND
+========================================================= */
+
+.methodology__legend {
+  margin-top:
+    22px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    8px;
+}
+
+
+/* ---------------------------------------------------------
+   BASE STATUS
+--------------------------------------------------------- */
+
+.methodology__legend-item {
+  padding:
+    6px 8px;
+
+  border:
+    1px solid rgba(255, 255, 255, 0.06);
+
+  border-radius:
+    7px;
+
+  background:
+    rgba(8, 19, 24, 0.6);
+
+  font-size:
+    9px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.08em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* PASS */
+
+.methodology__legend-item--pass {
+  color:
+    #8de8c5;
+
+  border-color:
+    rgba(112, 255, 206, 0.13);
+}
+
+
+/* CAUTION */
+
+.methodology__legend-item--caution {
+  color:
+    #d7c68c;
+
+  border-color:
+    rgba(215, 198, 140, 0.12);
+}
+
+
+/* UNKNOWN */
+
+.methodology__legend-item--unknown {
+  color:
+    #95a8ad;
+}
+
+
+/* N/A */
+
+.methodology__legend-item--na {
+  color:
+    #60767c;
+}
+
+
+/* =========================================================
+   9. CHECK LIST
+========================================================= */
+
+.methodology__checks {
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  gap:
+    10px;
+}
+
+
+/* =========================================================
+   10. INDIVIDUAL CHECK
+========================================================= */
+
+.methodology-check {
+  min-height:
+    96px;
+
+  padding:
+    15px 16px;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    36px
+    minmax(0, 1fr)
+    36px;
+
+  align-items:
+    center;
+
+  gap:
+    15px;
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.075);
+
+  border-radius:
+    15px;
+
+  background:
+    linear-gradient(
+      100deg,
+      rgba(11, 27, 32, 0.82),
+      rgba(8, 20, 25, 0.64)
+    );
+
+  backdrop-filter:
+    blur(14px);
+
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    background 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+
+/* ---------------------------------------------------------
+   CHECK HOVER
+--------------------------------------------------------- */
+
+.methodology-check:hover {
+  transform:
+    translateX(5px);
+
+  border-color:
+    rgba(112, 255, 206, 0.17);
+
+  background:
+    linear-gradient(
+      100deg,
+      rgba(13, 31, 36, 0.94),
+      rgba(8, 21, 26, 0.76)
+    );
+
+  box-shadow:
+    0 14px 35px rgba(0, 0, 0, 0.14),
+    0 0 30px rgba(112, 255, 206, 0.02);
+}
+
+
+/* ---------------------------------------------------------
+   FAINT LIGHT PASSING THROUGH CARD
+--------------------------------------------------------- */
+
+.methodology-check::before {
+  content: "";
+
+  position:
+    absolute;
+
+  width:
+    180px;
+
+  height:
+    180px;
+
+  top:
+    -90px;
+
+  right:
+    -110px;
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(112, 255, 206, 0.055),
+      transparent 68%
+    );
+
+  pointer-events:
+    none;
+}
+
+
+/* =========================================================
+   11. CHECK NUMBER
+========================================================= */
+
+.methodology-check__number {
+  color:
+    #4f6a64;
+
+  font-size:
+    11px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.08em;
+}
+
+
+/* =========================================================
+   12. CHECK CONTENT
+========================================================= */
+
+.methodology-check__content {
+  min-width:
+    0;
+}
+
+
+.methodology-check__content h3 {
+  color:
+    #e7f1ed;
+
+  font-size:
+    15px;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.25;
+
+  letter-spacing:
+    -0.018em;
+}
+
+
+.methodology-check__content p {
+  max-width:
+    560px;
+
+  margin-top:
+    5px;
+
+  color:
+    #74888e;
+
+  font-size:
+    11px;
+
+  line-height:
+    1.5;
+}
+
+
+/* =========================================================
+   13. CHECK SIGNAL
+========================================================= */
+
+.methodology-check__signal {
+  width:
+    32px;
+
+  height:
+    32px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    center;
+
+  border:
+    1px solid rgba(112, 255, 206, 0.08);
+
+  border-radius:
+    50%;
+}
+
+
+/* Signal Core */
+
+.methodology-check__signal span {
+  width:
+    6px;
+
+  height:
+    6px;
+
+  border-radius:
+    50%;
+
+  background:
+    #70ffce;
+
+  box-shadow:
+    0 0 9px rgba(112, 255, 206, 0.58);
+}
+
+
+/* =========================================================
+   14. SHORTER DESKTOP SCREENS
+========================================================= */
+
+@media
+  (min-width: 901px)
+  and (max-height: 820px) {
+
+  .methodology {
+    padding:
+      42px 24px;
+  }
+
+
+  .methodology__title {
+    font-size:
+      clamp(40px, 4vw, 54px);
+  }
+
+
+  .methodology__description {
+    margin-top:
+      16px;
+
+    line-height:
+      1.55;
+  }
+
+
+  .methodology__boundary {
+    margin-top:
+      20px;
+
+    padding:
+      13px;
+  }
+
+
+  .methodology__legend {
+    margin-top:
+      16px;
+  }
+
+
+  .methodology__checks {
+    gap:
+      8px;
+  }
+
+
+  .methodology-check {
+    min-height:
+      82px;
+
+    padding:
+      11px 14px;
+  }
+
+
+  .methodology-check__content p {
+    margin-top:
+      3px;
+
+    line-height:
+      1.4;
+  }
+
+}
+
+
+/* =========================================================
+   15. TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+  .methodology {
+    min-height:
+      auto;
+
+    padding:
+      110px 16px 120px;
+
+    display:
+      block;
+  }
+
+
+  .methodology__inner {
+    grid-template-columns:
+      1fr;
+
+    gap:
+      55px;
+  }
+
+
+  .methodology__intro {
+    max-width:
+      680px;
+  }
+
+
+  .methodology__description {
+    max-width:
+      620px;
+  }
+
+
+  .methodology__checks {
+    gap:
+      12px;
+  }
+
+
+  .methodology-check {
+    min-height:
+      100px;
+  }
+
+}
+
+
+/* =========================================================
+   16. MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+
+  .methodology {
+    padding:
+      90px 16px 100px;
+  }
+
+
+  .methodology__title {
+    font-size:
+      clamp(40px, 12vw, 52px);
+  }
+
+
+  .methodology-check {
+    grid-template-columns:
+      28px
+      minmax(0, 1fr);
+
+    gap:
+      12px;
+
+    padding:
+      16px;
+  }
+
+
+  .methodology-check__signal {
+    display:
+      none;
+  }
+
+
+  .methodology-check__content h3 {
+    font-size:
+      14px;
+  }
+
+
+  .methodology-check__content p {
+    font-size:
+      11px;
+  }
+
+}
+
+
+/* =========================================================
+   17. REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .methodology-check {
+    transition:
+      none;
+  }
+
+
+  .methodology-check:hover {
+    transform:
+      none;
+  }
+
+}
