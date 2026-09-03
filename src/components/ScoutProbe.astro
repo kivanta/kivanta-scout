@@ -1,0 +1,157 @@
+---
+import "../styles/scout-probe.css";
+
+const { state = "idle" } = Astro.props;
+---
+
+<div
+  class="scout-probe"
+  data-visual-state={state}
+  aria-hidden="true"
+>
+  <svg
+    class="scout-probe__svg"
+    viewBox="0 0 560 500"
+    role="presentation"
+    focusable="false"
+  >
+    <!-- Evidence paths -->
+    <path
+      class="probe-path probe-path--primary"
+      d="M118 126 C190 142 205 215 276 244"
+    />
+
+    <path
+      class="probe-path probe-path--primary"
+      d="M276 244 C340 217 367 150 438 162"
+    />
+
+    <path
+      class="probe-path"
+      d="M276 244 C341 266 369 331 448 350"
+    />
+
+    <path
+      class="probe-path"
+      d="M276 244 C217 283 203 354 132 382"
+    />
+
+    <!-- Partial / unresolved paths -->
+    <path
+      class="probe-path probe-path--quiet"
+      d="M118 126 C82 183 90 229 102 264"
+    />
+
+    <path
+      class="probe-path probe-path--quiet probe-path--broken"
+      d="M448 350 C472 391 463 423 436 448"
+    />
+
+    <path
+      class="probe-path probe-path--quiet probe-path--broken"
+      d="M132 382 C95 405 79 430 76 458"
+    />
+
+    <!-- Discovery node -->
+    <g class="probe-node-group">
+      <circle class="probe-node" cx="118" cy="126" r="10" />
+      <circle class="probe-node-core" cx="118" cy="126" r="3" />
+
+      <text
+        class="probe-label"
+        x="92"
+        y="101"
+        text-anchor="middle"
+      >
+        Discovery
+      </text>
+    </g>
+
+    <!-- Source node -->
+    <g class="probe-node-group">
+      <circle class="probe-node" cx="438" cy="162" r="10" />
+      <circle class="probe-node-core" cx="438" cy="162" r="3" />
+
+      <text
+        class="probe-label"
+        x="460"
+        y="137"
+        text-anchor="middle"
+      >
+        Source
+      </text>
+    </g>
+
+    <!-- Evidence node -->
+    <g class="probe-node-group">
+      <circle class="probe-node" cx="448" cy="350" r="10" />
+      <circle class="probe-node-core" cx="448" cy="350" r="3" />
+
+      <text
+        class="probe-label"
+        x="471"
+        y="382"
+        text-anchor="middle"
+      >
+        Evidence
+      </text>
+    </g>
+
+    <!-- Checks node -->
+    <g class="probe-node-group">
+      <circle class="probe-node" cx="132" cy="382" r="10" />
+      <circle class="probe-node-core" cx="132" cy="382" r="3" />
+
+      <text
+        class="probe-label"
+        x="109"
+        y="417"
+        text-anchor="middle"
+      >
+        Checks
+      </text>
+    </g>
+
+    <!-- Supporting evidence points -->
+    <circle class="probe-point" cx="102" cy="264" r="4" />
+    <circle class="probe-point" cx="436" cy="448" r="4" />
+    <circle class="probe-point" cx="76" cy="458" r="4" />
+
+    <!-- Central Scout identity -->
+    <g class="probe-scout">
+      <circle
+        class="probe-scout__outer"
+        cx="276"
+        cy="244"
+        r="42"
+      />
+
+      <circle
+        class="probe-scout__middle"
+        cx="276"
+        cy="244"
+        r="23"
+      />
+
+      <circle
+        class="probe-scout__core"
+        cx="276"
+        cy="244"
+        r="7"
+      />
+    </g>
+
+    <!-- Connected-system activity overlay -->
+    <g class="probe-activity">
+      <path
+        class="probe-activity__path"
+        d="M118 126 C190 142 205 215 276 244 C340 217 367 150 438 162"
+      />
+
+      <path
+        class="probe-activity__path probe-activity__path--second"
+        d="M132 382 C217 283 217 283 276 244 C341 266 369 331 448 350"
+      />
+    </g>
+  </svg>
+</div>

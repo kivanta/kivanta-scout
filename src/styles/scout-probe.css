@@ -1,0 +1,219 @@
+/* ========================================
+   KIVANTA SCOUT — SCOUT PROBE
+   ======================================== */
+
+.scout-probe {
+  width: min(100%, 26rem);
+  aspect-ratio: 1.12;
+
+  margin-inline: auto;
+
+  display: grid;
+  place-items: center;
+}
+
+.scout-probe__svg {
+  width: 100%;
+  height: auto;
+
+  overflow: visible;
+}
+
+/* Network paths
+---------------------------------------- */
+
+.probe-path {
+  fill: none;
+
+  stroke: var(--palette-cyan-300);
+  stroke-width: 1.25;
+
+  opacity: 0.22;
+}
+
+.probe-path--primary {
+  opacity: 0.36;
+}
+
+.probe-path--quiet {
+  opacity: 0.13;
+}
+
+.probe-path--broken {
+  stroke-dasharray: 5 8;
+}
+
+/* Evidence nodes
+---------------------------------------- */
+
+.probe-node {
+  fill: var(--surface-page);
+
+  stroke: var(--palette-cyan-300);
+  stroke-width: 1.5;
+
+  opacity: 0.9;
+}
+
+.probe-node-core {
+  fill: var(--palette-cyan-200);
+
+  opacity: 0.8;
+}
+
+.probe-point {
+  fill: var(--palette-cyan-300);
+
+  opacity: 0.35;
+}
+
+/* Labels
+---------------------------------------- */
+
+.probe-label {
+  fill: var(--text-muted);
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    sans-serif;
+
+  font-size: 11px;
+  font-weight: 550;
+
+  letter-spacing: 0.04em;
+
+  opacity: 0.8;
+}
+
+/* Central Scout identity
+---------------------------------------- */
+
+.probe-scout__outer {
+  fill: var(--surface-primary);
+
+  stroke: var(--palette-cyan-300);
+  stroke-width: 1;
+
+  opacity: 0.65;
+}
+
+.probe-scout__middle {
+  fill: var(--surface-primary);
+
+  stroke: var(--identity-scout-accent);
+  stroke-width: 1.4;
+
+  opacity: 0.95;
+}
+
+.probe-scout__core {
+  fill: var(--identity-scout-accent);
+}
+
+/* Connected activity
+---------------------------------------- */
+
+.probe-activity {
+  pointer-events: none;
+}
+
+.probe-activity__path {
+  fill: none;
+
+  stroke: var(--palette-cyan-200);
+  stroke-width: 1.6;
+
+  stroke-linecap: round;
+
+  stroke-dasharray: 22 380;
+  stroke-dashoffset: 0;
+
+  opacity: 0.55;
+
+  animation: probe-connected-flow 9s linear infinite;
+}
+
+.probe-activity__path--second {
+  animation-delay: -4.5s;
+  opacity: 0.35;
+}
+
+/* State: idle
+---------------------------------------- */
+
+.scout-probe[data-visual-state="idle"] .probe-scout__core {
+  animation: probe-core-breathe 4.8s ease-in-out infinite;
+}
+
+/* State: active
+---------------------------------------- */
+
+.scout-probe[data-visual-state="active"] .probe-activity__path {
+  animation-duration: 5.5s;
+}
+
+.scout-probe[data-visual-state="active"] .probe-scout__core {
+  animation: probe-core-breathe 3s ease-in-out infinite;
+}
+
+/* State: still
+---------------------------------------- */
+
+.scout-probe[data-visual-state="still"] .probe-activity__path,
+.scout-probe[data-visual-state="still"] .probe-scout__core {
+  animation: none;
+}
+
+/* Motion
+---------------------------------------- */
+
+@keyframes probe-connected-flow {
+  to {
+    stroke-dashoffset: -402;
+  }
+}
+
+@keyframes probe-core-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Mobile
+---------------------------------------- */
+
+@media (max-width: 40rem) {
+  .scout-probe {
+    width: min(100%, 21rem);
+  }
+
+  .probe-label {
+    font-size: 10px;
+  }
+}
+
+/* Reduced motion
+---------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .probe-activity__path,
+  .probe-scout__core {
+    animation: none !important;
+  }
+}
+
+/* High contrast
+---------------------------------------- */
+
+@media (forced-colors: active) {
+  .scout-probe {
+    display: none;
+  }
+}

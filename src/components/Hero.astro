@@ -1,0 +1,35 @@
+---
+import "../styles/hero.css";
+import ScoutInput from "./ScoutInput.astro";
+import ScoutProbe from "./ScoutProbe.astro";
+---
+
+<section class="hero">
+  <div class="hero__inner">
+
+    <!-- LEFT SIDE -->
+    <div class="hero__content">
+      <p class="hero__eyebrow">
+        EVIDENCE BEFORE CLAIMS
+      </p>
+
+      <h1 class="hero__title">
+        Understand a Technocore tool before you use it.
+      </h1>
+
+      <p class="hero__description">
+        Scout follows public evidence to help you understand what a tool
+        actually does, what it connects to, and what can be established
+        before you use it.
+      </p>
+
+      <ScoutInput />
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="hero__visual">
+      <ScoutProbe state="idle" />
+    </div>
+
+  </div>
+</section>

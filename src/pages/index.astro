@@ -1,327 +1,36 @@
 ---
-/* =========================================================
-   KIVANTA SCOUT
-   PAGE IMPORTS
-========================================================= */
-
 import "../styles/global.css";
-import "../styles/activity-strip.css";
-import "../styles/how-it-works.css";
-import "../styles/methodology.css";
-import "../styles/evidence.css";
-import "../styles/closing.css";
-
-import ActivityStrip from "../components/ActivityStrip.astro";
-import HowItWorks from "../components/HowItWorks.astro";
-import Methodology from "../components/Methodology.astro";
-import Evidence from "../components/Evidence.astro";
-import Closing from "../components/Closing.astro";
+import Navbar from "../components/Navbar.astro";
+import Hero from "../components/Hero.astro";
+import MethodologyPreview from "../components/MethodologyPreview.astro";
+import PrinciplesTrust from "../components/PrinciplesTrust.astro";
+import Footer from "../components/Footer.astro";
 ---
 
+<!doctype html>
 <html lang="en">
-
   <head>
-
-    <!-- =====================================================
-         PAGE META
-    ====================================================== -->
-
     <meta charset="UTF-8" />
-
-    <meta
-      name="viewport"
-      content="width=device-width"
-    />
+    <meta name="viewport" content="width=device-width" />
 
     <meta
       name="description"
-      content="Kivanta Scout helps you understand public Technocore projects before you trust or use them."
+      content="Kivanta Scout — evidence-first investigation for public Technocore tools."
     />
 
-    <title>
-      Kivanta Scout
-    </title>
-
+    <title>Kivanta Scout</title>
   </head>
 
 
+
   <body>
-
-    <!-- =====================================================
-         NAVBAR
-    ====================================================== -->
-
-    <header class="navbar">
-
-      <a
-        href="/"
-        class="navbar__brand"
-      >
-        Kivanta Scout
-      </a>
-
-
-      <nav
-        class="navbar__nav"
-        aria-label="Main navigation"
-      >
-
-        <a href="#how-it-works">
-          How it works
-        </a>
-
-        <a href="#methodology">
-          Methodology
-        </a>
-
-        <a href="#evidence">
-          Evidence
-        </a>
-
-      </nav>
-
-
-      <a
-        href="#scout"
-        class="navbar__cta"
-      >
-        Scout a project
-      </a>
-
-    </header>
-
-
-    <!-- =====================================================
-         MAIN CONTENT
-    ====================================================== -->
+    <Navbar />
 
     <main>
-
-      <!-- ===================================================
-           HERO
-      ==================================================== -->
-
-      <section
-        class="hero"
-        id="scout"
-      >
-
-        <!-- =================================================
-             HERO LEFT SIDE
-        ================================================== -->
-
-        <div class="hero__content">
-
-          <div class="hero__badge">
-
-            <span class="hero__badge-dot"></span>
-
-            Technocore project intelligence
-
-          </div>
-
-
-          <h1 class="hero__title">
-
-            Understand before
-
-            <span>
-              you trust.
-            </span>
-
-          </h1>
-
-
-          <p class="hero__description">
-
-            Scout investigates public project evidence to help you understand
-            what a tool does, where it comes from, and what you should know
-            before using it.
-
-          </p>
-
-
-          <!-- ===============================================
-               SCOUT INPUT
-          ================================================ -->
-
-          <div class="hero__input-wrapper">
-
-            <form class="scout-input">
-
-              <label
-                for="project-input"
-                class="sr-only"
-              >
-                Paste a project or agent
-              </label>
-
-
-              <input
-                id="project-input"
-                name="project"
-                type="text"
-                placeholder="Paste a project or agent..."
-                autocomplete="off"
-              />
-
-
-              <button type="submit">
-                Scout it
-              </button>
-
-            </form>
-
-
-            <!-- =============================================
-                 SUPPORTED INPUTS
-            ============================================== -->
-
-            <div class="hero__supported">
-
-              <span>Website</span>
-              <span>GitHub</span>
-              <span>Technocore</span>
-              <span>DID</span>
-              <span>ENS</span>
-
-            </div>
-
-
-            <!-- =============================================
-                 TRUST SIGNALS
-            ============================================== -->
-
-            <div
-              class="hero__trust"
-              aria-label="Scout access information"
-            >
-
-              <span>
-                <span class="hero__trust-check">✓</span>
-                No wallet required
-              </span>
-
-              <span>
-                <span class="hero__trust-check">✓</span>
-                No sign-up
-              </span>
-
-              <span>
-                <span class="hero__trust-check">✓</span>
-                Public evidence only
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- =================================================
-             HERO RIGHT SIDE
-        ================================================== -->
-
-        <div
-          class="hero__visual"
-          aria-hidden="true"
-        >
-
-          <div class="scout-orbit">
-
-            <span
-              class="
-                scout-orbit__ring
-                scout-orbit__ring--outer
-              "
-            ></span>
-
-
-            <span
-              class="
-                scout-orbit__ring
-                scout-orbit__ring--middle
-              "
-            ></span>
-
-
-            <span
-              class="
-                scout-orbit__ring
-                scout-orbit__ring--inner
-              "
-            ></span>
-
-
-            <div class="scout-probe">
-
-              <span class="scout-probe__ring"></span>
-
-
-              <span class="scout-probe__body">
-
-                <span class="scout-probe__core"></span>
-
-              </span>
-
-
-              <span class="scout-probe__pulse"></span>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- ===================================================
-           LIVE ACTIVITY
-      ==================================================== -->
-
-      <ActivityStrip />
-
-
-      <!-- ===================================================
-           HOW IT WORKS
-      ==================================================== -->
-
-      <HowItWorks />
-
-
-      <!-- ===================================================
-           METHODOLOGY
-      ==================================================== -->
-
-      <Methodology />
-
-
-      <!-- ===================================================
-           EVIDENCE
-      ==================================================== -->
-
-      <Evidence />
-
-
-      <!-- ===================================================
-           CLOSING CTA + FOOTER
-      ==================================================== -->
-
-      <Closing />
-
+      <Hero />
+      <MethodologyPreview />
+      <PrinciplesTrust />
     </main>
-
-
-    <!-- =====================================================
-         JAVASCRIPT
-    ====================================================== -->
-
-    <script>
-      import "../scripts/scout.js";
-    </script>
-
+    <Footer />
   </body>
-
 </html>

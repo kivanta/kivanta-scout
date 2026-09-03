@@ -1,27 +1,29 @@
 /* ========================================
-   KIVANTA SCOUT — METHODOLOGY PREVIEW
+   KIVANTA SCOUT — OPERATING PRINCIPLES
    ======================================== */
 
-.methodology {
+.principles {
   width: 100%;
 }
 
-.methodology__inner {
+.principles__inner {
   width: min(100% - 2rem, 72rem);
   margin-inline: auto;
 
   padding-block: clamp(5rem, 9vw, 8rem);
+
+  border-top: 1px solid var(--border-subtle, #182736);
 }
 
 /* Header
 ---------------------------------------- */
 
-.methodology__header {
-  max-width: 42rem;
+.principles__header {
+  max-width: 44rem;
   margin-bottom: 3rem;
 }
 
-.methodology__eyebrow {
+.principles__eyebrow {
   margin: 0 0 0.9rem;
 
   color: var(--link-text, #79dfff);
@@ -31,18 +33,20 @@
   letter-spacing: 0.14em;
 }
 
-.methodology__title {
+.principles__title {
   margin: 0;
+
+  max-width: 14ch;
 
   font-size: clamp(2rem, 4vw, 3.5rem);
   line-height: 1.05;
   letter-spacing: -0.035em;
 }
 
-.methodology__description {
+.principles__description {
   margin: 1.25rem 0 0;
 
-  max-width: 36rem;
+  max-width: 38rem;
 
   color: var(--text-secondary, #a6b2bd);
 
@@ -50,65 +54,71 @@
   line-height: 1.7;
 }
 
-/* Checks
+/* Principles
 ---------------------------------------- */
 
-.methodology__list {
+.principles__list {
   margin: 0;
   padding: 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 
   list-style: none;
 
   border-top: 1px solid var(--border-subtle, #182736);
 }
 
-.methodology__item {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
-  gap: 1.25rem;
-  align-items: start;
+.principles__item {
+  min-width: 0;
 
-  padding-block: 1.5rem;
+  padding: 1.75rem 1.5rem 1.75rem 0;
 
   border-bottom: 1px solid var(--border-subtle, #182736);
 }
 
-.methodology__number {
+.principles__item + .principles__item {
+  padding-left: 1.5rem;
+  border-left: 1px solid var(--border-subtle, #182736);
+}
+
+.principles__number {
+  display: block;
+  margin-bottom: 1.25rem;
+
   color: var(--text-secondary, #a6b2bd);
 
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.08em;
 }
 
-.methodology__question {
-  max-width: 48rem;
+.principles__text {
+  margin: 0;
+
+  max-width: 18rem;
 
   color: var(--text-primary, #f2f7f5);
 
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-size: 1rem;
   font-weight: 550;
-  line-height: 1.5;
-}
-
-/* Closing note
----------------------------------------- */
-
-.methodology__note {
-  margin: 1.5rem 0 0;
-
-  color: var(--text-secondary, #a6b2bd);
-
-  font-size: 0.9rem;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 /* Narrow layouts
 ---------------------------------------- */
 
-@media (max-width: 36rem) {
-  .methodology__item {
-    grid-template-columns: 2rem minmax(0, 1fr);
-    gap: 0.75rem;
+@media (max-width: 44rem) {
+  .principles__list {
+    grid-template-columns: 1fr;
+  }
+
+  .principles__item {
+    padding: 1.5rem 0;
+  }
+
+  .principles__item + .principles__item {
+    padding-left: 0;
+    border-left: 0;
   }
 }

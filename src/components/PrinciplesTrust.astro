@@ -1,0 +1,58 @@
+---
+import "../styles/principles.css";
+
+const principles = [
+  {
+    number: "01",
+    text: "Findings stay connected to evidence.",
+  },
+  {
+    number: "02",
+    text: "Explanations don't change findings.",
+  },
+  {
+    number: "03",
+    text: "Reviews aren't silently rewritten.",
+  },
+];
+---
+
+<section
+  class="principles"
+  aria-labelledby="principles-title"
+>
+  <div class="principles__inner">
+
+    <header class="principles__header">
+      <p class="principles__eyebrow">
+        OPERATING PRINCIPLES
+      </p>
+
+      <h2 class="principles__title" id="principles-title">
+        Trust comes from what Scout won't do.
+      </h2>
+
+      <p class="principles__description">
+        Scout follows the same rules on every review — including rules
+        that limit what it can claim.
+      </p>
+    </header>
+
+    <ol class="principles__list">
+      {
+        principles.map((principle) => (
+          <li class="principles__item">
+            <span class="principles__number">
+              {principle.number}
+            </span>
+
+            <p class="principles__text">
+              {principle.text}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+
+  </div>
+</section>

@@ -1,0 +1,107 @@
+/* ========================================
+   KIVANTA SCOUT — NAVBAR
+   ======================================== */
+
+.site-header {
+  position: relative;
+  z-index: 10;
+
+  width: 100%;
+}
+
+.navbar {
+  width: min(
+    calc(100% - (var(--page-gutter) * 2)),
+    var(--page-width)
+  );
+
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+
+  min-height: 4.75rem;
+}
+
+/* Brand
+---------------------------------------- */
+
+.navbar__brand {
+  flex-shrink: 0;
+
+  color: var(--text-primary);
+
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+
+  text-decoration: none;
+}
+
+/* Navigation
+---------------------------------------- */
+
+.navbar__nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+
+  gap: 1.5rem;
+}
+
+.navbar__link {
+  color: var(--text-secondary);
+
+  font-size: 0.86rem;
+  font-weight: 520;
+
+  text-decoration: none;
+  text-underline-offset: 0.25em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navbar__brand:hover {
+    color: var(--link-hover);
+  }
+
+  .navbar__link:hover {
+    color: var(--link-text);
+    text-decoration: underline;
+  }
+}
+
+/* Focus
+---------------------------------------- */
+
+.navbar__brand:focus-visible,
+.navbar__link:focus-visible {
+  outline: 0.125rem solid var(--focus-inner);
+  outline-offset: 0.25rem;
+}
+
+/* Narrow layouts
+---------------------------------------- */
+
+@media (max-width: 36rem) {
+  .navbar {
+    min-height: auto;
+
+    padding-block: 1.15rem;
+
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 0.8rem;
+  }
+
+  .navbar__nav {
+    width: 100%;
+
+    justify-content: space-between;
+
+    gap: 1rem;
+  }
+}

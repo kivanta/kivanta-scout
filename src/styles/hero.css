@@ -1,0 +1,190 @@
+/* ========================================
+   KIVANTA SCOUT — HERO
+   ======================================== */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  overflow: clip;
+}
+
+/* Decorative atmosphere
+---------------------------------------- */
+
+.hero::before,
+.hero::after {
+  content: "";
+
+  position: absolute;
+  z-index: -1;
+
+  pointer-events: none;
+  border-radius: 999px;
+
+  filter: blur(90px);
+}
+
+.hero::before {
+  width: 22rem;
+  height: 22rem;
+
+  top: 8%;
+  right: 7%;
+
+  background: var(--palette-cyan-300);
+  opacity: 0.09;
+}
+
+.hero::after {
+  width: 18rem;
+  height: 18rem;
+
+  right: 24%;
+  bottom: 12%;
+
+  background: var(--palette-blue-400);
+  opacity: 0.06;
+}
+
+/* Main layout
+---------------------------------------- */
+
+.hero__inner {
+  width: min(
+    calc(100% - (var(--page-gutter) * 2)),
+    var(--page-width)
+  );
+
+  margin-inline: auto;
+
+  display: grid;
+  grid-template-columns: 1fr;
+
+  gap: 2rem;
+
+  padding-block: 3rem 4rem;
+}
+
+/* Hero copy
+---------------------------------------- */
+
+.hero__content {
+  position: relative;
+  z-index: 1;
+
+  min-width: 0;
+  max-width: 39rem;
+}
+
+.hero__eyebrow {
+  margin: 0 0 0.7rem;
+
+  color: var(--link-text);
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+.hero__title {
+  margin: 0;
+
+  color: var(--text-primary);
+
+  font-size: clamp(2.35rem, 3.6vw, 3.55rem);
+  font-weight: 650;
+
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+
+  text-wrap: balance;
+}
+
+.hero__desktop-break {
+  display: none;
+}
+
+@media (min-width: 52rem) {
+  .hero__desktop-break {
+    display: inline;
+  }
+}
+
+.hero__description {
+  margin: 1rem 0 0;
+
+  max-width: 36rem;
+
+  color: var(--text-secondary);
+
+  font-size: 0.96rem;
+  line-height: 1.6;
+}
+
+/* Probe area
+---------------------------------------- */
+
+.hero__visual {
+  min-width: 0;
+
+  display: grid;
+  place-items: center;
+}
+
+/* Desktop
+---------------------------------------- */
+
+@media (min-width: 52rem) {
+  .hero__inner {
+    grid-template-columns:
+      minmax(0, 1.16fr)
+      minmax(16rem, 0.84fr);
+
+    align-items: center;
+
+    min-height: calc(100svh - 4.75rem);
+
+    gap: 2rem;
+
+    padding-block: 1rem 1.75rem;
+  }
+}
+
+/* Mobile
+---------------------------------------- */
+
+@media (max-width: 36rem) {
+  .hero__inner {
+    gap: 2rem;
+
+    padding-block: 2.5rem 4rem;
+  }
+
+  .hero__title {
+    max-width: 13ch;
+
+    font-size: clamp(2.3rem, 11vw, 3.2rem);
+  }
+}
+
+/* Reduced motion
+---------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero::before,
+  .hero::after {
+    animation: none;
+  }
+}
+
+/* High contrast
+---------------------------------------- */
+
+@media (forced-colors: active) {
+  .hero::before,
+  .hero::after {
+    display: none;
+  }
+}

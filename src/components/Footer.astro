@@ -1,0 +1,62 @@
+---
+import "../styles/footer.css";
+
+/*
+  We will add the real public Technocore DID before launch.
+  We do not invent one for the prototype.
+*/
+const publicDid = "";
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+
+    <div class="site-footer__top">
+      <p class="site-footer__built">
+        Built by Kivanta
+      </p>
+
+      <nav
+        class="site-footer__links"
+        aria-label="Footer navigation"
+      >
+        <a
+          href="https://github.com/kivanta/kivanta-scout"
+          class="site-footer__link"
+        >
+          GitHub ↗
+        </a>
+
+        <!-- Real Kivanta X link will be connected before launch. -->
+        <span class="site-footer__link site-footer__link--pending">
+          X ↗
+        </span>
+
+        <!-- Official Technocore Rooms link will be connected later. -->
+        <span class="site-footer__link site-footer__link--pending">
+          Technocore Rooms ↗
+        </span>
+
+        <!-- Privacy page will be created before public launch. -->
+        <span class="site-footer__link site-footer__link--pending">
+          Privacy
+        </span>
+      </nav>
+    </div>
+
+    {
+      publicDid && (
+        <div class="site-footer__identity">
+          <p class="site-footer__identity-label">
+            KIVANTA'S PUBLIC TECHNOCORE DID
+          </p>
+
+          <code class="site-footer__did">
+            {publicDid}
+          </code>
+        </div>
+      )
+    }
+
+  </div>
+</footer>
