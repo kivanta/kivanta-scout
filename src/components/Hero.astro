@@ -1,35 +1,54 @@
 ---
 import "../styles/hero.css";
+
 import ScoutInput from "./ScoutInput.astro";
 import ScoutProbe from "./ScoutProbe.astro";
 ---
 
-<section class="hero">
+<section class="hero" aria-labelledby="hero-title">
+
+  <!-- Decorative cursor-follow atmosphere -->
+  <div class="hero__beam" aria-hidden="true"></div>
+
   <div class="hero__inner">
 
-    <!-- LEFT SIDE -->
+    <!-- ==============================
+         LEFT — COPY + SCOUT INPUT
+         ============================== -->
     <div class="hero__content">
+
       <p class="hero__eyebrow">
-        EVIDENCE BEFORE CLAIMS
+        TECHNOCORE · EVIDENCE BEFORE CLAIMS
       </p>
 
-      <h1 class="hero__title">
-        Understand a Technocore tool before you use it.
+      <h1 class="hero__title" id="hero-title">
+        <span class="hero__title-line">
+          See what the agent is built to do
+        </span>
+
+        <span class="hero__title-line">
+          before you use it.
+        </span>
       </h1>
 
       <p class="hero__description">
-        Scout follows public evidence to help you understand what a tool
-        actually does, what it connects to, and what can be established
-        before you use it.
+        Scout checks the public code—and tells you what it can't establish.
       </p>
 
       <ScoutInput />
+
     </div>
 
-    <!-- RIGHT SIDE -->
+    <!-- ==============================
+         RIGHT — SCOUT PROBE
+         ============================== -->
     <div class="hero__visual">
       <ScoutProbe state="idle" />
     </div>
 
   </div>
 </section>
+
+<script>
+  import "../scripts/hero-beam.js";
+</script>

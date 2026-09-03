@@ -112,33 +112,7 @@
   fill: var(--identity-scout-accent);
 }
 
-/* Connected activity
----------------------------------------- */
 
-.probe-activity {
-  pointer-events: none;
-}
-
-.probe-activity__path {
-  fill: none;
-
-  stroke: var(--palette-cyan-200);
-  stroke-width: 1.6;
-
-  stroke-linecap: round;
-
-  stroke-dasharray: 22 380;
-  stroke-dashoffset: 0;
-
-  opacity: 0.55;
-
-  animation: probe-connected-flow 9s linear infinite;
-}
-
-.probe-activity__path--second {
-  animation-delay: -4.5s;
-  opacity: 0.35;
-}
 
 /* State: idle
 ---------------------------------------- */
@@ -150,30 +124,18 @@
 /* State: active
 ---------------------------------------- */
 
-.scout-probe[data-visual-state="active"] .probe-activity__path {
-  animation-duration: 5.5s;
-}
-
 .scout-probe[data-visual-state="active"] .probe-scout__core {
   animation: probe-core-breathe 3s ease-in-out infinite;
 }
 
 /* State: still
 ---------------------------------------- */
-
-.scout-probe[data-visual-state="still"] .probe-activity__path,
 .scout-probe[data-visual-state="still"] .probe-scout__core {
   animation: none;
 }
 
 /* Motion
 ---------------------------------------- */
-
-@keyframes probe-connected-flow {
-  to {
-    stroke-dashoffset: -402;
-  }
-}
 
 @keyframes probe-core-breathe {
   0%,

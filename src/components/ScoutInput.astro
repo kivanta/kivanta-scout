@@ -2,15 +2,10 @@
 import "../styles/scout-input.css";
 ---
 
-<form class="scout-input" action="#" method="post">
+<form class="scout-input" id="scout-input">
   <label class="scout-input__label" for="scout-reference">
-    Paste a project or agent
+    Paste a public project or agent reference
   </label>
-
-  <p class="scout-input__helper" id="scout-reference-help">
-    Use the public reference you have — a website, GitHub link,
-    Technocore identity, or ENS name. Scout works out the rest.
-  </p>
 
   <div class="scout-input__control">
     <input
@@ -18,21 +13,23 @@ import "../styles/scout-input.css";
       id="scout-reference"
       name="reference"
       type="text"
-      placeholder="https://project.com"
-      aria-describedby="scout-reference-help"
+      placeholder="github.com/... or did:key:z6Mkga....."
       autocomplete="off"
     />
 
-    <button class="scout-input__button" type="submit">
+    <button
+      class="scout-input__button"
+      type="button"
+    >
       Scout it
     </button>
   </div>
 
-  <p class="scout-input__trust">
-    No wallet connection · No sign-up
+  <p class="scout-input__capabilities">
+    Website · GitHub · Technocore link · did:key · ENS
   </p>
 
-  <p class="scout-input__principle">
-    If Scout can't confirm something, it tells you — it doesn't guess.
+  <p class="scout-input__trust">
+    No wallet connection · No sign-up
   </p>
 </form>
