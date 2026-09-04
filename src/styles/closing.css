@@ -925,81 +925,60 @@
    20. TABLET
 ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 51.99rem) {
 
   .closing-cta {
-    padding:
-      80px
-      16px
-      65px;
+    padding: 4rem 1.25rem 3.5rem;
   }
 
 
   .closing-cta__inner {
-    min-height:
-      auto;
+    min-height: auto;
 
-    padding:
-      42px;
+    padding: 2.25rem;
 
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
 
-    gap:
-      34px;
+    gap: 1.75rem;
   }
 
 
   .closing-cta__content {
-    grid-column:
-      1;
+    grid-column: 1;
 
-    grid-row:
-      1;
+    grid-row: 1;
   }
 
 
   .closing-cta__signal {
-    width:
-      140px;
+    width: 140px;
 
-    height:
-      140px;
+    height: 140px;
 
-    justify-self:
-      start;
+    justify-self: start;
 
-    grid-column:
-      1;
+    grid-column: 1;
 
-    grid-row:
-      2;
+    grid-row: 2;
   }
 
 
   .closing-cta__signal-ring {
-    width:
-      115px;
+    width: 115px;
 
-    height:
-      115px;
+    height: 115px;
   }
 
 
   .footer {
-    padding:
-      0
-      16px
-      32px;
+    padding: 0 1.25rem 2rem;
   }
 
 
   .footer__top {
-    flex-direction:
-      column;
+    flex-direction: column;
 
-    gap:
-      30px;
+    gap: 1.75rem;
   }
 
 }
@@ -1009,96 +988,92 @@
    21. MOBILE
 ========================================================= */
 
-@media (max-width: 560px) {
+@media (max-width: 36rem) {
 
   .closing-cta {
-    padding:
-      65px
-      16px
-      55px;
+    padding: 3.25rem 1rem 2.75rem;
   }
 
 
   .closing-cta__inner {
-    padding:
-      30px
-      23px;
+    padding: 1.75rem 1.25rem;
 
-    border-radius:
-      20px;
+    border-radius: 20px;
   }
 
 
   .closing-cta__title {
-    font-size:
-      clamp(36px, 10.5vw, 48px);
+    font-size: clamp(2rem, 9vw, 2.75rem);
   }
 
 
   .closing-cta__description {
-    font-size:
-      13px;
+    font-size: 13px;
+  }
+
+
+  .closing-cta__button {
+    min-height: 2.75rem;
   }
 
 
   .closing-cta__signal {
-    width:
-      115px;
+    width: 115px;
 
-    height:
-      115px;
+    height: 115px;
   }
 
 
   .closing-cta__signal-ring {
-    width:
-      95px;
+    width: 95px;
 
-    height:
-      95px;
+    height: 95px;
   }
 
 
   .closing-cta__signal-ring::before {
-    inset:
-      22px;
+    inset: 22px;
+  }
+
+
+  .footer {
+    padding: 0 1rem 2rem;
   }
 
 
   .footer__links {
-    width:
-      100%;
+    width: 100%;
 
-    grid-template-columns:
-      repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr);
 
-    gap:
-      26px;
+    gap: 1.5rem;
   }
 
 
   .footer__bottom {
-    padding-top:
-      16px;
+    padding-top: 16px;
 
     grid-template-columns:
       1fr
       auto;
 
-    gap:
-      12px;
+    gap: 12px;
   }
 
 
   .footer__bottom p {
-    grid-column:
-      1 / -1;
+    grid-column: 1 / -1;
 
-    grid-row:
-      2;
+    grid-row: 2;
 
-    text-align:
-      left;
+    text-align: left;
+  }
+
+
+  .footer__back-to-top {
+    width: 2.75rem;
+
+    height: 2.75rem;
   }
 
 }

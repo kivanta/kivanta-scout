@@ -148,16 +148,31 @@
   }
 }
 
+/* Tablet — keep the probe compact beside copy
+---------------------------------------- */
+
+@media (min-width: 768px) and (max-width: 831px) {
+  .scout-probe {
+    width: min(100%, 20rem);
+  }
+}
+
 /* Mobile
 ---------------------------------------- */
 
-@media (max-width: 40rem) {
+@media (max-width: 767px) {
   .scout-probe {
-    width: min(100%, 21rem);
+    width: min(100%, 18.5rem);
   }
 
   .probe-label {
     font-size: 10px;
+  }
+}
+
+@media (max-width: 36rem) {
+  .scout-probe {
+    width: min(100%, 16.5rem);
   }
 }
 

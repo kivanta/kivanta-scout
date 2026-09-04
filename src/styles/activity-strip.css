@@ -291,13 +291,12 @@
    10. TABLET
 ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 51.99rem) {
 
   .activity-strip__group {
     gap: 30px;
 
-    padding:
-      16px 26px;
+    padding: 16px 26px;
   }
 
 
@@ -313,13 +312,12 @@
    11. MOBILE
 ========================================================= */
 
-@media (max-width: 560px) {
+@media (max-width: 36rem) {
 
   .activity-strip__group {
-    gap: 24px;
+    gap: 20px;
 
-    padding:
-      15px 20px;
+    padding: 14px 16px;
   }
 
 
@@ -335,7 +333,7 @@
 
   .activity-strip::before,
   .activity-strip::after {
-    width: 35px;
+    width: 28px;
   }
 
 }

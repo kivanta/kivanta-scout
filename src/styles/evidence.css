@@ -982,38 +982,31 @@
    16. TABLET
 ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
 
   .evidence {
-    min-height:
-      auto;
+    min-height: auto;
 
-    padding:
-      110px 16px 120px;
+    padding: 4.5rem 1.25rem 5rem;
 
-    display:
-      block;
+    display: block;
   }
 
 
   .evidence__inner {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
 
-    gap:
-      55px;
+    gap: 2.5rem;
   }
 
 
   .evidence__intro {
-    max-width:
-      680px;
+    max-width: 680px;
   }
 
 
   .evidence__description {
-    max-width:
-      620px;
+    max-width: 620px;
   }
 
 }
@@ -1023,26 +1016,22 @@
    17. MOBILE
 ========================================================= */
 
-@media (max-width: 560px) {
+@media (max-width: 36rem) {
 
   .evidence {
-    padding:
-      90px 16px 100px;
+    padding: 3.5rem 1rem 4rem;
   }
 
 
   .evidence__title {
-    font-size:
-      clamp(40px, 12vw, 52px);
+    font-size: clamp(2rem, 9vw, 2.75rem);
   }
 
 
   .evidence-panel {
-    padding:
-      16px;
+    padding: 16px;
 
-    border-radius:
-      18px;
+    border-radius: 18px;
   }
 
 
@@ -1054,8 +1043,7 @@
 
 
   .evidence-trail__state {
-    display:
-      none;
+    display: none;
   }
 
 
@@ -1067,8 +1055,7 @@
 
 
   .evidence-reference__link {
-    grid-column:
-      2;
+    grid-column: 2;
   }
 
 }
