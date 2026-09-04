@@ -108,7 +108,7 @@
 /* Narrow layouts
 ---------------------------------------- */
 
-@media (max-width: 47.99rem) {
+@media (max-width: 767px) {
   .methodology__inner {
     padding-block: clamp(3.5rem, 10vw, 5.5rem);
   }

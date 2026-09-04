@@ -101,7 +101,7 @@
   transition: color 160ms ease;
 }
 
-@media (min-width: 48rem) and (max-width: 51.99rem) {
+@media (min-width: 768px) and (max-width: 831px) {
   .navbar {
     gap: 1.25rem;
   }

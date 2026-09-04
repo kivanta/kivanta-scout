@@ -108,7 +108,7 @@
 /* Tablet
 ---------------------------------------- */
 
-@media (min-width: 48rem) and (max-width: 51.99rem) {
+@media (min-width: 768px) and (max-width: 831px) {
   .site-footer__inner {
     width: min(100% - 2.5rem, 72rem);
   }
@@ -117,7 +117,7 @@
 /* Mobile
 ---------------------------------------- */
 
-@media (max-width: 47.99rem) {
+@media (max-width: 767px) {
   .site-footer__top {
     align-items: flex-start;
     flex-direction: column;

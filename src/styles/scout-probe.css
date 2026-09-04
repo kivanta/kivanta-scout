@@ -151,7 +151,7 @@
 /* Tablet — keep the probe compact beside copy
 ---------------------------------------- */
 
-@media (min-width: 48rem) and (max-width: 51.99rem) {
+@media (min-width: 768px) and (max-width: 831px) {
   .scout-probe {
     width: min(100%, 20rem);
   }
@@ -160,7 +160,7 @@
 /* Mobile
 ---------------------------------------- */
 
-@media (max-width: 47.99rem) {
+@media (max-width: 767px) {
   .scout-probe {
     width: min(100%, 18.5rem);
   }
