@@ -723,54 +723,45 @@
    16. TABLET
 ========================================================= */
 
-@media (max-width: 900px) {
+@media (max-width: 51.99rem) {
 
   /*
      Stop forcing viewport height on smaller screens.
   */
 
   .how-it-works {
-    min-height:
-      auto;
+    min-height: auto;
 
-    padding:
-      110px 16px 120px;
+    padding: 4.5rem 1.25rem 5rem;
 
-    display:
-      block;
+    display: block;
   }
 
 
   .how-it-works__grid {
-    margin-top:
-      52px;
+    margin-top: 2.25rem;
 
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
 
   .process-card {
-    min-height:
-      320px;
+    min-height: 0;
   }
 
 
   .process-card__icon {
-    margin-top:
-      34px;
+    margin-top: 1.5rem;
   }
 
 
   .process-card__description {
-    font-size:
-      14px;
+    font-size: 14px;
   }
 
 
   .process-card__footer {
-    font-size:
-      11px;
+    font-size: 11px;
   }
 
 }
@@ -780,44 +771,37 @@
    17. MOBILE
 ========================================================= */
 
-@media (max-width: 560px) {
+@media (max-width: 36rem) {
 
   .how-it-works {
-    padding:
-      90px 16px 100px;
+    padding: 3.5rem 1rem 4rem;
   }
 
 
   .how-it-works__title {
-    font-size:
-      clamp(40px, 12vw, 52px);
+    font-size: clamp(2rem, 9vw, 2.75rem);
   }
 
 
   .how-it-works__description {
-    font-size:
-      15px;
+    font-size: 15px;
   }
 
 
   .how-it-works__grid {
-    margin-top:
-      46px;
+    margin-top: 1.75rem;
   }
 
 
   .process-card {
-    min-height:
-      300px;
+    min-height: 0;
 
-    padding:
-      20px;
+    padding: 20px;
   }
 
 
   .how-it-works__guardrail {
-    align-items:
-      flex-start;
+    align-items: flex-start;
   }
 
 }

@@ -130,6 +130,8 @@
   line-height: 1.03;
 
   letter-spacing: -0.04em;
+
+  overflow-wrap: anywhere;
 }
 
 
@@ -193,6 +195,39 @@
 
 
 /* ========================================
+   TABLET — keep copy + probe together
+   768px and 820px stay two-column without
+   stretching the Hero to a full viewport.
+   Desktop rules below this are unchanged.
+   ======================================== */
+
+@media (min-width: 48rem) {
+
+  .hero__inner {
+    grid-template-columns:
+      minmax(0, 1.12fr)
+      minmax(16rem, 0.88fr);
+
+    align-items: center;
+  }
+
+}
+
+
+@media (min-width: 48rem) and (max-width: 51.99rem) {
+
+  .hero__inner {
+    gap: 1.5rem;
+
+    padding-block:
+      1.25rem
+      1.75rem;
+  }
+
+}
+
+
+/* ========================================
    DESKTOP COMPOSITION
    ======================================== */
 
@@ -234,7 +269,7 @@
 
 
 /* ========================================
-   TABLET
+   BELOW DESKTOP TITLE LOCK
    ======================================== */
 
 @media (max-width: 63.99rem) {
@@ -252,24 +287,20 @@
 
 
 /* ========================================
-   ONE-COLUMN LAYOUT
+   STACKED LAYOUT
+   Below tablet (768px)
    ======================================== */
 
-@media (max-width: 51.99rem) {
+@media (max-width: 47.99rem) {
 
   .hero__inner {
-    gap: 2rem;
+    gap: 1.5rem;
 
     padding-block:
-      3rem
-      4rem;
+      2rem
+      2.5rem;
   }
 
-
-  /*
-    On smaller screens we stop forcing
-    desktop line behavior.
-  */
 
   .hero__title-line {
     display: inline;
@@ -284,7 +315,7 @@
 
 
   .hero__visual {
-    margin-top: 0.5rem;
+    margin-top: 0.15rem;
 
     transform: none;
   }
@@ -294,6 +325,7 @@
 
 /* ========================================
    MOBILE
+   430px, 390px
    ======================================== */
 
 @media (max-width: 36rem) {
@@ -304,9 +336,11 @@
       var(--page-width, 72rem)
     );
 
+    gap: 1.35rem;
+
     padding-block:
-      2.5rem
-      3.5rem;
+      1.75rem
+      2.25rem;
   }
 
 
@@ -318,12 +352,12 @@
   .hero__title {
     font-size:
       clamp(
-        2rem,
-        10vw,
-        2.65rem
+        1.85rem,
+        8.5vw,
+        2.35rem
       );
 
-    line-height: 1.04;
+    line-height: 1.08;
   }
 
 
@@ -338,18 +372,23 @@
 
 /* ========================================
    VERY SMALL PHONE
+   320px
    ======================================== */
 
-@media (max-width: 22rem) {
+@media (max-width: 22.5rem) {
 
   .hero__inner {
     width:
       calc(100% - 1.5rem);
+
+    padding-block:
+      1.5rem
+      2rem;
   }
 
 
   .hero__title {
-    font-size: 1.9rem;
+    font-size: 1.75rem;
   }
 
 }

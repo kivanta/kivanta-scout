@@ -130,6 +130,8 @@
   line-height: 1.5;
 
   letter-spacing: 0.01em;
+
+  overflow-wrap: anywhere;
 }
 
 .scout-input__trust {
@@ -144,13 +146,21 @@
 /* Narrow layouts
 ---------------------------------------- */
 
-@media (max-width: 32rem) {
+@media (max-width: 36rem) {
   .scout-input {
     max-width: none;
+    margin-top: 1.35rem;
   }
 
   .scout-input__control {
     grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.4rem;
+  }
+
+  .scout-input__field,
+  .scout-input__button {
+    min-height: 2.85rem;
   }
 
   .scout-input__button {
