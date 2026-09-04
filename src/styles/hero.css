@@ -131,7 +131,7 @@
 
   letter-spacing: -0.04em;
 
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 

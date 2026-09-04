@@ -90,7 +90,7 @@
   font-weight: 550;
   line-height: 1.5;
 
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 /* Closing note
