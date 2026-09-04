@@ -218,10 +218,6 @@
 
   .hero__inner {
     gap: 1.5rem;
-
-    padding-block:
-      1.25rem
-      1.75rem;
   }
 
 }
@@ -263,6 +259,24 @@
   .hero__visual {
     transform:
       translateY(-0.4rem);
+  }
+
+}
+
+
+/*
+  Tablet portrait (1024×1366, 820×1180, 768×1024):
+  keep the two-column Hero, but do not stretch or
+  vertically center it in the tall viewport.
+*/
+@media (min-width: 768px) and (max-width: 1024px) {
+
+  .hero__inner {
+    min-height: 0;
+
+    padding-block:
+      0.85rem
+      1.25rem;
   }
 
 }
