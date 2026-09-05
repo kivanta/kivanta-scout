@@ -1,71 +1,93 @@
 /* ========================================
    KIVANTA SCOUT — HERO
-   Fresh complete version
-   ======================================== */
+======================================== */
 
 
 /* ========================================
-   HERO FOUNDATION
-   ======================================== */
+   1. HERO FOUNDATION
+======================================== */
 
 .hero {
-  --beam-x: 28%;
-  --beam-y: 45%;
-  --beam-opacity: 0.62;
+  --beam-x:
+    28%;
 
-  position: relative;
-  isolation: isolate;
+  --beam-y:
+    45%;
 
-  width: 100%;
+  --beam-opacity:
+    0.62;
 
-  overflow: clip;
+  position:
+    relative;
+
+  isolation:
+    isolate;
+
+  width:
+    100%;
+
+  overflow:
+    clip;
 }
 
 
 /* ========================================
-   CURSOR-FOLLOW BACKGROUND LIGHT
-   Decorative only
-   ======================================== */
+   2. CURSOR-FOLLOW BACKGROUND LIGHT
+======================================== */
 
 .hero__beam {
-  position: absolute;
-  inset: 0;
+  position:
+    absolute;
 
-  z-index: -1;
+  inset:
+    0;
 
-  pointer-events: none;
+  z-index:
+    -1;
 
-  opacity: var(--beam-opacity);
+  pointer-events:
+    none;
+
+  opacity:
+    var(--beam-opacity);
 
   background:
     radial-gradient(
-      circle 28rem at var(--beam-x) var(--beam-y),
+      circle 28rem
+      at var(--beam-x) var(--beam-y),
       rgba(110, 231, 162, 0.055) 0%,
       rgba(120, 220, 248, 0.05) 26%,
       rgba(77, 156, 255, 0.025) 48%,
       transparent 72%
     );
 
-  transition: opacity 220ms ease;
+  transition:
+    opacity 220ms ease;
 }
 
 
 /* ========================================
-   MAIN HERO CONTAINER
-   ======================================== */
+   3. MAIN HERO CONTAINER
+======================================== */
 
 .hero__inner {
-  width: min(
-    calc(100% - 3rem),
-    var(--page-width, 72rem)
-  );
+  width:
+    min(
+      calc(100% - 3rem),
+      var(--page-width, 72rem)
+    );
 
-  margin-inline: auto;
+  margin-inline:
+    auto;
 
-  display: grid;
-  grid-template-columns: 1fr;
+  display:
+    grid;
 
-  gap: 2.5rem;
+  grid-template-columns:
+    1fr;
+
+  gap:
+    2.5rem;
 
   padding-block:
     3rem
@@ -74,49 +96,91 @@
 
 
 /* ========================================
-   LEFT SIDE
-   ======================================== */
+   4. LEFT SIDE
+======================================== */
 
 .hero__content {
-  min-width: 0;
+  min-width:
+    0;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+  display:
+    flex;
 
+  flex-direction:
+    column;
 
-/* Eyebrow
----------------------------------------- */
-
-.hero__eyebrow {
-  margin:
-    0
-    0
-    0.85rem;
-
-  color: var(--link-text);
-
-  font-size: 0.66rem;
-  font-weight: 700;
-
-  line-height: 1.3;
-
-  letter-spacing: 0.14em;
-
-  text-transform: uppercase;
+  justify-content:
+    center;
 }
 
 
 /* ========================================
-   HERO H1
-   Deliberate two-line desktop composition
-   ======================================== */
+   5. HERO IDENTITY BADGE
+======================================== */
+
+.hero__eyebrow {
+  width:
+    fit-content;
+
+  margin:
+    0
+    0
+    0.75rem;
+
+  padding:
+    0.3rem
+    0.55rem;
+
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  border:
+    1px solid
+    rgba(120, 220, 248, 0.14);
+
+  border-radius:
+    0.45rem;
+
+  background:
+    rgba(120, 220, 248, 0.025);
+
+  color:
+    var(--link-text);
+
+  font-size:
+    0.66rem;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.3;
+
+  letter-spacing:
+    0.14em;
+
+  text-transform:
+    uppercase;
+
+  box-shadow:
+    inset 0 0 0.75rem
+    rgba(120, 220, 248, 0.015);
+}
+
+
+/* ========================================
+   6. HERO TITLE
+======================================== */
 
 .hero__title {
-  margin: 0;
+  margin:
+    0;
 
-  color: var(--text-primary);
+  color:
+    var(--text-primary);
 
   font-size:
     clamp(
@@ -125,41 +189,36 @@
       2.8rem
     );
 
-  font-weight: 650;
+  font-weight:
+    650;
 
-  line-height: 1.03;
+  line-height:
+    1.03;
 
-  letter-spacing: -0.04em;
+  letter-spacing:
+    -0.04em;
 }
 
-
-/*
-  On a proper desktop each line stays intact.
-  We already chose the wording and line breaks.
-*/
 
 .hero__title-line {
-  display: block;
+  display:
+    block;
 }
 
 
-/*
-  Only force no-wrap when there is genuinely
-  enough desktop space.
-*/
-
-@media (min-width: 64rem) {
+@media (min-width: 1024px) {
 
   .hero__title-line {
-    white-space: nowrap;
+    white-space:
+      nowrap;
   }
 
 }
 
 
 /* ========================================
-   SUPPORTING COPY
-   ======================================== */
+   7. SUPPORTING COPY
+======================================== */
 
 .hero__description {
   margin:
@@ -167,61 +226,79 @@
     0
     0;
 
-  max-width: 30rem;
+  max-width:
+    30rem;
 
-  color: var(--text-secondary);
+  color:
+    var(--text-secondary);
 
-  font-size: 0.84rem;
+  font-size:
+    0.84rem;
 
-  line-height: 1.6;
+  line-height:
+    1.6;
 }
 
 
 /* ========================================
-   RIGHT SIDE — SCOUT PROBE
-   ======================================== */
+   8. RIGHT SIDE — SCOUT PROBE
+======================================== */
 
 .hero__visual {
-  min-width: 0;
+  min-width:
+    0;
 
-  display: grid;
+  display:
+    grid;
 
-  place-items: center;
+  place-items:
+    center;
 
-  align-self: center;
+  align-self:
+    center;
 }
 
 
 /* ========================================
-   DESKTOP COMPOSITION
-   ======================================== */
+   9. TABLET + DESKTOP TWO-COLUMN LAYOUT
+======================================== */
 
-@media (min-width: 52rem) {
+/*
+   Explicit pixel breakpoint.
+
+   820px iPad Air = two columns.
+   768px iPad = two columns.
+
+   We only stack once the screen becomes
+   genuinely narrow.
+*/
+
+@media (min-width: 720px) {
 
   .hero__inner {
     grid-template-columns:
-      minmax(0, 1.12fr)
-      minmax(17rem, 0.88fr);
+      minmax(0, 1.08fr)
+      minmax(14rem, 0.92fr);
 
-    align-items: center;
+    align-items:
+      center;
 
-    /*
-      Keep Navbar + complete Hero
-      inside the opening viewport.
-    */
     min-height:
-      calc(100svh - 6.75rem);
+      calc(100svh - 7.75rem);
+
+    padding-block:
+      0.5rem
+      1.25rem;
 
     gap:
       clamp(
-        2rem,
-        4vw,
-        4rem
+        1.5rem,
+        3vw,
+        3.5rem
       );
 
-    padding-block:
-      1rem
-      2rem;
+    transform:
+      translateY(-0.6rem);
   }
 
 
@@ -234,75 +311,98 @@
 
 
 /* ========================================
-   TABLET
-   ======================================== */
+   10. TABLET-SPECIFIC TYPOGRAPHY
+======================================== */
 
-@media (max-width: 63.99rem) {
+@media
+  (min-width: 720px)
+  and (max-width: 1023px) {
 
   .hero__title {
     font-size:
       clamp(
-        2.1rem,
-        3.4vw,
-        2.65rem
+        1.9rem,
+        4vw,
+        2.35rem
       );
+  }
+
+
+  .hero__description {
+    max-width:
+      25rem;
+  }
+
+
+  .hero__eyebrow {
+    font-size:
+      0.6rem;
+
+    letter-spacing:
+      0.12em;
   }
 
 }
 
 
 /* ========================================
-   ONE-COLUMN LAYOUT
-   ======================================== */
+   11. ONE-COLUMN LAYOUT
+======================================== */
 
-@media (max-width: 51.99rem) {
+@media (max-width: 719px) {
 
   .hero__inner {
-    gap: 2rem;
+    gap:
+      2rem;
 
     padding-block:
       3rem
       4rem;
+
+    transform:
+      none;
   }
 
-
-  /*
-    On smaller screens we stop forcing
-    desktop line behavior.
-  */
 
   .hero__title-line {
-    display: inline;
+    display:
+      inline;
 
-    white-space: normal;
+    white-space:
+      normal;
   }
 
 
-  .hero__title-line + .hero__title-line::before {
-    content: " ";
+  .hero__title-line
+  + .hero__title-line::before {
+    content:
+      " ";
   }
 
 
   .hero__visual {
-    margin-top: 0.5rem;
+    margin-top:
+      0.5rem;
 
-    transform: none;
+    transform:
+      none;
   }
 
 }
 
 
 /* ========================================
-   MOBILE
-   ======================================== */
+   12. MOBILE
+======================================== */
 
-@media (max-width: 36rem) {
+@media (max-width: 576px) {
 
   .hero__inner {
-    width: min(
-      calc(100% - 2rem),
-      var(--page-width, 72rem)
-    );
+    width:
+      min(
+        calc(100% - 2rem),
+        var(--page-width, 72rem)
+      );
 
     padding-block:
       2.5rem
@@ -311,7 +411,12 @@
 
 
   .hero__eyebrow {
-    font-size: 0.62rem;
+    padding:
+      0.28rem
+      0.48rem;
+
+    font-size:
+      0.62rem;
   }
 
 
@@ -323,24 +428,27 @@
         2.65rem
       );
 
-    line-height: 1.04;
+    line-height:
+      1.04;
   }
 
 
   .hero__description {
-    max-width: 28rem;
+    max-width:
+      28rem;
 
-    font-size: 0.82rem;
+    font-size:
+      0.82rem;
   }
 
 }
 
 
 /* ========================================
-   VERY SMALL PHONE
-   ======================================== */
+   13. VERY SMALL PHONE
+======================================== */
 
-@media (max-width: 22rem) {
+@media (max-width: 352px) {
 
   .hero__inner {
     width:
@@ -349,51 +457,69 @@
 
 
   .hero__title {
-    font-size: 1.9rem;
+    font-size:
+      1.9rem;
   }
 
 }
 
 
 /* ========================================
-   REDUCED MOTION
-   Cursor beam becomes static
-   ======================================== */
+   14. REDUCED MOTION
+======================================== */
 
 @media (prefers-reduced-motion: reduce) {
 
   .hero {
-    --beam-x: 72%;
-    --beam-y: 38%;
-    --beam-opacity: 0.4;
+    --beam-x:
+      72%;
+
+    --beam-y:
+      38%;
+
+    --beam-opacity:
+      0.4;
   }
 
 
   .hero__beam {
-    transition: none;
+    transition:
+      none;
+  }
+
+
+  .hero__inner {
+    transform:
+      none;
   }
 
 
   .hero__visual {
-    transform: none;
+    transform:
+      none;
   }
 
 }
 
 
 /* ========================================
-   FORCED COLORS / HIGH CONTRAST
-   ======================================== */
+   15. FORCED COLORS
+======================================== */
 
 @media (forced-colors: active) {
 
   .hero__beam {
-    display: none;
+    display:
+      none;
   }
 
 
   .hero__eyebrow {
-    color: CanvasText;
+    color:
+      CanvasText;
+
+    border-color:
+      CanvasText;
   }
 
 }

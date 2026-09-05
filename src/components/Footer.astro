@@ -1,62 +1,189 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — FOOTER
+======================================== */
+
 import "../styles/footer.css";
 
+
 /*
-  We will add the real public Technocore DID before launch.
-  We do not invent one for the prototype.
+   Add Kivanta's verified public Technocore DID
+   here before launch.
+
+   Never invent a DID for the prototype.
 */
+
 const publicDid = "";
 ---
 
 <footer class="site-footer">
+
   <div class="site-footer__inner">
 
-    <div class="site-footer__top">
-      <p class="site-footer__built">
-        Built by Kivanta
-      </p>
+    <!-- ==================================
+         PRIMARY FOOTER ROW
+    =================================== -->
+
+    <div class="site-footer__primary">
+
+      <!-- ==================================
+           BRAND
+      =================================== -->
+
+      <div class="site-footer__brand">
+
+        <div class="site-footer__brand-name">
+
+          <span
+            class="site-footer__brand-dot"
+            aria-hidden="true"
+          ></span>
+
+          <strong>
+            Kivanta Scout
+          </strong>
+
+        </div>
+
+
+        <p class="site-footer__description">
+          Evidence-first investigation for public Technocore tools.
+        </p>
+
+      </div>
+
+
+      <!-- ==================================
+           FOOTER NAVIGATION
+      =================================== -->
 
       <nav
         class="site-footer__links"
         aria-label="Footer navigation"
       >
+
         <a
-          href="https://github.com/kivanta/kivanta-scout"
           class="site-footer__link"
+          href="#how-it-works"
+        >
+          How Scout Works
+        </a>
+
+
+        <a
+          class="site-footer__link"
+          href="#methodology"
+        >
+          Methodology
+        </a>
+
+
+        <a
+          class="site-footer__link"
+          href="#evidence"
+        >
+          Evidence
+        </a>
+
+
+        <a
+          class="site-footer__link"
+          href="https://github.com/kivanta/kivanta-scout"
         >
           GitHub ↗
         </a>
 
-        <!-- Real Kivanta X link will be connected before launch. -->
-        <span class="site-footer__link site-footer__link--pending">
-          X ↗
-        </span>
-
-        <!-- Official Technocore Rooms link will be connected later. -->
-        <span class="site-footer__link site-footer__link--pending">
-          Technocore Rooms ↗
-        </span>
-
-        <!-- Privacy page will be created before public launch. -->
-        <span class="site-footer__link site-footer__link--pending">
-          Privacy
-        </span>
       </nav>
+
     </div>
+
+
+    <!-- ==================================
+         STATUS / REFERENCE ROW
+    =================================== -->
+
+    <div class="site-footer__status-row">
+
+      <!-- Scout V1 Status -->
+
+      <div class="site-footer__status">
+
+        <span
+          class="site-footer__status-dot"
+          aria-hidden="true"
+        ></span>
+
+        <span>
+          Scout V1
+        </span>
+
+        <span class="site-footer__separator">
+          ·
+        </span>
+
+        <span>
+          Public evidence only
+        </span>
+
+      </div>
+
+
+      <!-- Technocore Reference -->
+
+      <div class="site-footer__reference">
+
+        <span>
+          Official Technocore reference
+        </span>
+
+        <span class="site-footer__reference-pending">
+          Link reserved
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- ==================================
+         PUBLIC TECHNOCORE DID
+         Only renders when one is supplied.
+    =================================== -->
 
     {
       publicDid && (
+
         <div class="site-footer__identity">
+
           <p class="site-footer__identity-label">
             KIVANTA'S PUBLIC TECHNOCORE DID
           </p>
 
+
           <code class="site-footer__did">
             {publicDid}
           </code>
+
         </div>
+
       )
     }
 
+
+    <!-- ==================================
+         FINAL PRODUCT NOTE
+    =================================== -->
+
+    <div class="site-footer__bottom">
+
+      <p>
+        Built by Kivanta.
+        Scout reports what it can establish from public evidence
+        and keeps limitations visible.
+      </p>
+
+    </div>
+
   </div>
+
 </footer>

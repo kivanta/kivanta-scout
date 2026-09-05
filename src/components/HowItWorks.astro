@@ -1,11 +1,16 @@
-<!-- =========================================================
-     KIVANTA SCOUT
-     HOW IT WORKS
-========================================================= -->
+---
+/* =========================================================
+   KIVANTA SCOUT
+   HOW SCOUT WORKS
+========================================================= */
+
+import "../styles/how-it-works.css";
+---
 
 <section
   class="how-it-works"
   id="how-it-works"
+  aria-labelledby="how-it-works-title"
 >
 
   <div class="how-it-works__inner">
@@ -17,22 +22,33 @@
     <div class="how-it-works__intro">
 
       <div class="section-eyebrow">
-        <span class="section-eyebrow__dot"></span>
+
+        <span
+          class="section-eyebrow__dot"
+          aria-hidden="true"
+        ></span>
+
         How Scout works
+
       </div>
 
 
-      <h2 class="how-it-works__title">
+      <h2
+        class="how-it-works__title"
+        id="how-it-works-title"
+      >
         From a public reference
-        <span>to evidence you can inspect.</span>
+
+        <span>
+          to evidence you can inspect.
+        </span>
       </h2>
 
 
       <p class="how-it-works__description">
         Scout separates discovery from investigation.
-        It first works out what project you are referring to,
-        then establishes whether there is a supported public source
-        before producing methodology findings.
+        It identifies the project, establishes a supported public source,
+        then applies the methodology only when that source is confirmed.
       </p>
 
     </div>
@@ -46,8 +62,7 @@
 
 
       <!-- ===================================================
-           STEP 01
-           DISCOVERY
+           STEP 01 — DISCOVERY
       ==================================================== -->
 
       <article class="process-card">
@@ -65,7 +80,10 @@
         </div>
 
 
-        <div class="process-card__icon" aria-hidden="true">
+        <div
+          class="process-card__icon"
+          aria-hidden="true"
+        >
 
           <span class="process-card__icon-core"></span>
 
@@ -81,20 +99,19 @@
 
         <p class="process-card__description">
           Start with a public website, GitHub repository,
-          Technocore reference, DID, or ENS name.
+          Technocore link, raw did:key, or ENS name.
         </p>
 
 
         <div class="process-card__footer">
-          Website · GitHub · Technocore · DID · ENS
+          Website · GitHub · Technocore link · did:key · ENS
         </div>
 
       </article>
 
 
       <!-- ===================================================
-           STEP 02
-           SOURCE ESTABLISHMENT
+           STEP 02 — SOURCE
       ==================================================== -->
 
       <article class="process-card">
@@ -112,7 +129,10 @@
         </div>
 
 
-        <div class="process-card__icon" aria-hidden="true">
+        <div
+          class="process-card__icon"
+          aria-hidden="true"
+        >
 
           <span class="process-card__icon-core"></span>
 
@@ -141,8 +161,7 @@
 
 
       <!-- ===================================================
-           STEP 03
-           INVESTIGATION
+           STEP 03 — INVESTIGATION
       ==================================================== -->
 
       <article class="process-card">
@@ -160,7 +179,10 @@
         </div>
 
 
-        <div class="process-card__icon" aria-hidden="true">
+        <div
+          class="process-card__icon"
+          aria-hidden="true"
+        >
 
           <span class="process-card__icon-core"></span>
 
@@ -191,17 +213,20 @@
 
 
     <!-- =====================================================
-         SAFETY / TRUST NOTE
+         DISCOVERY GUARDRAIL
     ====================================================== -->
 
     <div class="how-it-works__guardrail">
 
-      <div class="how-it-works__guardrail-icon">
+      <div
+        class="how-it-works__guardrail-icon"
+        aria-hidden="true"
+      >
         <span></span>
       </div>
 
 
-      <div>
+      <div class="how-it-works__guardrail-copy">
 
         <strong>
           No supported source?

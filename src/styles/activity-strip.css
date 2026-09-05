@@ -1,6 +1,6 @@
 /* =========================================================
    KIVANTA SCOUT
-   LIVE ACTIVITY STRIP
+   LIVE SCOUT ACTIVITY STRIP
 ========================================================= */
 
 
@@ -9,362 +9,479 @@
 ========================================================= */
 
 .activity-strip {
-  width: 100%;
+  width:
+    100%;
 
-  position: relative;
+  position:
+    relative;
 
-  overflow: hidden;
+  overflow:
+    hidden;
+
+
+  /*
+     Pull the strip slightly upward so
+     Navbar + Hero + Scout Activity
+     remain inside the opening viewport.
+  */
+
+  margin-top:
+    -0.5rem;
+
 
   border-top:
-    1px solid rgba(112, 255, 206, 0.08);
+    1px solid
+    rgba(112, 255, 206, 0.09);
 
   border-bottom:
-    1px solid rgba(112, 255, 206, 0.08);
+    1px solid
+    rgba(112, 255, 206, 0.09);
 
   background:
-    rgba(7, 18, 23, 0.72);
+    rgba(7, 18, 23, 0.76);
 
   backdrop-filter:
     blur(18px);
 
-  z-index: 3;
+  z-index:
+    3;
 }
 
 
-/* ---------------------------------------------------------
-   EDGE FADES
-
-   These keep the text from appearing/disappearing
-   abruptly at the edges of the screen.
---------------------------------------------------------- */
+/* =========================================================
+   2. EDGE FADES
+========================================================= */
 
 .activity-strip::before,
 .activity-strip::after {
-  content: "";
+  content:
+    "";
 
-  position: absolute;
+  position:
+    absolute;
 
-  top: 0;
-  bottom: 0;
+  top:
+    0;
 
-  width: 120px;
+  bottom:
+    0;
 
-  z-index: 4;
+  width:
+    110px;
 
-  pointer-events: none;
+  z-index:
+    4;
+
+  pointer-events:
+    none;
 }
 
 
 .activity-strip::before {
-  left: 0;
+  left:
+    0;
 
   background:
     linear-gradient(
       90deg,
       #071016 0%,
-      rgba(7, 16, 22, 0.88) 35%,
+      rgba(7, 16, 22, 0.9) 35%,
       transparent 100%
     );
 }
 
 
 .activity-strip::after {
-  right: 0;
+  right:
+    0;
 
   background:
     linear-gradient(
       270deg,
       #071016 0%,
-      rgba(7, 16, 22, 0.88) 35%,
+      rgba(7, 16, 22, 0.9) 35%,
       transparent 100%
     );
 }
 
 
 /* =========================================================
-   2. MOVING TRACK
+   3. MOVING TRACK
 ========================================================= */
 
 .activity-strip__track {
-  width: max-content;
+  width:
+    max-content;
 
-  display: flex;
+  display:
+    flex;
+
+  transform:
+    translateX(-50%);
 
   animation:
-    activityMarquee 42s linear infinite;
+    activityMarquee
+    40s
+    linear
+    infinite;
 
-  will-change: transform;
+  will-change:
+    transform;
 }
 
 
-/*
-   Pause the movement when somebody wants
-   to read a particular metric.
-*/
+/* =========================================================
+   4. PAUSE ON HOVER
+========================================================= */
 
 .activity-strip:hover
 .activity-strip__track {
-  animation-play-state: paused;
+  animation-play-state:
+    paused;
 }
 
 
 /* =========================================================
-   3. METRIC GROUP
+   5. ACTIVITY GROUP
 ========================================================= */
 
 .activity-strip__group {
-  min-width: max-content;
+  min-width:
+    max-content;
 
   padding:
-    18px 32px;
+    15px 32px;
 
-  display: flex;
-  align-items: center;
+  display:
+    flex;
 
-  gap: 38px;
+  align-items:
+    center;
+
+  gap:
+    36px;
 }
 
 
 /* =========================================================
-   4. TECHNOCORE NETWORK LABEL
+   6. SCOUT ACTIVITY LABEL
 ========================================================= */
+
+/*
+   Strongest text inside the strip.
+
+   Scout should be proud to show
+   the work it has completed.
+*/
 
 .activity-strip__status {
-  display: inline-flex;
-  align-items: center;
+  display:
+    inline-flex;
 
-  gap: 9px;
+  align-items:
+    center;
 
-  color: #b9cec6;
+  gap:
+    9px;
 
-  font-size: 11px;
-  font-weight: 700;
+  color:
+    rgba(222, 238, 233, 0.98);
 
-  letter-spacing: 0.12em;
+  font-size:
+    11px;
 
-  text-transform: uppercase;
+  font-weight:
+    700;
 
-  white-space: nowrap;
+  letter-spacing:
+    0.11em;
+
+  text-transform:
+    uppercase;
+
+  white-space:
+    nowrap;
 }
 
 
-/* Network Status Light */
+/* =========================================================
+   7. SCOUT STATUS LIGHT
+========================================================= */
 
 .activity-strip__status-dot {
-  width: 7px;
-  height: 7px;
+  width:
+    7px;
 
-  border-radius: 50%;
+  height:
+    7px;
 
-  background: #70ffce;
+  flex-shrink:
+    0;
 
-  box-shadow:
-    0 0 8px rgba(112, 255, 206, 0.8),
-    0 0 18px rgba(112, 255, 206, 0.25);
-
-  animation:
-    networkStatusPulse 2.6s ease-in-out infinite;
-}
-
-
-/* =========================================================
-   5. INDIVIDUAL METRIC
-========================================================= */
-
-.activity-strip__item {
-  display: inline-flex;
-  align-items: center;
-
-  gap: 7px;
-
-  color: #71858c;
-
-  font-size: 12px;
-
-  white-space: nowrap;
-}
-
-
-/* ---------------------------------------------------------
-   SMALL SEPARATOR BEFORE EACH METRIC
---------------------------------------------------------- */
-
-.activity-strip__item::before {
-  content: "";
-
-  width: 3px;
-  height: 3px;
-
-  margin-right: 4px;
-
-  border-radius: 50%;
+  border-radius:
+    50%;
 
   background:
-    rgba(112, 255, 206, 0.32);
+    var(
+      --identity-scout-accent,
+      #70ffce
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(112, 255, 206, 0.76),
+    0 0 18px
+    rgba(112, 255, 206, 0.22);
 }
 
 
 /* =========================================================
-   6. METRIC NUMBER
+   8. INDIVIDUAL METRIC
 ========================================================= */
+
+/*
+   Brighter than before.
+
+   These metrics are meaningful product proof,
+   not decorative background text.
+*/
+
+.activity-strip__item {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  color:
+    rgba(190, 211, 216, 0.94);
+
+  font-size:
+    12px;
+
+  font-weight:
+    500;
+
+  line-height:
+    1.4;
+
+  white-space:
+    nowrap;
+}
+
+
+/* =========================================================
+   9. METRIC SEPARATOR
+========================================================= */
+
+.activity-strip__item::before {
+  content:
+    "";
+
+  width:
+    3px;
+
+  height:
+    3px;
+
+  margin-right:
+    4px;
+
+  flex-shrink:
+    0;
+
+  border-radius:
+    50%;
+
+  background:
+    rgba(112, 255, 206, 0.56);
+}
+
+
+/* =========================================================
+   10. METRIC NUMBER
+========================================================= */
+
+/*
+   The real numbers will become one of
+   Scout's strongest public proof signals.
+
+   Keep them slightly brighter than
+   their accompanying metric labels.
+*/
 
 .activity-strip__number {
-  color: #d7eee6;
+  color:
+    rgba(239, 248, 244, 0.98);
 
-  font-size: 13px;
-  font-weight: 700;
+  font-size:
+    13px;
 
-  letter-spacing: -0.01em;
+  font-weight:
+    700;
+
+  letter-spacing:
+    -0.01em;
 }
 
 
 /* =========================================================
-   7. LIVE UPDATE INDICATOR
+   11. FEED STATE
 ========================================================= */
 
+/*
+   Still secondary because this describes
+   the connection state rather than Scout's work,
+   but no longer so faint that it disappears.
+*/
+
 .activity-strip__updated {
-  color: #60777e;
+  color:
+    rgba(166, 194, 200, 0.9);
+}
+
+
+.activity-strip__updated::before {
+  display:
+    none;
 }
 
 
 .activity-strip__pulse {
-  width: 6px;
-  height: 6px;
+  width:
+    6px;
 
-  border-radius: 50%;
+  height:
+    6px;
+
+  flex-shrink:
+    0;
+
+  border-radius:
+    50%;
 
   background:
-    rgba(112, 255, 206, 0.72);
+    rgba(112, 255, 206, 0.7);
 
   box-shadow:
-    0 0 10px rgba(112, 255, 206, 0.35);
-
-  animation:
-    networkStatusPulse 2.6s ease-in-out infinite;
+    0 0 9px
+    rgba(112, 255, 206, 0.3);
 }
 
 
 /* =========================================================
-   8. CONTINUOUS MOVEMENT
+   12. LEFT → RIGHT MOVEMENT
 ========================================================= */
 
 @keyframes activityMarquee {
 
   from {
     transform:
-      translateX(0);
-  }
-
-  to {
-    transform:
       translateX(-50%);
   }
 
-}
 
-
-/* =========================================================
-   9. STATUS PULSE
-========================================================= */
-
-@keyframes networkStatusPulse {
-
-  0%,
-  100% {
-    opacity: 0.55;
-
+  to {
     transform:
-      scale(0.85);
-  }
-
-  50% {
-    opacity: 1;
-
-    transform:
-      scale(1.15);
+      translateX(0);
   }
 
 }
 
 
 /* =========================================================
-   10. TABLET
+   13. TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
 
+  .activity-strip {
+    margin-top:
+      0;
+  }
+
+
   .activity-strip__group {
-    gap: 30px;
+    gap:
+      30px;
 
     padding:
-      16px 26px;
+      14px 26px;
   }
 
 
   .activity-strip::before,
   .activity-strip::after {
-    width: 70px;
+    width:
+      70px;
   }
 
 }
 
 
 /* =========================================================
-   11. MOBILE
+   14. MOBILE
 ========================================================= */
 
 @media (max-width: 560px) {
 
   .activity-strip__group {
-    gap: 24px;
+    gap:
+      24px;
 
     padding:
-      15px 20px;
+      13px 20px;
   }
 
 
   .activity-strip__item {
-    font-size: 11px;
+    font-size:
+      11px;
   }
 
 
   .activity-strip__number {
-    font-size: 12px;
+    font-size:
+      12px;
   }
 
 
   .activity-strip::before,
   .activity-strip::after {
-    width: 35px;
+    width:
+      35px;
   }
 
 }
 
 
 /* =========================================================
-   12. REDUCED MOTION
+   15. REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
   .activity-strip {
-    overflow-x: auto;
+    overflow-x:
+      auto;
   }
 
 
   .activity-strip__track {
-    animation: none;
+    transform:
+      none;
+
+    animation:
+      none;
   }
 
 
   .activity-strip__group[aria-hidden="true"] {
-    display: none;
-  }
-
-
-  .activity-strip__status-dot,
-  .activity-strip__pulse {
-    animation: none;
+    display:
+      none;
   }
 
 }

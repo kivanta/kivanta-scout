@@ -1,169 +1,313 @@
 /* ========================================
    KIVANTA SCOUT — NAVBAR
-   ======================================== */
+======================================== */
+
+
+/* ========================================
+   1. SITE HEADER
+======================================== */
 
 .site-header {
-  position: relative;
-  z-index: 20;
+  position:
+    relative;
 
-  width: 100%;
+  z-index:
+    20;
 
-  /* Breathing room above the framed Navbar */
-  padding-block-start: 1.25rem;
+  width:
+    100%;
+
+  /*
+     Slightly reduced so Navbar + Hero +
+     Scout Activity can share one viewport.
+  */
+
+  padding-block-start:
+    0.75rem;
 }
+
+
+/* ========================================
+   2. NAVBAR FRAME
+======================================== */
 
 .navbar {
-  width: min(
-    calc(100% - 3rem),
-    72rem
-  );
+  width:
+    min(
+      calc(100% - 3rem),
+      72rem
+    );
 
-  margin-inline: auto;
+  margin-inline:
+    auto;
 
-  min-height: 4.25rem;
+  /*
+     Reduced from 4.25rem.
+     Still comfortable, but less dominant.
+  */
 
-  padding-inline: 1rem;
+  min-height:
+    3.75rem;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding-inline:
+    1rem;
 
-  gap: 2rem;
+  display:
+    flex;
 
-  border: 1px solid var(--border-subtle);
-  border-radius: 1rem;
+  align-items:
+    center;
 
-  background: rgba(7, 16, 26, 0.72);
+  justify-content:
+    space-between;
+
+  gap:
+    2rem;
+
+  border:
+    1px solid
+    var(--border-subtle);
+
+  border-radius:
+    1rem;
+
+  background:
+    rgba(7, 16, 26, 0.72);
 }
 
-/* Brand
----------------------------------------- */
+
+/* ========================================
+   3. BRAND
+======================================== */
 
 .navbar__brand {
-  display: inline-flex;
-  align-items: center;
+  display:
+    inline-flex;
 
-  gap: 0.65rem;
+  align-items:
+    center;
 
-  flex-shrink: 0;
+  gap:
+    0.65rem;
 
-  color: var(--text-primary);
+  flex-shrink:
+    0;
 
-  font-size: 0.88rem;
-  font-weight: 700;
+  color:
+    var(--text-primary);
 
-  letter-spacing: -0.02em;
+  font-size:
+    0.88rem;
 
-  text-decoration: none;
+  font-weight:
+    700;
 
-  white-space: nowrap;
+  letter-spacing:
+    -0.02em;
 
-  transition: color 160ms ease;
+  text-decoration:
+    none;
+
+  white-space:
+    nowrap;
+
+  transition:
+    color 160ms ease;
 }
 
+
+/* ========================================
+   4. BRAND SCOUT MARK
+======================================== */
+
 .navbar__brand-mark {
-  width: 0.45rem;
-  height: 0.45rem;
+  width:
+    0.45rem;
 
-  flex: 0 0 auto;
+  height:
+    0.45rem;
 
-  border-radius: 999px;
+  flex:
+    0 0 auto;
 
-  background: var(--identity-scout-accent);
+  border-radius:
+    999px;
+
+  background:
+    var(--identity-scout-accent);
 
   box-shadow:
     0 0 0.55rem
     rgba(110, 231, 162, 0.34);
 }
 
-/* Right-side navigation
----------------------------------------- */
+
+/* ========================================
+   5. RIGHT-SIDE NAVIGATION
+======================================== */
 
 .navbar__nav {
-  margin-left: auto;
+  margin-left:
+    auto;
 
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  display:
+    flex;
 
-  gap: 1.5rem;
+  align-items:
+    center;
+
+  justify-content:
+    flex-end;
+
+  gap:
+    1.5rem;
 }
+
+
+/* ========================================
+   6. NAVBAR LINKS
+======================================== */
 
 .navbar__link {
-  color: var(--text-secondary);
+  color:
+    var(--text-primary);
 
-  font-size: 0.76rem;
-  font-weight: 550;
+  font-size:
+    0.76rem;
 
-  text-decoration: none;
-  text-underline-offset: 0.25em;
+  font-weight:
+    550;
 
-  transition: color 160ms ease;
+  text-decoration:
+    none;
+
+  text-underline-offset:
+    0.25em;
+
+  opacity:
+    0.9;
+
+  transition:
+    color 160ms ease,
+    opacity 160ms ease,
+    text-shadow 160ms ease;
 }
 
-/* Hover
----------------------------------------- */
+
+/* ========================================
+   7. HOVER STATES
+======================================== */
 
 @media (hover: hover) and (pointer: fine) {
+
   .navbar__brand:hover {
-    color: var(--link-hover);
+    color:
+      var(--link-hover);
   }
+
 
   .navbar__link:hover {
-    color: var(--link-text);
-    text-decoration: underline;
+    color:
+      var(--link-hover);
+
+    opacity:
+      1;
+
+    text-decoration:
+      none;
+
+    text-shadow:
+      0 0 0.75rem
+      rgba(120, 220, 248, 0.12);
   }
+
 }
 
-/* Keyboard focus
----------------------------------------- */
+
+/* ========================================
+   8. KEYBOARD FOCUS
+======================================== */
 
 .navbar__brand:focus-visible,
 .navbar__link:focus-visible {
-  outline: 0.125rem solid var(--focus-inner);
-  outline-offset: 0.25rem;
+  outline:
+    0.125rem solid
+    var(--focus-inner);
 
-  text-decoration: none;
+  outline-offset:
+    0.25rem;
+
+  text-decoration:
+    none;
 }
 
-/* Mobile
----------------------------------------- */
+
+/* ========================================
+   9. MOBILE
+======================================== */
 
 @media (max-width: 36rem) {
+
   .site-header {
-    padding-block-start: 1rem;
+    padding-block-start:
+      1rem;
   }
+
 
   .navbar {
-    width: min(
-      calc(100% - 2rem),
-      72rem
-    );
+    width:
+      min(
+        calc(100% - 2rem),
+        72rem
+      );
 
-    min-height: auto;
+    min-height:
+      auto;
 
-    padding: 1rem;
+    padding:
+      1rem;
 
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction:
+      column;
 
-    gap: 0.8rem;
+    align-items:
+      flex-start;
+
+    gap:
+      0.8rem;
   }
+
 
   .navbar__nav {
-    width: 100%;
-    margin-left: 0;
+    width:
+      100%;
 
-    justify-content: space-between;
+    margin-left:
+      0;
+
+    justify-content:
+      space-between;
   }
+
+
+  .navbar__link {
+    font-size:
+      0.74rem;
+  }
+
 }
 
-/* Reduced motion
----------------------------------------- */
+
+/* ========================================
+   10. REDUCED MOTION
+======================================== */
 
 @media (prefers-reduced-motion: reduce) {
+
   .navbar__brand,
   .navbar__link {
-    transition: none;
+    transition:
+      none;
   }
+
 }

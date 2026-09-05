@@ -1,114 +1,368 @@
 /* ========================================
    KIVANTA SCOUT — METHODOLOGY PREVIEW
-   ======================================== */
+======================================== */
+
+
+/* ========================================
+   1. SECTION
+======================================== */
 
 .methodology {
-  width: 100%;
+  width:
+    100%;
+
+  position:
+    relative;
+
+  z-index:
+    2;
 }
+
+
+/* ========================================
+   2. INNER CONTAINER
+======================================== */
+
+/*
+   Methodology should feel like the natural
+   continuation of How Scout Works.
+
+   Enough space to begin a new chapter,
+   without creating a large empty gap.
+*/
 
 .methodology__inner {
-  width: min(100% - 2rem, 72rem);
-  margin-inline: auto;
+  width:
+    min(100% - 2rem, 72rem);
 
-  padding-block: clamp(5rem, 9vw, 8rem);
+  margin-inline:
+    auto;
+
+  padding-block:
+    clamp(3.75rem, 6vw, 5.5rem);
 }
 
-/* Header
----------------------------------------- */
+
+/* ========================================
+   3. HEADER
+======================================== */
 
 .methodology__header {
-  max-width: 42rem;
-  margin-bottom: 3rem;
+  max-width:
+    42rem;
+
+  margin-bottom:
+    2.75rem;
 }
+
+
+/* ========================================
+   4. EYEBROW
+======================================== */
 
 .methodology__eyebrow {
-  margin: 0 0 0.9rem;
+  margin:
+    0 0 0.9rem;
 
-  color: var(--link-text, #79dfff);
+  color:
+    var(--link-text, #79dfff);
 
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size:
+    0.78rem;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.14em;
+
+  text-transform:
+    uppercase;
 }
+
+
+/* ========================================
+   5. TITLE
+======================================== */
 
 .methodology__title {
-  margin: 0;
+  margin:
+    0;
 
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  color:
+    var(--text-primary, #f2f7f5);
+
+  font-size:
+    clamp(2rem, 4vw, 3.5rem);
+
+  font-weight:
+    700;
+
+  line-height:
+    1.05;
+
+  letter-spacing:
+    -0.035em;
 }
+
+
+/* ========================================
+   6. DESCRIPTION
+======================================== */
 
 .methodology__description {
-  margin: 1.25rem 0 0;
+  margin:
+    1.25rem 0 0;
 
-  max-width: 36rem;
+  max-width:
+    40rem;
 
-  color: var(--text-secondary, #a6b2bd);
+  color:
+    rgba(183, 207, 214, 0.88);
 
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size:
+    1rem;
+
+  line-height:
+    1.7;
 }
 
-/* Checks
----------------------------------------- */
+
+/* ========================================
+   7. CHECK LIST
+======================================== */
 
 .methodology__list {
-  margin: 0;
-  padding: 0;
+  margin:
+    0;
 
-  list-style: none;
+  padding:
+    0;
 
-  border-top: 1px solid var(--border-subtle, #182736);
+  list-style:
+    none;
+
+  border-top:
+    1px solid
+    var(--border-subtle, #182736);
 }
+
+
+/* ========================================
+   8. CHECK ITEM
+======================================== */
 
 .methodology__item {
-  display: grid;
-  grid-template-columns: 3rem minmax(0, 1fr);
-  gap: 1.25rem;
-  align-items: start;
+  display:
+    grid;
 
-  padding-block: 1.5rem;
+  grid-template-columns:
+    3rem minmax(0, 1fr);
 
-  border-bottom: 1px solid var(--border-subtle, #182736);
+  gap:
+    1.25rem;
+
+  align-items:
+    center;
+
+  padding:
+    1.4rem 0;
+
+  border-bottom:
+    1px solid
+    var(--border-subtle, #182736);
+
+  transition:
+    padding-left 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
 }
+
+
+/* ========================================
+   9. CHECK NUMBER
+======================================== */
 
 .methodology__number {
-  color: var(--text-secondary, #a6b2bd);
+  color:
+    rgba(150, 180, 188, 0.9);
 
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+  font-size:
+    0.78rem;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    0.08em;
 }
+
+
+/* ========================================
+   10. CHECK QUESTION
+======================================== */
 
 .methodology__question {
-  max-width: 48rem;
+  max-width:
+    48rem;
 
-  color: var(--text-primary, #f2f7f5);
+  color:
+    var(--text-primary, #f2f7f5);
 
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  font-weight: 550;
-  line-height: 1.5;
+  font-size:
+    clamp(1rem, 2vw, 1.2rem);
+
+  font-weight:
+    550;
+
+  line-height:
+    1.5;
 }
 
-/* Closing note
----------------------------------------- */
+
+/* ========================================
+   11. ROW HOVER
+======================================== */
+
+/*
+   Quiet interaction only.
+
+   The list should feel responsive,
+   but should not turn into another card grid.
+*/
+
+@media (hover: hover) and (pointer: fine) {
+
+  .methodology__item:hover {
+    padding-left:
+      0.45rem;
+
+    border-color:
+      rgba(112, 255, 206, 0.18);
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(112, 255, 206, 0.025),
+        transparent 55%
+      );
+  }
+
+}
+
+
+/* ========================================
+   12. CLOSING NOTE
+======================================== */
 
 .methodology__note {
-  margin: 1.5rem 0 0;
+  margin:
+    1.4rem 0 0;
 
-  color: var(--text-secondary, #a6b2bd);
+  color:
+    rgba(166, 191, 197, 0.9);
 
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size:
+    0.9rem;
+
+  line-height:
+    1.6;
 }
 
-/* Narrow layouts
----------------------------------------- */
+
+/* ========================================
+   13. SHORTER DESKTOP SCREENS
+======================================== */
+
+@media
+  (min-width: 901px)
+  and (max-height: 820px) {
+
+  .methodology__inner {
+    padding-block:
+      3.25rem;
+  }
+
+
+  .methodology__header {
+    margin-bottom:
+      2.2rem;
+  }
+
+
+  .methodology__description {
+    margin-top:
+      1rem;
+  }
+
+
+  .methodology__item {
+    padding-block:
+      1.15rem;
+  }
+
+
+  .methodology__note {
+    margin-top:
+      1.1rem;
+  }
+
+}
+
+
+/* ========================================
+   14. NARROW LAYOUTS
+======================================== */
 
 @media (max-width: 36rem) {
-  .methodology__item {
-    grid-template-columns: 2rem minmax(0, 1fr);
-    gap: 0.75rem;
+
+  .methodology__inner {
+    padding-block:
+      4.5rem;
   }
+
+
+  .methodology__header {
+    margin-bottom:
+      2.25rem;
+  }
+
+
+  .methodology__item {
+    grid-template-columns:
+      2rem minmax(0, 1fr);
+
+    gap:
+      0.75rem;
+
+    align-items:
+      start;
+  }
+
+
+  .methodology__question {
+    font-size:
+      1rem;
+  }
+
+}
+
+
+/* ========================================
+   15. REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .methodology__item {
+    transition:
+      none;
+  }
+
+
+  .methodology__item:hover {
+    padding-left:
+      0;
+  }
+
 }

@@ -1,22 +1,57 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — NAVBAR
+======================================== */
+
 import "../styles/navbar.css";
 ---
 
 <header class="site-header">
+
   <div class="navbar">
+
+    <!-- ==================================
+         BRAND
+    =================================== -->
+
     <a
       class="navbar__brand"
       href="/"
       aria-label="Kivanta Scout home"
     >
-      <span class="navbar__brand-mark" aria-hidden="true"></span>
-      <span>Kivanta Scout</span>
+
+      <span
+        class="navbar__brand-mark"
+        aria-hidden="true"
+      ></span>
+
+      <span>
+        Kivanta Scout
+      </span>
+
     </a>
 
-    <nav class="navbar__nav" aria-label="Primary navigation">
-      <a class="navbar__link" href="#how-scout-works">
+
+    <!-- ==================================
+         PRIMARY NAVIGATION
+    =================================== -->
+
+    <nav
+      class="navbar__nav"
+      aria-label="Primary navigation"
+    >
+
+      <!-- How Scout Works -->
+
+      <a
+        class="navbar__link"
+        href="#how-it-works"
+      >
         How Scout Works
       </a>
+
+
+      <!-- GitHub -->
 
       <a
         class="navbar__link"
@@ -24,6 +59,9 @@ import "../styles/navbar.css";
       >
         GitHub ↗
       </a>
+
     </nav>
+
   </div>
+
 </header>

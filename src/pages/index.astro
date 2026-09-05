@@ -1,36 +1,91 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — HOME PAGE
+======================================== */
+
 import "../styles/global.css";
+
 import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
+import ActivityStrip from "../components/ActivityStrip.astro";
+import HowItWorks from "../components/HowItWorks.astro";
 import MethodologyPreview from "../components/MethodologyPreview.astro";
 import PrinciplesTrust from "../components/PrinciplesTrust.astro";
 import Footer from "../components/Footer.astro";
 ---
 
 <!doctype html>
+
 <html lang="en">
+
   <head>
+
+    <!-- ==================================
+         PAGE META
+    =================================== -->
+
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
+
+    <meta
+      name="viewport"
+      content="width=device-width"
+    />
 
     <meta
       name="description"
       content="Kivanta Scout — evidence-first investigation for public Technocore tools."
     />
 
-    <title>Kivanta Scout</title>
+    <title>
+      Kivanta Scout
+    </title>
+
   </head>
 
 
-
   <body>
+
+    <!-- ==================================
+         NAVBAR
+    =================================== -->
+
     <Navbar />
 
+
+    <!-- ==================================
+         MAIN PAGE STORY
+    =================================== -->
+
     <main>
+
+      <!-- Hero — locked -->
       <Hero />
+
+
+      <!-- Live Scout activity -->
+      <ActivityStrip />
+
+
+      <!-- How Scout Works — locked -->
+      <HowItWorks />
+
+
+      <!-- Methodology 1.0 — locked -->
       <MethodologyPreview />
+
+
+      <!-- Evidence — locked -->
       <PrinciplesTrust />
+
     </main>
+
+
+    <!-- ==================================
+         FOOTER
+    =================================== -->
+
     <Footer />
+
   </body>
+
 </html>

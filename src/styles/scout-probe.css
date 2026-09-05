@@ -1,77 +1,149 @@
 /* ========================================
    KIVANTA SCOUT — SCOUT PROBE
-   ======================================== */
+======================================== */
+
+
+/* ========================================
+   1. PROBE WRAPPER
+======================================== */
 
 .scout-probe {
-  width: min(100%, 26rem);
-  aspect-ratio: 1.12;
+  width:
+    min(100%, 26rem);
 
-  margin-inline: auto;
+  aspect-ratio:
+    1.12;
 
-  display: grid;
-  place-items: center;
+  margin-inline:
+    auto;
+
+  display:
+    grid;
+
+  place-items:
+    center;
 }
+
+
+/* ========================================
+   2. SVG
+======================================== */
 
 .scout-probe__svg {
-  width: 100%;
-  height: auto;
+  width:
+    100%;
 
-  overflow: visible;
+  height:
+    auto;
+
+  overflow:
+    visible;
 }
 
-/* Network paths
----------------------------------------- */
+
+/* ========================================
+   3. NETWORK PATHS
+======================================== */
+
+/*
+   Base paths are now easier to see,
+   but still remain behind the nodes and labels.
+*/
 
 .probe-path {
-  fill: none;
+  fill:
+    none;
 
-  stroke: var(--palette-cyan-300);
-  stroke-width: 1.25;
+  stroke:
+    var(--palette-cyan-300);
 
-  opacity: 0.22;
+  stroke-width:
+    1.3;
+
+  opacity:
+    0.38;
 }
+
+
+/* Main established paths */
 
 .probe-path--primary {
-  opacity: 0.36;
+  opacity:
+    0.58;
 }
+
+
+/* Quiet / unresolved paths */
 
 .probe-path--quiet {
-  opacity: 0.13;
+  opacity:
+    0.22;
 }
+
+
+/* Broken / incomplete paths */
 
 .probe-path--broken {
-  stroke-dasharray: 5 8;
+  stroke-dasharray:
+    5 8;
 }
 
-/* Evidence nodes
----------------------------------------- */
+
+/* ========================================
+   4. EVIDENCE NODES
+======================================== */
 
 .probe-node {
-  fill: var(--surface-page);
+  fill:
+    var(--surface-page);
 
-  stroke: var(--palette-cyan-300);
-  stroke-width: 1.5;
+  stroke:
+    var(--palette-cyan-300);
 
-  opacity: 0.9;
+  stroke-width:
+    1.6;
+
+  opacity:
+    1;
 }
+
+
+/* Inner node dot */
 
 .probe-node-core {
-  fill: var(--palette-cyan-200);
+  fill:
+    var(--palette-cyan-200);
 
-  opacity: 0.8;
+  opacity:
+    1;
 }
+
+
+/* Supporting endpoint dots */
 
 .probe-point {
-  fill: var(--palette-cyan-300);
+  fill:
+    var(--palette-cyan-300);
 
-  opacity: 0.35;
+  opacity:
+    0.58;
 }
 
-/* Labels
----------------------------------------- */
+
+/* ========================================
+   5. LABELS
+======================================== */
+
+/*
+   Labels were previously too faint.
+
+   These should now be clearly readable
+   without competing with the Hero text.
+*/
 
 .probe-label {
-  fill: var(--text-muted);
+  fill:
+    rgba(168, 196, 207, 0.9);
 
   font-family:
     Inter,
@@ -79,103 +151,202 @@
     system-ui,
     sans-serif;
 
-  font-size: 11px;
-  font-weight: 550;
+  font-size:
+    11px;
 
-  letter-spacing: 0.04em;
+  font-weight:
+    600;
 
-  opacity: 0.8;
+  letter-spacing:
+    0.035em;
+
+  opacity:
+    1;
 }
 
-/* Central Scout identity
----------------------------------------- */
+
+/* ========================================
+   6. CENTRAL SCOUT IDENTITY
+======================================== */
+
+/*
+   Keep the central Scout restrained.
+   The surrounding network gains contrast,
+   while Scout remains the visual anchor.
+*/
 
 .probe-scout__outer {
-  fill: var(--surface-primary);
+  fill:
+    var(--surface-primary);
 
-  stroke: var(--palette-cyan-300);
-  stroke-width: 1;
+  stroke:
+    var(--palette-cyan-300);
 
-  opacity: 0.65;
+  stroke-width:
+    1.1;
+
+  opacity:
+    0.78;
 }
+
 
 .probe-scout__middle {
-  fill: var(--surface-primary);
+  fill:
+    var(--surface-primary);
 
-  stroke: var(--identity-scout-accent);
-  stroke-width: 1.4;
+  stroke:
+    var(--identity-scout-accent);
 
-  opacity: 0.95;
+  stroke-width:
+    1.4;
+
+  opacity:
+    1;
 }
+
 
 .probe-scout__core {
-  fill: var(--identity-scout-accent);
+  fill:
+    var(--identity-scout-accent);
+
+  filter:
+    drop-shadow(
+      0 0 5px
+      rgba(112, 255, 206, 0.28)
+    );
 }
 
 
+/* ========================================
+   7. STATE — IDLE
+======================================== */
 
-/* State: idle
----------------------------------------- */
-
-.scout-probe[data-visual-state="idle"] .probe-scout__core {
-  animation: probe-core-breathe 4.8s ease-in-out infinite;
+.scout-probe[data-visual-state="idle"]
+.probe-scout__core {
+  animation:
+    probe-core-breathe
+    4.8s
+    ease-in-out
+    infinite;
 }
 
-/* State: active
----------------------------------------- */
 
-.scout-probe[data-visual-state="active"] .probe-scout__core {
-  animation: probe-core-breathe 3s ease-in-out infinite;
+/* ========================================
+   8. STATE — ACTIVE
+======================================== */
+
+.scout-probe[data-visual-state="active"]
+.probe-scout__core {
+  animation:
+    probe-core-breathe
+    3s
+    ease-in-out
+    infinite;
 }
 
-/* State: still
----------------------------------------- */
-.scout-probe[data-visual-state="still"] .probe-scout__core {
-  animation: none;
+
+/* ========================================
+   9. STATE — STILL
+======================================== */
+
+.scout-probe[data-visual-state="still"]
+.probe-scout__core {
+  animation:
+    none;
 }
 
-/* Motion
----------------------------------------- */
+
+/* ========================================
+   10. CORE MOTION
+======================================== */
 
 @keyframes probe-core-breathe {
+
   0%,
   100% {
-    opacity: 0.72;
+    opacity:
+      0.72;
+
+    transform:
+      scale(0.94);
+
+    transform-origin:
+      center;
   }
+
 
   50% {
-    opacity: 1;
+    opacity:
+      1;
+
+    transform:
+      scale(1.08);
+
+    transform-origin:
+      center;
   }
+
 }
 
-/* Mobile
----------------------------------------- */
+
+/* ========================================
+   11. MOBILE
+======================================== */
 
 @media (max-width: 40rem) {
+
   .scout-probe {
-    width: min(100%, 21rem);
+    width:
+      min(100%, 21rem);
   }
+
 
   .probe-label {
-    font-size: 10px;
+    font-size:
+      10px;
+
+    fill:
+      rgba(180, 205, 214, 0.94);
   }
+
+
+  .probe-path {
+    opacity:
+      0.42;
+  }
+
+
+  .probe-path--primary {
+    opacity:
+      0.62;
+  }
+
 }
 
-/* Reduced motion
----------------------------------------- */
+
+/* ========================================
+   12. REDUCED MOTION
+======================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .probe-activity__path,
+
   .probe-scout__core {
-    animation: none !important;
+    animation:
+      none !important;
   }
+
 }
 
-/* High contrast
----------------------------------------- */
+
+/* ========================================
+   13. HIGH CONTRAST
+======================================== */
 
 @media (forced-colors: active) {
+
   .scout-probe {
-    display: none;
+    display:
+      none;
   }
+
 }

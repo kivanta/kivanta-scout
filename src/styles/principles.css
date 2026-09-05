@@ -1,124 +1,789 @@
 /* ========================================
-   KIVANTA SCOUT — OPERATING PRINCIPLES
-   ======================================== */
+   KIVANTA SCOUT — EVIDENCE
+======================================== */
+
+
+/* ========================================
+   1. SECTION
+======================================== */
 
 .principles {
-  width: 100%;
+  width:
+    100%;
+
+  position:
+    relative;
+
+  z-index:
+    2;
 }
+
+
+/* ========================================
+   2. INNER CONTAINER
+======================================== */
 
 .principles__inner {
-  width: min(100% - 2rem, 72rem);
-  margin-inline: auto;
+  width:
+    min(100% - 3rem, 72rem);
 
-  padding-block: clamp(5rem, 9vw, 8rem);
+  margin-inline:
+    auto;
 
-  border-top: 1px solid var(--border-subtle, #182736);
+  padding-block:
+    clamp(6rem, 8vw, 7.5rem)
+    clamp(4.5rem, 6vw, 5.5rem);
+
+  border-top:
+    1px solid
+    var(--border-subtle, #182736);
 }
 
-/* Header
----------------------------------------- */
 
-.principles__header {
-  max-width: 44rem;
-  margin-bottom: 3rem;
+/* ========================================
+   3. INTRO
+======================================== */
+
+.principles__intro {
+  max-width:
+    760px;
 }
+
+
+/* ========================================
+   4. EYEBROW
+======================================== */
 
 .principles__eyebrow {
-  margin: 0 0 0.9rem;
+  width:
+    fit-content;
 
-  color: var(--link-text, #79dfff);
+  display:
+    inline-flex;
 
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  align-items:
+    center;
+
+  gap:
+    9px;
+
+  margin-bottom:
+    18px;
+
+  color:
+    var(--link-text, #79dfff);
+
+  font-size:
+    12px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.1em;
+
+  text-transform:
+    uppercase;
 }
+
+
+.principles__eyebrow-dot {
+  width:
+    7px;
+
+  height:
+    7px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--identity-scout-accent, #70ffce);
+
+  box-shadow:
+    0 0 8px
+    rgba(112, 255, 206, 0.7),
+    0 0 16px
+    rgba(112, 255, 206, 0.18);
+}
+
+
+/* ========================================
+   5. TITLE
+======================================== */
+
+/*
+   Slightly reduced from the previous version.
+
+   This keeps the headline strong while allowing
+   the evidence cards to carry more visual weight.
+*/
 
 .principles__title {
-  margin: 0;
+  margin:
+    0;
 
-  max-width: 14ch;
+  color:
+    var(--text-primary, #f2f7f5);
 
-  font-size: clamp(2rem, 4vw, 3.5rem);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
+  font-size:
+    clamp(38px, 3.6vw, 52px);
+
+  font-weight:
+    700;
+
+  line-height:
+    1.02;
+
+  letter-spacing:
+    -0.045em;
 }
+
+
+.principles__title span {
+  display:
+    block;
+}
+
+
+.principles__title-secondary {
+  margin-top:
+    4px;
+
+  color:
+    rgba(205, 225, 220, 0.88);
+}
+
+
+/* ========================================
+   6. DESCRIPTION
+======================================== */
 
 .principles__description {
-  margin: 1.25rem 0 0;
+  max-width:
+    670px;
 
-  max-width: 38rem;
+  margin:
+    18px 0 0;
 
-  color: var(--text-secondary, #a6b2bd);
+  color:
+    rgba(183, 207, 214, 0.88);
 
-  font-size: 1rem;
-  line-height: 1.7;
+  font-size:
+    15px;
+
+  line-height:
+    1.65;
 }
 
-/* Principles
----------------------------------------- */
 
-.principles__list {
-  margin: 0;
-  padding: 0;
+/* ========================================
+   7. EVIDENCE GRID
+======================================== */
 
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+.principles__grid {
+  margin-top:
+    clamp(34px, 4vh, 48px);
 
-  list-style: none;
+  display:
+    grid;
 
-  border-top: 1px solid var(--border-subtle, #182736);
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    18px;
 }
 
-.principles__item {
-  min-width: 0;
 
-  padding: 1.75rem 1.5rem 1.75rem 0;
+/* ========================================
+   8. EVIDENCE CARD
+======================================== */
 
-  border-bottom: 1px solid var(--border-subtle, #182736);
+.evidence-card {
+  min-height:
+    285px;
+
+  padding:
+    22px;
+
+  display:
+    flex;
+
+  flex-direction:
+    column;
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+
+  border:
+    1px solid
+    rgba(112, 255, 206, 0.1);
+
+  border-radius:
+    20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(12, 28, 33, 0.86),
+      rgba(7, 18, 23, 0.7)
+    );
+
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    background 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
-.principles__item + .principles__item {
-  padding-left: 1.5rem;
-  border-left: 1px solid var(--border-subtle, #182736);
+
+/* ========================================
+   9. CARD GLOW
+======================================== */
+
+.evidence-card::before {
+  content:
+    "";
+
+  position:
+    absolute;
+
+  width:
+    210px;
+
+  height:
+    210px;
+
+  top:
+    -120px;
+
+  right:
+    -100px;
+
+  border-radius:
+    50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(112, 255, 206, 0.07),
+      transparent 68%
+    );
+
+  pointer-events:
+    none;
 }
 
-.principles__number {
-  display: block;
-  margin-bottom: 1.25rem;
 
-  color: var(--text-secondary, #a6b2bd);
+/* ========================================
+   10. CARD TOP
+======================================== */
 
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+.evidence-card__top {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  justify-content:
+    space-between;
+
+  gap:
+    16px;
 }
 
-.principles__text {
-  margin: 0;
 
-  max-width: 18rem;
+.evidence-card__number {
+  color:
+    rgba(151, 184, 181, 0.9);
 
-  color: var(--text-primary, #f2f7f5);
+  font-size:
+    12px;
 
-  font-size: 1rem;
-  font-weight: 550;
-  line-height: 1.55;
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.08em;
 }
 
-/* Narrow layouts
----------------------------------------- */
 
-@media (max-width: 44rem) {
-  .principles__list {
-    grid-template-columns: 1fr;
+.evidence-card__status {
+  padding:
+    5px 8px;
+
+  border:
+    1px solid
+    rgba(112, 255, 206, 0.14);
+
+  border-radius:
+    999px;
+
+  color:
+    rgba(153, 199, 185, 0.94);
+
+  background:
+    rgba(112, 255, 206, 0.035);
+
+  font-size:
+    10px;
+
+  font-weight:
+    700;
+
+  letter-spacing:
+    0.07em;
+
+  text-transform:
+    uppercase;
+}
+
+
+/* ========================================
+   11. CARD SIGNAL
+======================================== */
+
+.evidence-card__signal {
+  width:
+    50px;
+
+  height:
+    50px;
+
+  margin-top:
+    28px;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  position:
+    relative;
+}
+
+
+.evidence-card__signal-ring {
+  position:
+    absolute;
+
+  width:
+    46px;
+
+  height:
+    46px;
+
+  border:
+    1px solid
+    rgba(112, 255, 206, 0.24);
+
+  border-radius:
+    50%;
+}
+
+
+.evidence-card__signal-core {
+  width:
+    11px;
+
+  height:
+    11px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--identity-scout-accent, #70ffce);
+
+  box-shadow:
+    0 0 10px
+    rgba(112, 255, 206, 0.7),
+    0 0 24px
+    rgba(112, 255, 206, 0.18);
+}
+
+
+/* ========================================
+   12. CARD TITLE
+======================================== */
+
+.evidence-card__title {
+  margin:
+    20px 0 0;
+
+  color:
+    var(--text-primary, #f2f7f5);
+
+  font-size:
+    19px;
+
+  font-weight:
+    650;
+
+  line-height:
+    1.25;
+
+  letter-spacing:
+    -0.025em;
+}
+
+
+/* ========================================
+   13. CARD DESCRIPTION
+======================================== */
+
+.evidence-card__description {
+  margin:
+    11px 0 0;
+
+  color:
+    rgba(169, 195, 202, 0.88);
+
+  font-size:
+    13px;
+
+  line-height:
+    1.6;
+}
+
+
+/* ========================================
+   14. CARD FOOTER
+======================================== */
+
+.evidence-card__footer {
+  margin-top:
+    auto;
+
+  padding-top:
+    18px;
+
+  border-top:
+    1px solid
+    rgba(255, 255, 255, 0.055);
+
+  color:
+    rgba(133, 165, 172, 0.88);
+
+  font-size:
+    10px;
+
+  line-height:
+    1.45;
+
+  letter-spacing:
+    0.015em;
+}
+
+
+/* ========================================
+   15. CARD HOVER
+======================================== */
+
+@media (hover: hover) and (pointer: fine) {
+
+  .evidence-card:hover {
+    transform:
+      translateY(-4px);
+
+    border-color:
+      rgba(112, 255, 206, 0.2);
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(14, 32, 37, 0.92),
+        rgba(7, 19, 24, 0.78)
+      );
+
+    box-shadow:
+      0 20px 50px
+      rgba(0, 0, 0, 0.18);
   }
 
-  .principles__item {
-    padding: 1.5rem 0;
+}
+
+
+/* ========================================
+   16. VERIFICATION RAIL
+======================================== */
+
+.principles__verify {
+  margin-top:
+    18px;
+
+  min-height:
+    72px;
+
+  padding:
+    14px 18px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  gap:
+    14px;
+
+  border:
+    1px solid
+    rgba(112, 255, 206, 0.11);
+
+  border-radius:
+    14px;
+
+  background:
+    rgba(9, 22, 27, 0.6);
+}
+
+
+/* ========================================
+   17. VERIFICATION ICON
+======================================== */
+
+.principles__verify-icon {
+  width:
+    34px;
+
+  height:
+    34px;
+
+  flex-shrink:
+    0;
+
+  display:
+    grid;
+
+  place-items:
+    center;
+
+  border:
+    1px solid
+    rgba(112, 255, 206, 0.16);
+
+  border-radius:
+    10px;
+
+  background:
+    rgba(112, 255, 206, 0.035);
+}
+
+
+.principles__verify-icon span {
+  width:
+    7px;
+
+  height:
+    7px;
+
+  border-radius:
+    50%;
+
+  background:
+    var(--identity-scout-accent, #70ffce);
+
+  box-shadow:
+    0 0 10px
+    rgba(112, 255, 206, 0.55);
+}
+
+
+/* ========================================
+   18. VERIFICATION COPY
+======================================== */
+
+.principles__verify-copy {
+  min-width:
+    0;
+}
+
+
+.principles__verify-copy strong {
+  display:
+    block;
+
+  color:
+    rgba(215, 232, 227, 0.94);
+
+  font-size:
+    13px;
+
+  font-weight:
+    650;
+}
+
+
+.principles__verify-copy p {
+  margin:
+    2px 0 0;
+
+  color:
+    rgba(166, 191, 197, 0.88);
+
+  font-size:
+    11px;
+
+  line-height:
+    1.45;
+}
+
+
+/* ========================================
+   19. RESERVED LINK
+======================================== */
+
+.principles__verify-reserved {
+  margin-left:
+    auto;
+
+  flex-shrink:
+    0;
+
+  color:
+    rgba(133, 165, 172, 0.82);
+
+  font-size:
+    11px;
+}
+
+
+/* ========================================
+   20. SHORTER DESKTOP SCREENS
+======================================== */
+
+@media
+  (min-width: 901px)
+  and (max-height: 820px) {
+
+  .principles__inner {
+    padding-block:
+      4.5rem
+      3.5rem;
   }
 
-  .principles__item + .principles__item {
-    padding-left: 0;
-    border-left: 0;
+
+  .principles__title {
+    font-size:
+      clamp(36px, 3.3vw, 48px);
   }
+
+
+  .principles__grid {
+    margin-top:
+      28px;
+  }
+
+
+  .evidence-card {
+    min-height:
+      260px;
+  }
+
+
+  .evidence-card__signal {
+    margin-top:
+      20px;
+  }
+
+}
+
+
+/* ========================================
+   21. TABLET
+======================================== */
+
+@media (max-width: 900px) {
+
+  .principles__inner {
+    width:
+      min(100% - 2rem, 72rem);
+
+    padding-block:
+      6rem;
+  }
+
+
+  .principles__grid {
+    grid-template-columns:
+      1fr;
+  }
+
+
+  .evidence-card {
+    min-height:
+      300px;
+  }
+
+}
+
+
+/* ========================================
+   22. MOBILE
+======================================== */
+
+@media (max-width: 560px) {
+
+  .principles__inner {
+    padding-block:
+      5rem;
+  }
+
+
+  .principles__title {
+    font-size:
+      clamp(38px, 11vw, 48px);
+  }
+
+
+  .evidence-card {
+    min-height:
+      285px;
+
+    padding:
+      20px;
+  }
+
+
+  .principles__verify {
+    align-items:
+      flex-start;
+  }
+
+
+  .principles__verify-reserved {
+    margin-left:
+      0;
+
+    padding-top:
+      0.25rem;
+  }
+
+}
+
+
+/* ========================================
+   23. REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .evidence-card {
+    transition:
+      none;
+  }
+
+
+  .evidence-card:hover {
+    transform:
+      none;
+  }
+
 }

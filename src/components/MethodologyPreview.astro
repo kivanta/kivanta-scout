@@ -1,5 +1,14 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — METHODOLOGY PREVIEW
+======================================== */
+
 import "../styles/methodology.css";
+
+
+/* ========================================
+   METHODOLOGY 1.0 — FIVE CHECKS
+======================================== */
 
 const checks = [
   "What does this tool actually do?",
@@ -12,45 +21,76 @@ const checks = [
 
 <section
   class="methodology"
-  id="how-scout-works"
+  id="methodology"
   aria-labelledby="methodology-title"
 >
+
   <div class="methodology__inner">
 
+    <!-- ==================================
+         SECTION HEADER
+    =================================== -->
+
     <header class="methodology__header">
+
       <p class="methodology__eyebrow">
         METHODOLOGY 1.0
       </p>
 
-      <h2 class="methodology__title" id="methodology-title">
+
+      <h2
+        class="methodology__title"
+        id="methodology-title"
+      >
         What Scout checks
       </h2>
 
-      <p class="methodology__description">
-        Once Scout can confirm the code behind a tool, it uses these
-        checks to review it.
-      </p>
+
+    <p 
+      class="methodology__description">
+      Once Scout establishes the supported public code behind a tool,
+      it applies five checks.
+     </p>
+
     </header>
 
+
+    <!-- ==================================
+         FIVE METHODOLOGY CHECKS
+    =================================== -->
+
     <ol class="methodology__list">
+
       {
         checks.map((check, index) => (
+
           <li class="methodology__item">
+
             <span class="methodology__number">
               {String(index + 1).padStart(2, "0")}
             </span>
 
+
             <span class="methodology__question">
               {check}
             </span>
+
           </li>
+
         ))
       }
+
     </ol>
+
+
+    <!-- ==================================
+         METHODOLOGY RESTRAINT
+    =================================== -->
 
     <p class="methodology__note">
       If Scout can't establish something, it says so.
     </p>
 
   </div>
+
 </section>

@@ -1,58 +1,206 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — EVIDENCE
+======================================== */
+
 import "../styles/principles.css";
 
-const principles = [
+
+/* ========================================
+   EVIDENCE PRINCIPLES
+======================================== */
+
+const evidencePrinciples = [
   {
     number: "01",
-    text: "Findings stay connected to evidence.",
+    status: "Evidence",
+    title: "Source stays attached",
+    description:
+      "The finding stays connected to the public source and observations that support it.",
+    footer: "Source · Observation · Finding",
   },
   {
     number: "02",
-    text: "Explanations don't change findings.",
+    status: "Interpretation",
+    title: "Observation ≠ claim",
+    description:
+      "Scout separates what it directly observes from what the evidence allows it to conclude.",
+    footer: "Observed · Established · Unknown",
   },
   {
     number: "03",
-    text: "Reviews aren't silently rewritten.",
+    status: "Limits",
+    title: "Limitations stay visible",
+    description:
+      "If something cannot be established from the available evidence, Scout keeps that uncertainty visible.",
+    footer: "PASS · CAUTION · UNKNOWN",
   },
 ];
 ---
 
 <section
   class="principles"
+  id="evidence"
   aria-labelledby="principles-title"
 >
+
   <div class="principles__inner">
 
-    <header class="principles__header">
-      <p class="principles__eyebrow">
-        OPERATING PRINCIPLES
-      </p>
+    <!-- ==================================
+         SECTION INTRO
+    =================================== -->
 
-      <h2 class="principles__title" id="principles-title">
-        Trust comes from what Scout won't do.
+    <div class="principles__intro">
+
+      <div class="principles__eyebrow">
+
+        <span
+          class="principles__eyebrow-dot"
+          aria-hidden="true"
+        ></span>
+
+        EVIDENCE BEFORE TRUST
+
+      </div>
+
+
+      <h2
+        class="principles__title"
+        id="principles-title"
+      >
+
+        <span>
+          See what Scout saw.
+        </span>
+
+        <span class="principles__title-secondary">
+          Verify it yourself.
+        </span>
+
       </h2>
 
+
       <p class="principles__description">
-        Scout follows the same rules on every review — including rules
-        that limit what it can claim.
+        Scout keeps evidence and limitations beside the finding
+        so you can inspect how it got there.
       </p>
-    </header>
 
-    <ol class="principles__list">
+    </div>
+
+
+    <!-- ==================================
+         EVIDENCE CARDS
+    =================================== -->
+
+    <div class="principles__grid">
+
       {
-        principles.map((principle) => (
-          <li class="principles__item">
-            <span class="principles__number">
-              {principle.number}
-            </span>
+        evidencePrinciples.map((principle) => (
 
-            <p class="principles__text">
-              {principle.text}
+          <article class="evidence-card">
+
+            <!-- ============================
+                 CARD TOP
+            ============================= -->
+
+            <div class="evidence-card__top">
+
+              <span class="evidence-card__number">
+                {principle.number}
+              </span>
+
+
+              <span class="evidence-card__status">
+                {principle.status}
+              </span>
+
+            </div>
+
+
+            <!-- ============================
+                 CARD SIGNAL
+            ============================= -->
+
+            <div
+              class="evidence-card__signal"
+              aria-hidden="true"
+            >
+
+              <span class="evidence-card__signal-ring"></span>
+
+              <span class="evidence-card__signal-core"></span>
+
+            </div>
+
+
+            <!-- ============================
+                 CARD COPY
+            ============================= -->
+
+            <h3 class="evidence-card__title">
+              {principle.title}
+            </h3>
+
+
+            <p class="evidence-card__description">
+              {principle.description}
             </p>
-          </li>
+
+
+            <!-- ============================
+                 CARD FOOTER
+            ============================= -->
+
+            <div class="evidence-card__footer">
+              {principle.footer}
+            </div>
+
+          </article>
+
         ))
       }
-    </ol>
+
+    </div>
+
+
+    <!-- ==================================
+         INDEPENDENT VERIFICATION RAIL
+    =================================== -->
+
+    <div class="principles__verify">
+
+      <div
+        class="principles__verify-icon"
+        aria-hidden="true"
+      >
+        <span></span>
+      </div>
+
+
+      <div class="principles__verify-copy">
+
+        <strong>
+          Verify independently
+        </strong>
+
+        <p>
+          Official Technocore reference
+        </p>
+
+      </div>
+
+
+      <!--
+        Reserved until we have a verified
+        Technocore reference URL.
+      -->
+
+      <span class="principles__verify-reserved">
+        Link reserved
+      </span>
+
+    </div>
 
   </div>
+
 </section>

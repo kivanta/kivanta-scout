@@ -1,35 +1,118 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — SCOUT INPUT
+======================================== */
+
 import "../styles/scout-input.css";
 ---
 
-<form class="scout-input" id="scout-input">
-  <label class="scout-input__label" for="scout-reference">
+<!-- ========================================
+     SCOUT INPUT
+======================================== -->
+
+<form
+  class="scout-input"
+  id="scout-input"
+>
+
+  <!-- ======================================
+       ACCESSIBLE LABEL
+  ======================================= -->
+
+  <label
+    class="scout-input__label"
+    for="scout-reference"
+  >
     Paste a public project or agent reference
   </label>
 
+
+  <!-- ======================================
+       INPUT CONTROL
+       Field + Scout button
+  ======================================= -->
+
   <div class="scout-input__control">
+
+    <!-- Input Field -->
+
     <input
       class="scout-input__field"
       id="scout-reference"
       name="reference"
       type="text"
-      placeholder="github.com/... or did:key:z6Mkga....."
+      placeholder="github.com/owner/repo or did:key:z6Mk..."
       autocomplete="off"
     />
 
+
+    <!-- ====================================
+         SCOUT BUTTON
+    ===================================== -->
+
     <button
       class="scout-input__button"
-      type="button"
+      type="submit"
     >
-      Scout it
+
+      <span>
+        Scout it
+      </span>
+
+
+      <!-- Forward Action Icon -->
+
+      <svg
+        class="scout-input__button-icon"
+        width="15"
+        height="15"
+        viewBox="0 0 24 24"
+        fill="none"
+        aria-hidden="true"
+      >
+
+        <!-- Arrow Line -->
+
+        <path
+          d="M5 12H19"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+
+
+        <!-- Arrow Head -->
+
+        <path
+          d="M14 7L19 12L14 17"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+
+      </svg>
+
     </button>
+
   </div>
+
+
+  <!-- ======================================
+       SUPPORTED REFERENCES
+  ======================================= -->
 
   <p class="scout-input__capabilities">
     Website · GitHub · Technocore link · did:key · ENS
   </p>
 
+
+  <!-- ======================================
+       TRUST SIGNALS
+  ======================================= -->
+
   <p class="scout-input__trust">
-    No wallet connection · No sign-up
+    No wallet required · No sign-up · Public evidence only
   </p>
+
 </form>

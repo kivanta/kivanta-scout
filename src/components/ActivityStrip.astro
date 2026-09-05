@@ -1,74 +1,95 @@
-<!-- =========================================================
-     KIVANTA SCOUT
-     LIVE TECHNOCORE / SCOUT ACTIVITY STRIP
-========================================================= -->
+---
+/* =========================================================
+   KIVANTA SCOUT
+   LIVE SCOUT ACTIVITY STRIP
+========================================================= */
+
+import "../styles/activity-strip.css";
+---
 
 <section
   class="activity-strip"
-  aria-label="Technocore and Scout network activity"
+  aria-label="Scout investigation activity"
 >
 
-  <!-- =======================================================
+  <!-- =====================================================
        MOVING TRACK
-  ======================================================== -->
+  ====================================================== -->
 
   <div class="activity-strip__track">
 
-    <!-- =====================================================
-         PRIMARY METRIC GROUP
-    ====================================================== -->
+    <!-- ===================================================
+         PRIMARY ACTIVITY GROUP
+    ==================================================== -->
 
     <div class="activity-strip__group">
 
-      <!-- Network Status -->
+      <!-- Scout Activity Status -->
+
       <span class="activity-strip__status">
-        <span class="activity-strip__status-dot"></span>
 
-        Technocore network
+        <span
+          class="activity-strip__status-dot"
+          aria-hidden="true"
+        ></span>
+
+        Scout activity
+
       </span>
 
 
-      <!-- Public Rooms -->
+      <!-- Repositories Investigated -->
+
       <span class="activity-strip__item">
+
         <strong
           class="activity-strip__number"
-          data-metric="rooms-indexed"
+          data-metric="repos-investigated"
         >
           —
         </strong>
 
-        Public rooms indexed
+        Repositories investigated
+
       </span>
 
 
-      <!-- Projects Investigated -->
+      <!-- DIDs Resolved -->
+
       <span class="activity-strip__item">
+
         <strong
           class="activity-strip__number"
-          data-metric="projects-investigated"
+          data-metric="dids-resolved"
         >
           —
         </strong>
 
-        Projects investigated
+        DIDs resolved
+
       </span>
 
 
       <!-- Evidence Receipts -->
+
       <span class="activity-strip__item">
+
         <strong
           class="activity-strip__number"
-          data-metric="receipts-verified"
+          data-metric="receipts-confirmed"
         >
           —
         </strong>
 
-        Evidence receipts verified
+        Evidence receipts confirmed
+
       </span>
 
 
       <!-- Supported Sources -->
+
       <span class="activity-strip__item">
+
         <strong
           class="activity-strip__number"
           data-metric="supported-sources"
@@ -77,23 +98,38 @@
         </strong>
 
         Supported sources established
+
       </span>
 
 
-      <!-- Latest Update -->
-      <span class="activity-strip__item activity-strip__updated">
-        <span class="activity-strip__pulse"></span>
+      <!-- Feed State -->
 
-        Live metrics connect here
+      <span
+        class="
+          activity-strip__item
+          activity-strip__updated
+        "
+      >
+
+        <span
+          class="activity-strip__pulse"
+          aria-hidden="true"
+        ></span>
+
+        Live feed pending
+
       </span>
 
     </div>
 
 
-    <!-- =====================================================
+    <!-- ===================================================
          DUPLICATE GROUP
-         Creates the seamless continuous movement.
-    ====================================================== -->
+
+         Required for seamless marquee movement.
+         Hidden from assistive technology because
+         it repeats the exact same information.
+    ==================================================== -->
 
     <div
       class="activity-strip__group"
@@ -101,52 +137,69 @@
     >
 
       <span class="activity-strip__status">
+
         <span class="activity-strip__status-dot"></span>
 
-        Technocore network
+        Scout activity
+
       </span>
 
 
       <span class="activity-strip__item">
+
         <strong class="activity-strip__number">
           —
         </strong>
 
-        Public rooms indexed
+        Repositories investigated
+
       </span>
 
 
       <span class="activity-strip__item">
+
         <strong class="activity-strip__number">
           —
         </strong>
 
-        Projects investigated
+        DIDs resolved
+
       </span>
 
 
       <span class="activity-strip__item">
+
         <strong class="activity-strip__number">
           —
         </strong>
 
-        Evidence receipts verified
+        Evidence receipts confirmed
+
       </span>
 
 
       <span class="activity-strip__item">
+
         <strong class="activity-strip__number">
           —
         </strong>
 
         Supported sources established
+
       </span>
 
 
-      <span class="activity-strip__item activity-strip__updated">
+      <span
+        class="
+          activity-strip__item
+          activity-strip__updated
+        "
+      >
+
         <span class="activity-strip__pulse"></span>
 
-        Live metrics connect here
+        Live feed pending
+
       </span>
 
     </div>
