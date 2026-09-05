@@ -8,20 +8,6 @@
    1. SECTION
 ========================================================= */
 
-/*
-   DESKTOP GOAL
-
-   The complete story should FIT inside one viewport,
-   but the section should not artificially consume
-   an entire viewport when the content is shorter.
-
-   Intro
-     ↓
-   Discovery · Source · Investigation
-     ↓
-   Discovery guardrail
-*/
-
 .how-it-works {
   width:
     100%;
@@ -774,47 +760,237 @@
 
 
 /* =========================================================
-   23. TABLET
+   23. TABLET — 561px TO 900px
 ========================================================= */
 
-@media (max-width: 900px) {
+/*
+   TABLET GOAL
+
+   Keep the same visual language,
+   but make the section denser and
+   easier to scan vertically.
+
+   Text remains readable.
+   We reduce container air instead.
+*/
+
+@media
+  (min-width: 561px)
+  and (max-width: 900px) {
 
   .how-it-works {
     padding:
-      110px 16px 120px;
+      64px 16px
+      68px;
   }
 
 
-  .how-it-works__grid {
-    margin-top:
-      52px;
-
-    grid-template-columns:
-      1fr;
+  .how-it-works__intro {
+    max-width:
+      700px;
   }
 
 
-  .process-card {
-    min-height:
-      320px;
-  }
-
-
-  .process-card__icon {
-    margin-top:
-      34px;
-  }
-
-
-  .process-card__description {
-    font-size:
+  .section-eyebrow {
+    margin-bottom:
       14px;
   }
 
 
-  .process-card__footer {
+  /* --------------------------------------
+     TABLET H2
+  -------------------------------------- */
+
+  .how-it-works__title {
+    font-size:
+      clamp(
+        32px,
+        4.6vw,
+        38px
+      );
+
+    line-height:
+      1.04;
+
+    letter-spacing:
+      -0.04em;
+  }
+
+
+  .how-it-works__title span {
+    margin-top:
+      3px;
+  }
+
+
+  .how-it-works__description {
+    max-width:
+      680px;
+
+    margin-top:
+      14px;
+
+    font-size:
+      14px;
+
+    line-height:
+      1.55;
+  }
+
+
+  /* --------------------------------------
+     TABLET PROCESS GRID
+  -------------------------------------- */
+
+  .how-it-works__grid {
+    margin-top:
+      28px;
+
+    grid-template-columns:
+      1fr;
+
+    gap:
+      12px;
+  }
+
+
+  /* --------------------------------------
+     COMPACT TABLET CARD
+  -------------------------------------- */
+
+  .process-card {
+    min-height:
+      192px;
+
+    padding:
+      16px
+      18px;
+
+    border-radius:
+      17px;
+  }
+
+
+  .process-card__top {
+    gap:
+      10px;
+  }
+
+
+  .process-card__number {
     font-size:
       11px;
+  }
+
+
+  .process-card__status {
+    padding:
+      4px
+      7px;
+
+    font-size:
+      9px;
+  }
+
+
+  /* --------------------------------------
+     COMPACT TABLET ICON
+  -------------------------------------- */
+
+  .process-card__icon {
+    width:
+      38px;
+
+    height:
+      38px;
+
+    margin-top:
+      12px;
+  }
+
+
+  .process-card__icon-ring {
+    width:
+      36px;
+
+    height:
+      36px;
+  }
+
+
+  .process-card__icon-core {
+    width:
+      9px;
+
+    height:
+      9px;
+  }
+
+
+  /* --------------------------------------
+     CARD COPY
+  -------------------------------------- */
+
+  .process-card__title {
+    margin-top:
+      10px;
+
+    font-size:
+      18px;
+  }
+
+
+  .process-card__description {
+    margin-top:
+      7px;
+
+    font-size:
+      13px;
+
+    line-height:
+      1.48;
+  }
+
+
+  /* --------------------------------------
+     CARD FOOTER
+  -------------------------------------- */
+
+  .process-card__footer {
+    margin-top:
+      10px;
+
+    padding-top:
+      10px;
+
+    font-size:
+      10px;
+  }
+
+
+  /* --------------------------------------
+     TABLET GUARDRAIL
+  -------------------------------------- */
+
+  .how-it-works__guardrail {
+    margin-top:
+      12px;
+
+    padding:
+      11px
+      14px;
+
+    gap:
+      11px;
+  }
+
+
+  .how-it-works__guardrail-icon {
+    width:
+      30px;
+
+    height:
+      30px;
   }
 
 }

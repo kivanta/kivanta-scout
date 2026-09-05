@@ -206,18 +206,24 @@
 }
 
 
-@media (min-width: 1024px) {
+/* ========================================
+   7. TITLE VARIANTS
+======================================== */
 
-  .hero__title-line {
-    white-space:
-      nowrap;
-  }
+.hero__title-desktop {
+  display:
+    block;
+}
 
+
+.hero__title-tablet {
+  display:
+    none;
 }
 
 
 /* ========================================
-   7. SUPPORTING COPY
+   8. SUPPORTING COPY
 ======================================== */
 
 .hero__description {
@@ -241,7 +247,7 @@
 
 
 /* ========================================
-   8. RIGHT SIDE — SCOUT PROBE
+   9. RIGHT SIDE — SCOUT PROBE
 ======================================== */
 
 .hero__visual {
@@ -260,18 +266,8 @@
 
 
 /* ========================================
-   9. TABLET + DESKTOP TWO-COLUMN LAYOUT
+   10. TABLET + DESKTOP TWO-COLUMN LAYOUT
 ======================================== */
-
-/*
-   Explicit pixel breakpoint.
-
-   820px iPad Air = two columns.
-   768px iPad = two columns.
-
-   We only stack once the screen becomes
-   genuinely narrow.
-*/
 
 @media (min-width: 720px) {
 
@@ -311,32 +307,168 @@
 
 
 /* ========================================
-   10. TABLET-SPECIFIC TYPOGRAPHY
+   11. NARROW TABLET — 720px TO 900px
 ======================================== */
 
 @media
   (min-width: 720px)
+  and (max-width: 900px) {
+
+  .hero__inner {
+    min-height:
+      auto;
+
+    padding-block:
+      1.5rem
+      2rem;
+
+    gap:
+      1.5rem;
+
+    transform:
+      none;
+  }
+
+
+  /* --------------------------------------
+     TABLET TITLE VARIANT
+  -------------------------------------- */
+
+  .hero__title-desktop {
+    display:
+      none;
+  }
+
+
+  .hero__title-tablet {
+    display:
+      block;
+  }
+
+
+  .hero__title {
+    font-size:
+      clamp(
+        1.85rem,
+        3.8vw,
+        2.1rem
+      );
+
+    line-height:
+      1.04;
+  }
+
+
+  /* --------------------------------------
+     TABLET SUPPORTING COPY
+  -------------------------------------- */
+
+  .hero__description {
+    max-width:
+      24rem;
+
+    margin-top:
+      0.85rem;
+
+    font-size:
+      0.82rem;
+
+    line-height:
+      1.55;
+  }
+
+
+  /* --------------------------------------
+     TABLET BADGE
+  -------------------------------------- */
+
+  .hero__eyebrow {
+    margin-bottom:
+      0.7rem;
+
+    font-size:
+      0.59rem;
+
+    letter-spacing:
+      0.115em;
+  }
+
+
+  /* --------------------------------------
+     TABLET PROBE
+  -------------------------------------- */
+
+  .hero__visual {
+    transform:
+      none;
+  }
+
+}
+
+
+/* ========================================
+   12. LARGE TABLET GEOMETRY — 901px TO 1100px
+======================================== */
+
+/*
+   Large tablet keeps the two-line Hero.
+
+   Remove the desktop upward pull and move
+   the complete Scout probe slightly right
+   so the Discovery label does not touch
+   the H1 at 1024px.
+*/
+
+@media
+  (min-width: 901px)
+  and (max-width: 1100px) {
+
+  .hero__inner {
+    padding-block:
+      1.25rem
+      1.5rem;
+
+    transform:
+      none;
+  }
+
+
+  .hero__visual {
+    transform:
+      translateX(1.25rem);
+  }
+
+}
+
+
+/* ========================================
+   13. LARGE TABLET TYPOGRAPHY
+   901px TO 1023px
+======================================== */
+
+@media
+  (min-width: 901px)
   and (max-width: 1023px) {
 
   .hero__title {
     font-size:
       clamp(
-        1.9rem,
-        4vw,
-        2.35rem
+        2rem,
+        3.4vw,
+        2.3rem
       );
   }
 
 
   .hero__description {
     max-width:
-      25rem;
+      27rem;
   }
 
 
   .hero__eyebrow {
     font-size:
-      0.6rem;
+      0.62rem;
 
     letter-spacing:
       0.12em;
@@ -346,7 +478,21 @@
 
 
 /* ========================================
-   11. ONE-COLUMN LAYOUT
+   14. DESKTOP TITLE
+======================================== */
+
+@media (min-width: 1024px) {
+
+  .hero__title-line {
+    white-space:
+      nowrap;
+  }
+
+}
+
+
+/* ========================================
+   15. ONE-COLUMN LAYOUT
 ======================================== */
 
 @media (max-width: 719px) {
@@ -360,6 +506,18 @@
       4rem;
 
     transform:
+      none;
+  }
+
+
+  .hero__title-desktop {
+    display:
+      block;
+  }
+
+
+  .hero__title-tablet {
+    display:
       none;
   }
 
@@ -392,7 +550,7 @@
 
 
 /* ========================================
-   12. MOBILE
+   16. MOBILE
 ======================================== */
 
 @media (max-width: 576px) {
@@ -445,7 +603,7 @@
 
 
 /* ========================================
-   13. VERY SMALL PHONE
+   17. VERY SMALL PHONE
 ======================================== */
 
 @media (max-width: 352px) {
@@ -465,7 +623,7 @@
 
 
 /* ========================================
-   14. REDUCED MOTION
+   18. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -503,7 +661,7 @@
 
 
 /* ========================================
-   15. FORCED COLORS
+   19. FORCED COLORS
 ======================================== */
 
 @media (forced-colors: active) {

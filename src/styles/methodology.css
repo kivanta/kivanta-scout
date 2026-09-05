@@ -62,7 +62,9 @@
 
 .methodology__eyebrow {
   margin:
-    0 0 0.9rem;
+    0
+    0
+    0.9rem;
 
   color:
     var(--link-text, #79dfff);
@@ -112,7 +114,9 @@
 
 .methodology__description {
   margin:
-    1.25rem 0 0;
+    1.25rem
+    0
+    0;
 
   max-width:
     40rem;
@@ -157,7 +161,8 @@
     grid;
 
   grid-template-columns:
-    3rem minmax(0, 1fr);
+    3rem
+    minmax(0, 1fr);
 
   gap:
     1.25rem;
@@ -166,7 +171,8 @@
     center;
 
   padding:
-    1.4rem 0;
+    1.4rem
+    0;
 
   border-bottom:
     1px solid
@@ -224,13 +230,6 @@
    11. ROW HOVER
 ======================================== */
 
-/*
-   Quiet interaction only.
-
-   The list should feel responsive,
-   but should not turn into another card grid.
-*/
-
 @media (hover: hover) and (pointer: fine) {
 
   .methodology__item:hover {
@@ -257,7 +256,9 @@
 
 .methodology__note {
   margin:
-    1.4rem 0 0;
+    1.4rem
+    0
+    0;
 
   color:
     rgba(166, 191, 197, 0.9);
@@ -311,7 +312,151 @@
 
 
 /* ========================================
-   14. NARROW LAYOUTS
+   14. TABLET — 561px TO 900px
+======================================== */
+
+/*
+   TABLET GOAL
+
+   Preserve the clean methodology list,
+   but reduce desktop-sized vertical rhythm.
+
+   No cards.
+   No structural redesign.
+*/
+
+@media
+  (min-width: 561px)
+  and (max-width: 900px) {
+
+  /* --------------------------------------
+     SECTION SPACING
+  -------------------------------------- */
+
+  .methodology__inner {
+    padding-block:
+      3rem
+      3.5rem;
+  }
+
+
+  /* --------------------------------------
+     HEADER
+  -------------------------------------- */
+
+  .methodology__header {
+    max-width:
+      38rem;
+
+    margin-bottom:
+      1.8rem;
+  }
+
+
+  .methodology__eyebrow {
+    margin-bottom:
+      0.7rem;
+
+    font-size:
+      0.7rem;
+
+    letter-spacing:
+      0.13em;
+  }
+
+
+  /* --------------------------------------
+     TABLET H2
+  -------------------------------------- */
+
+  .methodology__title {
+    font-size:
+      clamp(
+        1.75rem,
+        4.2vw,
+        2.15rem
+      );
+
+    line-height:
+      1.04;
+
+    letter-spacing:
+      -0.035em;
+  }
+
+
+  .methodology__description {
+    max-width:
+      36rem;
+
+    margin-top:
+      0.9rem;
+
+    font-size:
+      0.9rem;
+
+    line-height:
+      1.55;
+  }
+
+
+  /* --------------------------------------
+     COMPACT TABLET CHECK ROWS
+  -------------------------------------- */
+
+  .methodology__item {
+    grid-template-columns:
+      2.5rem
+      minmax(0, 1fr);
+
+    gap:
+      1rem;
+
+    padding:
+      1.05rem
+      0;
+  }
+
+
+  .methodology__number {
+    font-size:
+      0.72rem;
+  }
+
+
+  .methodology__question {
+    font-size:
+      clamp(
+        0.95rem,
+        2vw,
+        1.08rem
+      );
+
+    line-height:
+      1.42;
+  }
+
+
+  /* --------------------------------------
+     CLOSING NOTE
+  -------------------------------------- */
+
+  .methodology__note {
+    margin-top:
+      1.05rem;
+
+    font-size:
+      0.82rem;
+
+    line-height:
+      1.5;
+  }
+
+}
+
+
+/* ========================================
+   15. MOBILE
 ======================================== */
 
 @media (max-width: 36rem) {
@@ -330,7 +475,8 @@
 
   .methodology__item {
     grid-template-columns:
-      2rem minmax(0, 1fr);
+      2rem
+      minmax(0, 1fr);
 
     gap:
       0.75rem;
@@ -349,7 +495,7 @@
 
 
 /* ========================================
-   15. REDUCED MOTION
+   16. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {

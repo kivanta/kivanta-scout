@@ -1,4 +1,8 @@
 ---
+/* ========================================
+   KIVANTA SCOUT — HERO
+======================================== */
+
 import "../styles/hero.css";
 
 import ScoutInput from "./ScoutInput.astro";
@@ -7,47 +11,106 @@ import ScoutProbe from "./ScoutProbe.astro";
 
 <section class="hero" aria-labelledby="hero-title">
 
-  <!-- Decorative cursor-follow atmosphere -->
-  <div class="hero__beam" aria-hidden="true"></div>
+  <!-- ==================================
+       DECORATIVE HERO LIGHT
+  =================================== -->
+
+  <div
+    class="hero__beam"
+    aria-hidden="true"
+  ></div>
+
+
+  <!-- ==================================
+       HERO LAYOUT
+  =================================== -->
 
   <div class="hero__inner">
 
-    <!-- ==============================
+    <!-- ==================================
          LEFT — COPY + SCOUT INPUT
-         ============================== -->
+    =================================== -->
+
     <div class="hero__content">
 
       <p class="hero__eyebrow">
         TECHNOCORE · EVIDENCE BEFORE CLAIMS
       </p>
 
-      <h1 class="hero__title" id="hero-title">
-        <span class="hero__title-line">
-          See what the agent is built to do
+
+      <!-- ==================================
+           HERO TITLE
+      =================================== -->
+
+      <h1
+        class="hero__title"
+        id="hero-title"
+      >
+
+        <!-- Desktop + large tablet -->
+        <span class="hero__title-desktop">
+
+          <span class="hero__title-line">
+            See what the agent is built to do
+          </span>
+
+          <span class="hero__title-line">
+            before you use it.
+          </span>
+
         </span>
 
-        <span class="hero__title-line">
-          before you use it.
+
+        <!-- Narrow tablet only -->
+        <span class="hero__title-tablet">
+
+          <span class="hero__title-line">
+            See what the agent
+          </span>
+
+          <span class="hero__title-line">
+            is built to do
+          </span>
+
+          <span class="hero__title-line">
+            before you use it.
+          </span>
+
         </span>
+
       </h1>
+
+
+      <!-- ==================================
+           SUPPORTING COPY
+      =================================== -->
 
       <p class="hero__description">
         Scout reads the public code—and shows what it can and can’t establish.
       </p>
 
+
+      <!-- ==================================
+           SCOUT INPUT
+      =================================== -->
+
       <ScoutInput />
 
     </div>
 
-    <!-- ==============================
+
+    <!-- ==================================
          RIGHT — SCOUT PROBE
-         ============================== -->
+    =================================== -->
+
     <div class="hero__visual">
       <ScoutProbe state="idle" />
     </div>
 
   </div>
+
 </section>
+
 
 <script>
   import "../scripts/hero-beam.js";

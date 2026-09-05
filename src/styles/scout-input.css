@@ -8,11 +8,14 @@
 ======================================== */
 
 .scout-input {
-  margin-top: 1.6rem;
+  margin-top:
+    1.6rem;
 
-  width: 100%;
+  width:
+    100%;
 
-  max-width: 36rem;
+  max-width:
+    36rem;
 }
 
 
@@ -21,21 +24,32 @@
 ======================================== */
 
 .scout-input__label {
-  position: absolute;
+  position:
+    absolute;
 
-  width: 1px;
-  height: 1px;
+  width:
+    1px;
 
-  padding: 0;
-  margin: -1px;
+  height:
+    1px;
 
-  overflow: hidden;
+  padding:
+    0;
 
-  clip: rect(0, 0, 0, 0);
+  margin:
+    -1px;
 
-  white-space: nowrap;
+  overflow:
+    hidden;
 
-  border: 0;
+  clip:
+    rect(0, 0, 0, 0);
+
+  white-space:
+    nowrap;
+
+  border:
+    0;
 }
 
 
@@ -45,20 +59,25 @@
 ======================================== */
 
 .scout-input__control {
-  display: grid;
+  display:
+    grid;
 
   grid-template-columns:
     minmax(0, 1fr)
     auto;
 
-  gap: 0.4rem;
+  gap:
+    0.4rem;
 
-  padding: 0.35rem;
+  padding:
+    0.35rem;
 
   border:
-    1px solid rgba(120, 220, 248, 0.22);
+    1px solid
+    rgba(120, 220, 248, 0.22);
 
-  border-radius: 0.85rem;
+  border-radius:
+    0.85rem;
 
   background:
     rgba(7, 16, 26, 0.78);
@@ -78,7 +97,8 @@
     var(--focus-inner);
 
   outline:
-    0.1rem solid var(--focus-outer);
+    0.1rem solid
+    var(--focus-outer);
 
   outline-offset:
     0.12rem;
@@ -90,18 +110,23 @@
 ======================================== */
 
 .scout-input__field {
-  min-width: 0;
+  min-width:
+    0;
 
-  width: 100%;
+  width:
+    100%;
 
-  min-height: 2.85rem;
+  min-height:
+    2.85rem;
 
   padding-inline:
     0.75rem;
 
-  border: 0;
+  border:
+    0;
 
-  outline: 0;
+  outline:
+    0;
 
   background:
     transparent;
@@ -132,7 +157,8 @@
 ======================================== */
 
 .scout-input__button {
-  min-height: 2.85rem;
+  min-height:
+    2.85rem;
 
   padding-inline:
     1.15rem;
@@ -152,7 +178,8 @@
   white-space:
     nowrap;
 
-  border: 0;
+  border:
+    0;
 
   border-radius:
     0.65rem;
@@ -230,7 +257,8 @@
 
 .scout-input__button:focus-visible {
   outline:
-    0.125rem solid var(--focus-inner);
+    0.125rem solid
+    var(--focus-inner);
 
   outline-offset:
     0.125rem;
@@ -241,14 +269,11 @@
    11. SUPPORTED REFERENCES
 ======================================== */
 
-/*
-   Secondary information, but bright enough
-   to be comfortably readable.
-*/
-
 .scout-input__capabilities {
   margin:
-    0.65rem 0 0;
+    0.65rem
+    0
+    0;
 
   color:
     rgba(143, 179, 190, 0.88);
@@ -268,15 +293,11 @@
    12. TRUST SIGNALS
 ======================================== */
 
-/*
-   Slightly brighter than the supported-reference
-   line because these are important reassurance
-   signals for first-time visitors.
-*/
-
 .scout-input__trust {
   margin:
-    0.45rem 0 0;
+    0.45rem
+    0
+    0;
 
   color:
     rgba(195, 220, 216, 0.92);
@@ -293,7 +314,98 @@
 
 
 /* ========================================
-   13. NARROW LAYOUTS
+   13. TABLET — 720px TO 900px
+======================================== */
+
+/*
+   TABLET GOAL
+
+   Preserve the unified desktop control,
+   but give the input field more room.
+
+   The button becomes slightly more compact
+   without changing its visual identity.
+*/
+
+@media
+  (min-width: 720px)
+  and (max-width: 900px) {
+
+  .scout-input {
+    margin-top:
+      1.35rem;
+
+    max-width:
+      100%;
+  }
+
+
+  .scout-input__control {
+    gap:
+      0.3rem;
+
+    padding:
+      0.3rem;
+  }
+
+
+  /* --------------------------------------
+     TABLET INPUT
+  -------------------------------------- */
+
+  .scout-input__field {
+    min-height:
+      2.7rem;
+
+    padding-inline:
+      0.65rem;
+
+    font-size:
+      0.82rem;
+  }
+
+
+  .scout-input__field::placeholder {
+    font-size:
+      0.8rem;
+  }
+
+
+  /* --------------------------------------
+     COMPACT TABLET BUTTON
+  -------------------------------------- */
+
+  .scout-input__button {
+    min-height:
+      2.7rem;
+
+    padding-inline:
+      0.75rem;
+
+    gap:
+      0.4rem;
+
+    border-radius:
+      0.6rem;
+
+    font-size:
+      0.78rem;
+  }
+
+
+  .scout-input__button-icon {
+    width:
+      0.85rem;
+
+    height:
+      0.85rem;
+  }
+
+}
+
+
+/* ========================================
+   14. NARROW LAYOUTS
 ======================================== */
 
 @media (max-width: 32rem) {
@@ -319,7 +431,7 @@
 
 
 /* ========================================
-   14. REDUCED MOTION
+   15. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {

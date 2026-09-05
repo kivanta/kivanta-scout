@@ -112,13 +112,6 @@
    5. TITLE
 ======================================== */
 
-/*
-   Slightly reduced from the previous version.
-
-   This keeps the headline strong while allowing
-   the evidence cards to carry more visual weight.
-*/
-
 .principles__title {
   margin:
     0;
@@ -697,29 +690,265 @@
 
 
 /* ========================================
-   21. TABLET
+   21. TABLET — 561px TO 900px
 ======================================== */
 
-@media (max-width: 900px) {
+/*
+   TABLET GOAL
+
+   Keep the Evidence story visually aligned
+   with the tablet How Scout Works section.
+
+   Reduce large desktop spacing,
+   not the information.
+*/
+
+@media
+  (min-width: 561px)
+  and (max-width: 900px) {
+
+  /* --------------------------------------
+     SECTION + TRANSITION
+  -------------------------------------- */
 
   .principles__inner {
     width:
       min(100% - 2rem, 72rem);
 
     padding-block:
-      6rem;
+      3rem
+      3.5rem;
   }
 
+
+  /* --------------------------------------
+     EYEBROW
+  -------------------------------------- */
+
+  .principles__eyebrow {
+    margin-bottom:
+      14px;
+
+    font-size:
+      11px;
+  }
+
+
+  /* --------------------------------------
+     TABLET H2
+  -------------------------------------- */
+
+  .principles__title {
+    font-size:
+      clamp(
+        32px,
+        4.6vw,
+        38px
+      );
+
+    line-height:
+      1.04;
+
+    letter-spacing:
+      -0.04em;
+  }
+
+
+  .principles__title-secondary {
+    margin-top:
+      3px;
+  }
+
+
+  /* --------------------------------------
+     DESCRIPTION
+  -------------------------------------- */
+
+  .principles__description {
+    max-width:
+      640px;
+
+    margin-top:
+      14px;
+
+    font-size:
+      14px;
+
+    line-height:
+      1.55;
+  }
+
+
+  /* --------------------------------------
+     STACKED TABLET GRID
+  -------------------------------------- */
 
   .principles__grid {
+    margin-top:
+      28px;
+
     grid-template-columns:
       1fr;
+
+    gap:
+      12px;
   }
 
+
+  /* --------------------------------------
+     COMPACT EVIDENCE CARDS
+  -------------------------------------- */
 
   .evidence-card {
     min-height:
-      300px;
+      192px;
+
+    padding:
+      16px
+      18px;
+
+    border-radius:
+      17px;
+  }
+
+
+  .evidence-card__top {
+    gap:
+      10px;
+  }
+
+
+  .evidence-card__number {
+    font-size:
+      11px;
+  }
+
+
+  .evidence-card__status {
+    padding:
+      4px
+      7px;
+
+    font-size:
+      9px;
+  }
+
+
+  /* --------------------------------------
+     SIGNAL
+  -------------------------------------- */
+
+  .evidence-card__signal {
+    width:
+      38px;
+
+    height:
+      38px;
+
+    margin-top:
+      12px;
+  }
+
+
+  .evidence-card__signal-ring {
+    width:
+      36px;
+
+    height:
+      36px;
+  }
+
+
+  .evidence-card__signal-core {
+    width:
+      9px;
+
+    height:
+      9px;
+  }
+
+
+  /* --------------------------------------
+     CARD COPY
+  -------------------------------------- */
+
+  .evidence-card__title {
+    margin-top:
+      10px;
+
+    font-size:
+      18px;
+  }
+
+
+  .evidence-card__description {
+    margin-top:
+      7px;
+
+    font-size:
+      13px;
+
+    line-height:
+      1.48;
+  }
+
+
+  .evidence-card__footer {
+    margin-top:
+      10px;
+
+    padding-top:
+      10px;
+
+    font-size:
+      10px;
+  }
+
+
+  /* --------------------------------------
+     VERIFICATION RAIL
+  -------------------------------------- */
+
+  .principles__verify {
+    margin-top:
+      12px;
+
+    min-height:
+      58px;
+
+    padding:
+      11px
+      14px;
+
+    gap:
+      11px;
+  }
+
+
+  .principles__verify-icon {
+    width:
+      30px;
+
+    height:
+      30px;
+  }
+
+
+  .principles__verify-copy strong {
+    font-size:
+      12px;
+  }
+
+
+  .principles__verify-copy p {
+    font-size:
+      10px;
+  }
+
+
+  .principles__verify-reserved {
+    font-size:
+      10px;
   }
 
 }
