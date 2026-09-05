@@ -8,7 +8,10 @@ import "../styles/navbar.css";
 
 <header class="site-header">
 
-  <div class="navbar">
+  <div
+    class="navbar"
+    data-menu-open="false"
+  >
 
     <!-- ==================================
          BRAND
@@ -33,15 +36,33 @@ import "../styles/navbar.css";
 
 
     <!-- ==================================
+         MOBILE MENU BUTTON
+         Hidden on tablet + desktop
+    =================================== -->
+
+    <button
+      class="navbar__menu-button"
+      type="button"
+      aria-label="Open navigation"
+      aria-expanded="false"
+      aria-controls="primary-navigation"
+    >
+
+      <span class="navbar__menu-line"></span>
+      <span class="navbar__menu-line"></span>
+
+    </button>
+
+
+    <!-- ==================================
          PRIMARY NAVIGATION
     =================================== -->
 
     <nav
       class="navbar__nav"
+      id="primary-navigation"
       aria-label="Primary navigation"
     >
-
-      <!-- How Scout Works -->
 
       <a
         class="navbar__link"
@@ -49,9 +70,6 @@ import "../styles/navbar.css";
       >
         How Scout Works
       </a>
-
-
-      <!-- GitHub -->
 
       <a
         class="navbar__link"
@@ -65,3 +83,108 @@ import "../styles/navbar.css";
   </div>
 
 </header>
+
+
+<script>
+  /* ========================================
+     MOBILE NAVIGATION
+  ======================================== */
+
+  const navbar =
+    document.querySelector(".navbar");
+
+  const menuButton =
+    document.querySelector(".navbar__menu-button");
+
+  const nav =
+    document.querySelector(".navbar__nav");
+
+
+  if (
+    navbar instanceof HTMLElement &&
+    menuButton instanceof HTMLButtonElement &&
+    nav instanceof HTMLElement
+  ) {
+
+    const closeMenu = () => {
+
+      navbar.dataset.menuOpen =
+        "false";
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        "Open navigation"
+      );
+
+    };
+
+
+    const openMenu = () => {
+
+      navbar.dataset.menuOpen =
+        "true";
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        "true"
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        "Close navigation"
+      );
+
+    };
+
+
+    menuButton.addEventListener(
+      "click",
+      () => {
+
+        const isOpen =
+          navbar.dataset.menuOpen ===
+          "true";
+
+        if (isOpen) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+
+      }
+    );
+
+
+    nav
+      .querySelectorAll("a")
+      .forEach((link) => {
+
+        link.addEventListener(
+          "click",
+          closeMenu
+        );
+
+      });
+
+
+    window.addEventListener(
+      "resize",
+      () => {
+
+        if (
+          window.innerWidth >
+          576
+        ) {
+          closeMenu();
+        }
+
+      }
+    );
+
+  }
+</script>

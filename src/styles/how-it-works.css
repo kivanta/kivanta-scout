@@ -763,17 +763,6 @@
    23. TABLET — 561px TO 900px
 ========================================================= */
 
-/*
-   TABLET GOAL
-
-   Keep the same visual language,
-   but make the section denser and
-   easier to scan vertically.
-
-   Text remains readable.
-   We reduce container air instead.
-*/
-
 @media
   (min-width: 561px)
   and (max-width: 900px) {
@@ -796,10 +785,6 @@
       14px;
   }
 
-
-  /* --------------------------------------
-     TABLET H2
-  -------------------------------------- */
 
   .how-it-works__title {
     font-size:
@@ -838,10 +823,6 @@
   }
 
 
-  /* --------------------------------------
-     TABLET PROCESS GRID
-  -------------------------------------- */
-
   .how-it-works__grid {
     margin-top:
       28px;
@@ -853,10 +834,6 @@
       12px;
   }
 
-
-  /* --------------------------------------
-     COMPACT TABLET CARD
-  -------------------------------------- */
 
   .process-card {
     min-height:
@@ -893,10 +870,6 @@
   }
 
 
-  /* --------------------------------------
-     COMPACT TABLET ICON
-  -------------------------------------- */
-
   .process-card__icon {
     width:
       38px;
@@ -927,10 +900,6 @@
   }
 
 
-  /* --------------------------------------
-     CARD COPY
-  -------------------------------------- */
-
   .process-card__title {
     margin-top:
       10px;
@@ -952,10 +921,6 @@
   }
 
 
-  /* --------------------------------------
-     CARD FOOTER
-  -------------------------------------- */
-
   .process-card__footer {
     margin-top:
       10px;
@@ -967,10 +932,6 @@
       10px;
   }
 
-
-  /* --------------------------------------
-     TABLET GUARDRAIL
-  -------------------------------------- */
 
   .how-it-works__guardrail {
     margin-top:
@@ -997,54 +958,384 @@
 
 
 /* =========================================================
-   24. MOBILE
+   24. MOBILE — 560px AND BELOW
 ========================================================= */
+
+/*
+   Mobile keeps each step full-width,
+   but removes the tablet-like vertical bulk.
+
+   Final transition pass:
+   reduce only the space after the guardrail
+   before Methodology begins.
+*/
 
 @media (max-width: 560px) {
 
+  /* --------------------------------------
+     MOBILE SECTION
+  -------------------------------------- */
+
   .how-it-works {
     padding:
-      90px 16px 100px;
+      72px
+      16px
+      28px;
+
+    overflow:
+      hidden;
   }
 
+
+  /* --------------------------------------
+     MOBILE SECTION GLOW
+  -------------------------------------- */
+
+  .how-it-works::before {
+    width:
+      480px;
+
+    height:
+      480px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE INTRO
+  -------------------------------------- */
+
+  .how-it-works__intro {
+    max-width:
+      none;
+  }
+
+
+  .section-eyebrow {
+    margin-bottom:
+      13px;
+
+    gap:
+      7px;
+
+    font-size:
+      10px;
+
+    letter-spacing:
+      0.095em;
+  }
+
+
+  .section-eyebrow__dot {
+    width:
+      6px;
+
+    height:
+      6px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE H2
+  -------------------------------------- */
 
   .how-it-works__title {
     font-size:
-      clamp(40px, 12vw, 52px);
+      clamp(
+        34px,
+        9vw,
+        39px
+      );
+
+    line-height:
+      1.03;
+
+    letter-spacing:
+      -0.042em;
   }
 
 
+  .how-it-works__title span {
+    margin-top:
+      3px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE DESCRIPTION
+  -------------------------------------- */
+
   .how-it-works__description {
+    max-width:
+      none;
+
+    margin-top:
+      14px;
+
     font-size:
+      13.5px;
+
+    line-height:
+      1.55;
+  }
+
+
+  /* --------------------------------------
+     MOBILE PROCESS GRID
+  -------------------------------------- */
+
+  .how-it-works__grid {
+    margin-top:
+      26px;
+
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    gap:
+      10px;
+  }
+
+
+  /* --------------------------------------
+     COMPACT MOBILE CARD
+  -------------------------------------- */
+
+  .process-card {
+    width:
+      100%;
+
+    min-height:
+      0;
+
+    padding:
+      14px;
+
+    border-radius:
       15px;
   }
 
 
-  .how-it-works__grid {
-    margin-top:
-      46px;
+  /* --------------------------------------
+     MOBILE CARD TOP
+  -------------------------------------- */
+
+  .process-card__top {
+    gap:
+      8px;
   }
 
 
-  .process-card {
-    min-height:
-      300px;
+  .process-card__number {
+    font-size:
+      10px;
+  }
 
+
+  .process-card__status {
     padding:
-      20px;
+      4px
+      7px;
+
+    font-size:
+      8.25px;
+
+    letter-spacing:
+      0.06em;
   }
 
+
+  /* --------------------------------------
+     SMALLER MOBILE ICON
+  -------------------------------------- */
+
+  .process-card__icon {
+    width:
+      34px;
+
+    height:
+      34px;
+
+    margin-top:
+      10px;
+  }
+
+
+  .process-card__icon-ring {
+    width:
+      32px;
+
+    height:
+      32px;
+  }
+
+
+  .process-card__icon-core {
+    width:
+      8px;
+
+    height:
+      8px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE CARD TITLE
+  -------------------------------------- */
+
+  .process-card__title {
+    margin-top:
+      9px;
+
+    font-size:
+      16.5px;
+
+    line-height:
+      1.22;
+  }
+
+
+  /* --------------------------------------
+     MOBILE CARD DESCRIPTION
+  -------------------------------------- */
+
+  .process-card__description {
+    margin-top:
+      6px;
+
+    font-size:
+      12px;
+
+    line-height:
+      1.48;
+  }
+
+
+  /* --------------------------------------
+     COMPACT MOBILE FOOTER
+  -------------------------------------- */
+
+  .process-card__footer {
+    margin-top:
+      10px;
+
+    padding-top:
+      8px;
+
+    font-size:
+      9px;
+
+    line-height:
+      1.4;
+  }
+
+
+  /* --------------------------------------
+     MOBILE GUARDRAIL
+  -------------------------------------- */
 
   .how-it-works__guardrail {
+    width:
+      100%;
+
+    margin-top:
+      10px;
+
+    padding:
+      11px;
+
     align-items:
       flex-start;
+
+    gap:
+      10px;
+
+    border-radius:
+      12px;
+  }
+
+
+  .how-it-works__guardrail-icon {
+    width:
+      28px;
+
+    height:
+      28px;
+
+    border-radius:
+      8px;
+  }
+
+
+  .how-it-works__guardrail-icon span {
+    width:
+      6px;
+
+    height:
+      6px;
+  }
+
+
+  .how-it-works__guardrail strong {
+    font-size:
+      11.5px;
+  }
+
+
+  .how-it-works__guardrail p {
+    margin-top:
+      2px;
+
+    font-size:
+      10px;
+
+    line-height:
+      1.42;
   }
 
 }
 
 
 /* =========================================================
-   25. REDUCED MOTION
+   25. VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 352px) {
+
+  .how-it-works {
+    padding:
+      64px
+      12px
+      24px;
+  }
+
+
+  .how-it-works__title {
+    font-size:
+      32px;
+  }
+
+
+  .how-it-works__description {
+    font-size:
+      13px;
+  }
+
+
+  .process-card {
+    padding:
+      13px;
+  }
+
+
+  .process-card__title {
+    font-size:
+      16px;
+  }
+
+}
+
+
+/* =========================================================
+   26. REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {

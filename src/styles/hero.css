@@ -394,10 +394,6 @@
   }
 
 
-  /* --------------------------------------
-     TABLET PROBE
-  -------------------------------------- */
-
   .hero__visual {
     transform:
       none;
@@ -407,17 +403,9 @@
 
 
 /* ========================================
-   12. LARGE TABLET GEOMETRY — 901px TO 1100px
+   12. LARGE TABLET GEOMETRY
+   901px TO 1100px
 ======================================== */
-
-/*
-   Large tablet keeps the two-line Hero.
-
-   Remove the desktop upward pull and move
-   the complete Scout probe slightly right
-   so the Discovery label does not touch
-   the H1 at 1024px.
-*/
 
 @media
   (min-width: 901px)
@@ -493,6 +481,7 @@
 
 /* ========================================
    15. ONE-COLUMN LAYOUT
+   BELOW TABLET
 ======================================== */
 
 @media (max-width: 719px) {
@@ -550,8 +539,20 @@
 
 
 /* ========================================
-   16. MOBILE
+   16. MOBILE — 576px AND BELOW
 ======================================== */
+
+/*
+   Mobile Hero should feel like one story:
+
+   copy
+   input
+   trust
+   probe
+   activity
+
+   No separate probe viewport.
+*/
 
 @media (max-width: 576px) {
 
@@ -562,11 +563,28 @@
         var(--page-width, 72rem)
       );
 
+    /*
+       Keep comfortable space after Navbar,
+       but reduce the large bottom reserve.
+    */
+
     padding-block:
       2.5rem
-      3.5rem;
+      1rem;
+
+    /*
+       Pull the probe much closer to the
+       trust copy.
+    */
+
+    gap:
+      0.75rem;
   }
 
+
+  /* --------------------------------------
+     MOBILE BADGE
+  -------------------------------------- */
 
   .hero__eyebrow {
     padding:
@@ -577,6 +595,10 @@
       0.62rem;
   }
 
+
+  /* --------------------------------------
+     MOBILE TITLE
+  -------------------------------------- */
 
   .hero__title {
     font-size:
@@ -591,12 +613,32 @@
   }
 
 
+  /* --------------------------------------
+     MOBILE DESCRIPTION
+  -------------------------------------- */
+
   .hero__description {
     max-width:
       28rem;
 
     font-size:
       0.82rem;
+  }
+
+
+  /* --------------------------------------
+     MOBILE PROBE POSITION
+  -------------------------------------- */
+
+  .hero__visual {
+    margin-top:
+      0;
+
+    margin-bottom:
+      0;
+
+    transform:
+      none;
   }
 
 }
@@ -611,6 +653,9 @@
   .hero__inner {
     width:
       calc(100% - 1.5rem);
+
+    padding-block-end:
+      0.75rem;
   }
 
 

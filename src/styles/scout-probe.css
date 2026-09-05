@@ -45,11 +45,6 @@
    3. NETWORK PATHS
 ======================================== */
 
-/*
-   Base paths are now easier to see,
-   but still remain behind the nodes and labels.
-*/
-
 .probe-path {
   fill:
     none;
@@ -108,8 +103,6 @@
 }
 
 
-/* Inner node dot */
-
 .probe-node-core {
   fill:
     var(--palette-cyan-200);
@@ -118,8 +111,6 @@
     1;
 }
 
-
-/* Supporting endpoint dots */
 
 .probe-point {
   fill:
@@ -133,13 +124,6 @@
 /* ========================================
    5. LABELS
 ======================================== */
-
-/*
-   Labels were previously too faint.
-
-   These should now be clearly readable
-   without competing with the Hero text.
-*/
 
 .probe-label {
   fill:
@@ -168,12 +152,6 @@
 /* ========================================
    6. CENTRAL SCOUT IDENTITY
 ======================================== */
-
-/*
-   Keep the central Scout restrained.
-   The surrounding network gains contrast,
-   while Scout remains the visual anchor.
-*/
 
 .probe-scout__outer {
   fill:
@@ -290,10 +268,17 @@
 
 
 /* ========================================
-   11. MOBILE
+   11. TABLET / SMALL DESKTOP
 ======================================== */
 
-@media (max-width: 40rem) {
+/*
+   Preserve the probe scale already locked
+   for tablet and desktop.
+*/
+
+@media
+  (min-width: 577px)
+  and (max-width: 1023px) {
 
   .scout-probe {
     width:
@@ -325,7 +310,88 @@
 
 
 /* ========================================
-   12. REDUCED MOTION
+   12. MOBILE — 576px AND BELOW
+======================================== */
+
+/*
+   Mobile goal:
+
+   Keep Scout visible as part of the Hero,
+   but do not let the probe become its own
+   large viewport.
+
+   The visual becomes a compact supporting
+   element beneath the trust copy.
+*/
+
+@media (max-width: 576px) {
+
+  .scout-probe {
+    width:
+      min(100%, 16.5rem);
+  }
+
+
+  .probe-label {
+    font-size:
+      9px;
+
+    fill:
+      rgba(180, 205, 214, 0.94);
+  }
+
+
+  .probe-path {
+    stroke-width:
+      1.2;
+
+    opacity:
+      0.42;
+  }
+
+
+  .probe-path--primary {
+    opacity:
+      0.62;
+  }
+
+
+  .probe-path--quiet {
+    opacity:
+      0.24;
+  }
+
+
+  .probe-node {
+    stroke-width:
+      1.5;
+  }
+
+}
+
+
+/* ========================================
+   13. VERY SMALL MOBILE
+======================================== */
+
+@media (max-width: 352px) {
+
+  .scout-probe {
+    width:
+      min(100%, 14.5rem);
+  }
+
+
+  .probe-label {
+    font-size:
+      8.5px;
+  }
+
+}
+
+
+/* ========================================
+   14. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {
@@ -339,7 +405,7 @@
 
 
 /* ========================================
-   13. HIGH CONTRAST
+   15. HIGH CONTRAST
 ======================================== */
 
 @media (forced-colors: active) {

@@ -693,16 +693,6 @@
    21. TABLET — 561px TO 900px
 ======================================== */
 
-/*
-   TABLET GOAL
-
-   Keep the Evidence story visually aligned
-   with the tablet How Scout Works section.
-
-   Reduce large desktop spacing,
-   not the information.
-*/
-
 @media
   (min-width: 561px)
   and (max-width: 900px) {
@@ -955,51 +945,409 @@
 
 
 /* ========================================
-   22. MOBILE
+   22. MOBILE — 560px AND BELOW
 ======================================== */
+
+/*
+   MOBILE GOAL
+
+   Preserve the Evidence story,
+   but stack the three evidence cards
+   into compact full-width steps.
+
+   Evidence should feel inspectable,
+   not like three squeezed desktop columns.
+*/
 
 @media (max-width: 560px) {
 
+  /* --------------------------------------
+     SECTION
+  -------------------------------------- */
+
   .principles__inner {
+    width:
+      min(
+        calc(100% - 2rem),
+        72rem
+      );
+
     padding-block:
-      5rem;
+      3.5rem
+      3.25rem;
   }
 
+
+  /* --------------------------------------
+     INTRO
+  -------------------------------------- */
+
+  .principles__intro {
+    max-width:
+      none;
+  }
+
+
+  /* --------------------------------------
+     EYEBROW
+  -------------------------------------- */
+
+  .principles__eyebrow {
+    margin-bottom:
+      12px;
+
+    gap:
+      7px;
+
+    font-size:
+      10px;
+
+    letter-spacing:
+      0.095em;
+  }
+
+
+  .principles__eyebrow-dot {
+    width:
+      6px;
+
+    height:
+      6px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE H2
+  -------------------------------------- */
 
   .principles__title {
     font-size:
-      clamp(38px, 11vw, 48px);
+      clamp(
+        32px,
+        8.8vw,
+        38px
+      );
+
+    line-height:
+      1.03;
+
+    letter-spacing:
+      -0.042em;
   }
 
+
+  .principles__title-secondary {
+    margin-top:
+      2px;
+  }
+
+
+  /* --------------------------------------
+     DESCRIPTION
+  -------------------------------------- */
+
+  .principles__description {
+    max-width:
+      none;
+
+    margin-top:
+      13px;
+
+    font-size:
+      13px;
+
+    line-height:
+      1.52;
+  }
+
+
+  /* --------------------------------------
+     MOBILE EVIDENCE GRID
+  -------------------------------------- */
+
+  .principles__grid {
+    margin-top:
+      26px;
+
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    gap:
+      10px;
+  }
+
+
+  /* --------------------------------------
+     COMPACT MOBILE CARD
+  -------------------------------------- */
 
   .evidence-card {
+    width:
+      100%;
+
     min-height:
-      285px;
+      0;
 
     padding:
-      20px;
+      14px;
+
+    border-radius:
+      15px;
   }
 
+
+  /* --------------------------------------
+     CARD TOP
+  -------------------------------------- */
+
+  .evidence-card__top {
+    gap:
+      8px;
+  }
+
+
+  .evidence-card__number {
+    font-size:
+      10px;
+  }
+
+
+  .evidence-card__status {
+    padding:
+      4px
+      7px;
+
+    font-size:
+      8.25px;
+
+    letter-spacing:
+      0.06em;
+  }
+
+
+  /* --------------------------------------
+     SMALLER MOBILE SIGNAL
+  -------------------------------------- */
+
+  .evidence-card__signal {
+    width:
+      34px;
+
+    height:
+      34px;
+
+    margin-top:
+      10px;
+  }
+
+
+  .evidence-card__signal-ring {
+    width:
+      32px;
+
+    height:
+      32px;
+  }
+
+
+  .evidence-card__signal-core {
+    width:
+      8px;
+
+    height:
+      8px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE CARD TITLE
+  -------------------------------------- */
+
+  .evidence-card__title {
+    margin-top:
+      9px;
+
+    font-size:
+      16.5px;
+
+    line-height:
+      1.22;
+  }
+
+
+  /* --------------------------------------
+     MOBILE CARD DESCRIPTION
+  -------------------------------------- */
+
+  .evidence-card__description {
+    margin-top:
+      6px;
+
+    font-size:
+      12px;
+
+    line-height:
+      1.48;
+  }
+
+
+  /* --------------------------------------
+     MOBILE CARD FOOTER
+  -------------------------------------- */
+
+  .evidence-card__footer {
+    margin-top:
+      10px;
+
+    padding-top:
+      8px;
+
+    font-size:
+      9px;
+
+    line-height:
+      1.4;
+  }
+
+
+  /* --------------------------------------
+     MOBILE VERIFICATION RAIL
+  -------------------------------------- */
 
   .principles__verify {
+    width:
+      100%;
+
+    min-height:
+      0;
+
+    margin-top:
+      10px;
+
+    padding:
+      11px;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      auto minmax(0, 1fr);
+
     align-items:
-      flex-start;
+      center;
+
+    gap:
+      10px;
+
+    border-radius:
+      12px;
   }
 
 
+  .principles__verify-icon {
+    width:
+      28px;
+
+    height:
+      28px;
+
+    border-radius:
+      8px;
+  }
+
+
+  .principles__verify-icon span {
+    width:
+      6px;
+
+    height:
+      6px;
+  }
+
+
+  .principles__verify-copy strong {
+    font-size:
+      11.5px;
+  }
+
+
+  .principles__verify-copy p {
+    margin-top:
+      2px;
+
+    font-size:
+      9.75px;
+
+    line-height:
+      1.4;
+  }
+
+
+  /*
+     On mobile the reserved state gets its
+     own line underneath the verification copy.
+  */
+
   .principles__verify-reserved {
+    grid-column:
+      2;
+
     margin-left:
       0;
 
     padding-top:
-      0.25rem;
+      1px;
+
+    font-size:
+      9px;
   }
 
 }
 
 
 /* ========================================
-   23. REDUCED MOTION
+   23. VERY SMALL MOBILE
+======================================== */
+
+@media (max-width: 352px) {
+
+  .principles__inner {
+    width:
+      calc(100% - 1.5rem);
+
+    padding-block:
+      3rem;
+  }
+
+
+  .principles__title {
+    font-size:
+      30px;
+  }
+
+
+  .principles__description {
+    font-size:
+      12.5px;
+  }
+
+
+  .evidence-card {
+    padding:
+      13px;
+  }
+
+
+  .evidence-card__title {
+    font-size:
+      16px;
+  }
+
+}
+
+
+/* ========================================
+   24. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {

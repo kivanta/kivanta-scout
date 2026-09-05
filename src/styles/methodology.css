@@ -23,14 +23,6 @@
    2. INNER CONTAINER
 ======================================== */
 
-/*
-   Methodology should feel like the natural
-   continuation of How Scout Works.
-
-   Enough space to begin a new chapter,
-   without creating a large empty gap.
-*/
-
 .methodology__inner {
   width:
     min(100% - 2rem, 72rem);
@@ -62,9 +54,7 @@
 
 .methodology__eyebrow {
   margin:
-    0
-    0
-    0.9rem;
+    0 0 0.9rem;
 
   color:
     var(--link-text, #79dfff);
@@ -114,9 +104,7 @@
 
 .methodology__description {
   margin:
-    1.25rem
-    0
-    0;
+    1.25rem 0 0;
 
   max-width:
     40rem;
@@ -161,8 +149,7 @@
     grid;
 
   grid-template-columns:
-    3rem
-    minmax(0, 1fr);
+    3rem minmax(0, 1fr);
 
   gap:
     1.25rem;
@@ -171,8 +158,7 @@
     center;
 
   padding:
-    1.4rem
-    0;
+    1.4rem 0;
 
   border-bottom:
     1px solid
@@ -256,9 +242,7 @@
 
 .methodology__note {
   margin:
-    1.4rem
-    0
-    0;
+    1.4rem 0 0;
 
   color:
     rgba(166, 191, 197, 0.9);
@@ -312,158 +296,16 @@
 
 
 /* ========================================
-   14. TABLET — 561px TO 900px
+   14. TABLET
 ======================================== */
-
-/*
-   TABLET GOAL
-
-   Preserve the clean methodology list,
-   but reduce desktop-sized vertical rhythm.
-
-   No cards.
-   No structural redesign.
-*/
 
 @media
   (min-width: 561px)
   and (max-width: 900px) {
 
-  /* --------------------------------------
-     SECTION SPACING
-  -------------------------------------- */
-
   .methodology__inner {
     padding-block:
-      3rem
-      3.5rem;
-  }
-
-
-  /* --------------------------------------
-     HEADER
-  -------------------------------------- */
-
-  .methodology__header {
-    max-width:
-      38rem;
-
-    margin-bottom:
-      1.8rem;
-  }
-
-
-  .methodology__eyebrow {
-    margin-bottom:
-      0.7rem;
-
-    font-size:
-      0.7rem;
-
-    letter-spacing:
-      0.13em;
-  }
-
-
-  /* --------------------------------------
-     TABLET H2
-  -------------------------------------- */
-
-  .methodology__title {
-    font-size:
-      clamp(
-        1.75rem,
-        4.2vw,
-        2.15rem
-      );
-
-    line-height:
-      1.04;
-
-    letter-spacing:
-      -0.035em;
-  }
-
-
-  .methodology__description {
-    max-width:
-      36rem;
-
-    margin-top:
-      0.9rem;
-
-    font-size:
-      0.9rem;
-
-    line-height:
-      1.55;
-  }
-
-
-  /* --------------------------------------
-     COMPACT TABLET CHECK ROWS
-  -------------------------------------- */
-
-  .methodology__item {
-    grid-template-columns:
-      2.5rem
-      minmax(0, 1fr);
-
-    gap:
-      1rem;
-
-    padding:
-      1.05rem
-      0;
-  }
-
-
-  .methodology__number {
-    font-size:
-      0.72rem;
-  }
-
-
-  .methodology__question {
-    font-size:
-      clamp(
-        0.95rem,
-        2vw,
-        1.08rem
-      );
-
-    line-height:
-      1.42;
-  }
-
-
-  /* --------------------------------------
-     CLOSING NOTE
-  -------------------------------------- */
-
-  .methodology__note {
-    margin-top:
-      1.05rem;
-
-    font-size:
-      0.82rem;
-
-    line-height:
-      1.5;
-  }
-
-}
-
-
-/* ========================================
-   15. MOBILE
-======================================== */
-
-@media (max-width: 36rem) {
-
-  .methodology__inner {
-    padding-block:
-      4.5rem;
+      4rem;
   }
 
 
@@ -473,29 +315,277 @@
   }
 
 
+  .methodology__title {
+    font-size:
+      clamp(
+        2rem,
+        5vw,
+        2.5rem
+      );
+  }
+
+
+  .methodology__description {
+    margin-top:
+      1rem;
+
+    font-size:
+      0.95rem;
+
+    line-height:
+      1.6;
+  }
+
+
   .methodology__item {
     grid-template-columns:
-      2rem
-      minmax(0, 1fr);
+      2.5rem minmax(0, 1fr);
 
     gap:
-      0.75rem;
+      1rem;
 
-    align-items:
-      start;
+    padding-block:
+      1.2rem;
   }
 
 
   .methodology__question {
     font-size:
-      1rem;
+      1.05rem;
   }
 
 }
 
 
 /* ========================================
-   16. REDUCED MOTION
+   15. MOBILE — 560px AND BELOW
+======================================== */
+
+/*
+   Compact mobile checklist.
+
+   Final transition pass:
+   reduce only the space above Methodology
+   so it follows How Scout Works naturally.
+
+   All internal Methodology spacing,
+   typography and rows remain locked.
+*/
+
+@media (max-width: 560px) {
+
+  /* --------------------------------------
+     SECTION
+  -------------------------------------- */
+
+  .methodology__inner {
+    width:
+      min(
+        calc(100% - 2rem),
+        72rem
+      );
+
+    padding:
+      2rem
+      0
+      3.25rem;
+  }
+
+
+  /* --------------------------------------
+     HEADER
+  -------------------------------------- */
+
+  .methodology__header {
+    margin-bottom:
+      1.4rem;
+  }
+
+
+  /* --------------------------------------
+     EYEBROW
+  -------------------------------------- */
+
+  .methodology__eyebrow {
+    margin-bottom:
+      0.65rem;
+
+    font-size:
+      0.64rem;
+
+    letter-spacing:
+      0.115em;
+  }
+
+
+  /* --------------------------------------
+     TITLE
+  -------------------------------------- */
+
+  .methodology__title {
+    font-size:
+      clamp(
+        1.9rem,
+        8.5vw,
+        2.2rem
+      );
+
+    line-height:
+      1.04;
+  }
+
+
+  /* --------------------------------------
+     DESCRIPTION
+  -------------------------------------- */
+
+  .methodology__description {
+    margin-top:
+      0.85rem;
+
+    max-width:
+      none;
+
+    font-size:
+      0.84rem;
+
+    line-height:
+      1.5;
+  }
+
+
+  /* --------------------------------------
+     CHECK ITEM
+  -------------------------------------- */
+
+  .methodology__item {
+    grid-template-columns:
+      2.2rem minmax(0, 1fr);
+
+    gap:
+      0.65rem;
+
+    align-items:
+      start;
+
+    padding:
+      0.95rem 0;
+  }
+
+
+  /* --------------------------------------
+     CHECK NUMBER
+  -------------------------------------- */
+
+  .methodology__number {
+    padding-top:
+      0.08rem;
+
+    font-size:
+      0.66rem;
+
+    letter-spacing:
+      0.07em;
+  }
+
+
+  /* --------------------------------------
+     CHECK QUESTION
+  -------------------------------------- */
+
+  .methodology__question {
+    max-width:
+      none;
+
+    font-size:
+      0.94rem;
+
+    line-height:
+      1.4;
+  }
+
+
+  /* --------------------------------------
+     CLOSING NOTE
+  -------------------------------------- */
+
+  .methodology__note {
+    margin-top:
+      0.9rem;
+
+    font-size:
+      0.78rem;
+
+    line-height:
+      1.45;
+  }
+
+}
+
+
+/* ========================================
+   16. VERY SMALL MOBILE
+======================================== */
+
+@media (max-width: 352px) {
+
+  .methodology__inner {
+    width:
+      calc(100% - 1.5rem);
+
+    padding:
+      1.75rem
+      0
+      3rem;
+  }
+
+
+  .methodology__title {
+    font-size:
+      1.8rem;
+  }
+
+
+  .methodology__description {
+    font-size:
+      0.8rem;
+  }
+
+
+  .methodology__item {
+    grid-template-columns:
+      1.9rem minmax(0, 1fr);
+
+    gap:
+      0.55rem;
+
+    padding-block:
+      0.85rem;
+  }
+
+
+  .methodology__number {
+    font-size:
+      0.63rem;
+  }
+
+
+  .methodology__question {
+    font-size:
+      0.9rem;
+  }
+
+
+  .methodology__note {
+    font-size:
+      0.75rem;
+  }
+
+}
+
+
+/* ========================================
+   17. REDUCED MOTION
 ======================================== */
 
 @media (prefers-reduced-motion: reduce) {

@@ -18,16 +18,8 @@
   overflow:
     hidden;
 
-
-  /*
-     Pull the strip slightly upward so
-     Navbar + Hero + Scout Activity
-     remain inside the opening viewport.
-  */
-
   margin-top:
     -0.5rem;
-
 
   border-top:
     1px solid
@@ -49,11 +41,44 @@
 
 
 /* =========================================================
-   2. EDGE FADES
+   2. MOBILE FIXED STATUS
 ========================================================= */
 
-.activity-strip::before,
-.activity-strip::after {
+/*
+   Hidden on tablet + desktop.
+
+   Mobile gets its own permanent
+   Scout Activity identity.
+*/
+
+.activity-strip__mobile-status {
+  display:
+    none;
+}
+
+
+/* =========================================================
+   3. MARQUEE VIEWPORT
+========================================================= */
+
+.activity-strip__viewport {
+  width:
+    100%;
+
+  position:
+    relative;
+
+  overflow:
+    hidden;
+}
+
+
+/* =========================================================
+   4. EDGE FADES
+========================================================= */
+
+.activity-strip__viewport::before,
+.activity-strip__viewport::after {
   content:
     "";
 
@@ -77,7 +102,7 @@
 }
 
 
-.activity-strip::before {
+.activity-strip__viewport::before {
   left:
     0;
 
@@ -91,7 +116,7 @@
 }
 
 
-.activity-strip::after {
+.activity-strip__viewport::after {
   right:
     0;
 
@@ -106,7 +131,7 @@
 
 
 /* =========================================================
-   3. MOVING TRACK
+   5. MOVING TRACK
 ========================================================= */
 
 .activity-strip__track {
@@ -131,7 +156,7 @@
 
 
 /* =========================================================
-   4. PAUSE ON HOVER
+   6. PAUSE ON HOVER
 ========================================================= */
 
 .activity-strip:hover
@@ -142,7 +167,7 @@
 
 
 /* =========================================================
-   5. ACTIVITY GROUP
+   7. ACTIVITY GROUP
 ========================================================= */
 
 .activity-strip__group {
@@ -164,15 +189,8 @@
 
 
 /* =========================================================
-   6. SCOUT ACTIVITY LABEL
+   8. SCOUT ACTIVITY LABEL
 ========================================================= */
-
-/*
-   Strongest text inside the strip.
-
-   Scout should be proud to show
-   the work it has completed.
-*/
 
 .activity-strip__status {
   display:
@@ -205,7 +223,7 @@
 
 
 /* =========================================================
-   7. SCOUT STATUS LIGHT
+   9. SCOUT STATUS LIGHT
 ========================================================= */
 
 .activity-strip__status-dot {
@@ -236,15 +254,8 @@
 
 
 /* =========================================================
-   8. INDIVIDUAL METRIC
+   10. INDIVIDUAL METRIC
 ========================================================= */
-
-/*
-   Brighter than before.
-
-   These metrics are meaningful product proof,
-   not decorative background text.
-*/
 
 .activity-strip__item {
   display:
@@ -274,7 +285,7 @@
 
 
 /* =========================================================
-   9. METRIC SEPARATOR
+   11. METRIC SEPARATOR
 ========================================================= */
 
 .activity-strip__item::before {
@@ -302,16 +313,8 @@
 
 
 /* =========================================================
-   10. METRIC NUMBER
+   12. METRIC NUMBER
 ========================================================= */
-
-/*
-   The real numbers will become one of
-   Scout's strongest public proof signals.
-
-   Keep them slightly brighter than
-   their accompanying metric labels.
-*/
 
 .activity-strip__number {
   color:
@@ -329,14 +332,8 @@
 
 
 /* =========================================================
-   11. FEED STATE
+   13. FEED STATE
 ========================================================= */
-
-/*
-   Still secondary because this describes
-   the connection state rather than Scout's work,
-   but no longer so faint that it disappears.
-*/
 
 .activity-strip__updated {
   color:
@@ -373,7 +370,7 @@
 
 
 /* =========================================================
-   12. LEFT → RIGHT MOVEMENT
+   14. LEFT → RIGHT MOVEMENT
 ========================================================= */
 
 @keyframes activityMarquee {
@@ -393,7 +390,7 @@
 
 
 /* =========================================================
-   13. TABLET
+   15. TABLET
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -413,8 +410,8 @@
   }
 
 
-  .activity-strip::before,
-  .activity-strip::after {
+  .activity-strip__viewport::before,
+  .activity-strip__viewport::after {
     width:
       70px;
   }
@@ -423,48 +420,313 @@
 
 
 /* =========================================================
-   14. MOBILE
+   16. MOBILE — 576px AND BELOW
 ========================================================= */
 
-@media (max-width: 560px) {
+/*
+   MOBILE STRUCTURE
 
-  .activity-strip__group {
-    gap:
-      24px;
+   Row 1:
+   Scout Activity stays fixed.
 
-    padding:
-      13px 20px;
+   Row 2:
+   Metrics receive the full phone width
+   and continue moving left → right.
+*/
+
+@media (max-width: 576px) {
+
+  /* --------------------------------------
+     COMPLETE MOBILE STRIP
+  -------------------------------------- */
+
+  .activity-strip {
+    margin-top:
+      0;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      1fr;
+
+    grid-template-rows:
+      auto
+      auto;
+
+    overflow:
+      hidden;
+
+    backdrop-filter:
+      blur(14px);
   }
 
 
-  .activity-strip__item {
+  /* --------------------------------------
+     FIXED SCOUT ACTIVITY HEADER
+  -------------------------------------- */
+
+  .activity-strip__mobile-status {
+    width:
+      100%;
+
+    min-height:
+      2.15rem;
+
+    padding-inline:
+      0.85rem;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    gap:
+      0.42rem;
+
+    position:
+      relative;
+
+    z-index:
+      6;
+
+    border-bottom:
+      1px solid
+      rgba(112, 255, 206, 0.08);
+
+    background:
+      rgba(7, 18, 23, 0.96);
+
+    color:
+      rgba(222, 238, 233, 0.98);
+
     font-size:
-      11px;
+      9px;
+
+    font-weight:
+      700;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      0.085em;
+
+    text-transform:
+      uppercase;
+
+    white-space:
+      nowrap;
+  }
+
+
+  .activity-strip__mobile-status
+  .activity-strip__status-dot {
+    width:
+      5px;
+
+    height:
+      5px;
+
+    box-shadow:
+      0 0 6px
+      rgba(112, 255, 206, 0.72);
+  }
+
+
+  /* --------------------------------------
+     FULL-WIDTH METRIC VIEWPORT
+  -------------------------------------- */
+
+  .activity-strip__viewport {
+    width:
+      100%;
+
+    min-width:
+      0;
+
+    min-height:
+      2.25rem;
+  }
+
+
+  /* --------------------------------------
+     HIDE MARQUEE COPY OF SCOUT ACTIVITY
+  -------------------------------------- */
+
+  .activity-strip__group
+  .activity-strip__status {
+    display:
+      none;
+  }
+
+
+  /* --------------------------------------
+     MOBILE EDGE FADES
+  -------------------------------------- */
+
+  .activity-strip__viewport::before,
+  .activity-strip__viewport::after {
+    width:
+      14px;
+  }
+
+
+  .activity-strip__viewport::before {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(7, 18, 23, 0.97),
+        transparent
+      );
+  }
+
+
+  .activity-strip__viewport::after {
+    background:
+      linear-gradient(
+        270deg,
+        rgba(7, 18, 23, 0.97),
+        transparent
+      );
+  }
+
+
+  /* --------------------------------------
+     MOBILE MARQUEE SPEED
+  -------------------------------------- */
+
+  .activity-strip__track {
+    animation-duration:
+      36s;
+  }
+
+
+  /* --------------------------------------
+     MOBILE METRIC GROUP
+  -------------------------------------- */
+
+  .activity-strip__group {
+    gap:
+      19px;
+
+    padding:
+      10px
+      14px;
+  }
+
+
+  /* --------------------------------------
+     MOBILE METRICS
+  -------------------------------------- */
+
+  .activity-strip__item {
+    gap:
+      5px;
+
+    color:
+      rgba(190, 211, 216, 0.94);
+
+    font-size:
+      9.75px;
+
+    line-height:
+      1.25;
+  }
+
+
+  .activity-strip__item::before {
+    width:
+      2.5px;
+
+    height:
+      2.5px;
+
+    margin-right:
+      2px;
   }
 
 
   .activity-strip__number {
     font-size:
-      12px;
+      10.25px;
   }
 
 
-  .activity-strip::before,
-  .activity-strip::after {
+  /* --------------------------------------
+     LIVE FEED
+  -------------------------------------- */
+
+  .activity-strip__pulse {
     width:
-      35px;
+      5px;
+
+    height:
+      5px;
   }
 
 }
 
 
 /* =========================================================
-   15. REDUCED MOTION
+   17. VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 352px) {
+
+  .activity-strip__mobile-status {
+    min-height:
+      2rem;
+
+    padding-inline:
+      0.7rem;
+
+    font-size:
+      8.5px;
+
+    letter-spacing:
+      0.07em;
+  }
+
+
+  .activity-strip__viewport {
+    min-height:
+      2.15rem;
+  }
+
+
+  .activity-strip__group {
+    gap:
+      16px;
+
+    padding:
+      9px
+      11px;
+  }
+
+
+  .activity-strip__item {
+    font-size:
+      9px;
+  }
+
+
+  .activity-strip__number {
+    font-size:
+      9.5px;
+  }
+
+}
+
+
+/* =========================================================
+   18. REDUCED MOTION
 ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
 
-  .activity-strip {
+  .activity-strip__viewport {
     overflow-x:
       auto;
   }

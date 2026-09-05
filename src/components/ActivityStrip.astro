@@ -1,206 +1,248 @@
 ---
-/* =========================================================
-   KIVANTA SCOUT
-   LIVE SCOUT ACTIVITY STRIP
-========================================================= */
+/* ========================================
+   KIVANTA SCOUT — ACTIVITY STRIP
+======================================== */
 
 import "../styles/activity-strip.css";
 ---
 
 <section
   class="activity-strip"
-  aria-label="Scout investigation activity"
+  aria-label="Scout activity"
 >
 
-  <!-- =====================================================
-       MOVING TRACK
-  ====================================================== -->
+  <!-- ==================================
+       MOBILE FIXED IDENTITY
 
-  <div class="activity-strip__track">
+       Hidden on tablet + desktop.
+       On mobile this remains visible while
+       the proof metrics continue moving.
+  =================================== -->
 
-    <!-- ===================================================
-         PRIMARY ACTIVITY GROUP
-    ==================================================== -->
+  <div
+    class="activity-strip__mobile-status"
+    aria-hidden="true"
+  >
 
-    <div class="activity-strip__group">
+    <span
+      class="activity-strip__status-dot"
+    ></span>
 
-      <!-- Scout Activity Status -->
+    <span>
+      Scout Activity
+    </span>
 
-      <span class="activity-strip__status">
-
-        <span
-          class="activity-strip__status-dot"
-          aria-hidden="true"
-        ></span>
-
-        Scout activity
-
-      </span>
+  </div>
 
 
-      <!-- Repositories Investigated -->
+  <!-- ==================================
+       MARQUEE VIEWPORT
+  =================================== -->
 
-      <span class="activity-strip__item">
+  <div class="activity-strip__viewport">
 
-        <strong
-          class="activity-strip__number"
-          data-metric="repos-investigated"
+    <div class="activity-strip__track">
+
+      <!-- ==================================
+           FIRST ACTIVITY GROUP
+      =================================== -->
+
+      <div class="activity-strip__group">
+
+        <!-- Scout Activity identity -->
+
+        <div class="activity-strip__status">
+
+          <span
+            class="activity-strip__status-dot"
+            aria-hidden="true"
+          ></span>
+
+          <span>
+            Scout Activity
+          </span>
+
+        </div>
+
+
+        <!-- Repositories investigated -->
+
+        <div class="activity-strip__item">
+
+          <span class="activity-strip__number">
+            —
+          </span>
+
+          <span>
+            Repositories investigated
+          </span>
+
+        </div>
+
+
+        <!-- DIDs resolved -->
+
+        <div class="activity-strip__item">
+
+          <span class="activity-strip__number">
+            —
+          </span>
+
+          <span>
+            DIDs resolved
+          </span>
+
+        </div>
+
+
+        <!-- Evidence receipts -->
+
+        <div class="activity-strip__item">
+
+          <span class="activity-strip__number">
+            —
+          </span>
+
+          <span>
+            Evidence receipts confirmed
+          </span>
+
+        </div>
+
+
+        <!-- Supported sources -->
+
+        <div class="activity-strip__item">
+
+          <span class="activity-strip__number">
+            —
+          </span>
+
+          <span>
+            Supported sources established
+          </span>
+
+        </div>
+
+
+        <!-- Feed status -->
+
+        <div
+          class="
+            activity-strip__item
+            activity-strip__updated
+          "
         >
-          —
-        </strong>
 
-        Repositories investigated
+          <span
+            class="activity-strip__pulse"
+            aria-hidden="true"
+          ></span>
 
-      </span>
+          <span>
+            Live feed pending
+          </span>
 
+        </div>
 
-      <!-- DIDs Resolved -->
-
-      <span class="activity-strip__item">
-
-        <strong
-          class="activity-strip__number"
-          data-metric="dids-resolved"
-        >
-          —
-        </strong>
-
-        DIDs resolved
-
-      </span>
+      </div>
 
 
-      <!-- Evidence Receipts -->
+      <!-- ==================================
+           DUPLICATED GROUP
 
-      <span class="activity-strip__item">
+           Required for the seamless marquee.
+           Hidden from assistive technology.
+      =================================== -->
 
-        <strong
-          class="activity-strip__number"
-          data-metric="receipts-confirmed"
-        >
-          —
-        </strong>
-
-        Evidence receipts confirmed
-
-      </span>
-
-
-      <!-- Supported Sources -->
-
-      <span class="activity-strip__item">
-
-        <strong
-          class="activity-strip__number"
-          data-metric="supported-sources"
-        >
-          —
-        </strong>
-
-        Supported sources established
-
-      </span>
-
-
-      <!-- Feed State -->
-
-      <span
-        class="
-          activity-strip__item
-          activity-strip__updated
-        "
+      <div
+        class="activity-strip__group"
+        aria-hidden="true"
       >
 
-        <span
-          class="activity-strip__pulse"
-          aria-hidden="true"
-        ></span>
+        <div class="activity-strip__status">
 
-        Live feed pending
+          <span
+            class="activity-strip__status-dot"
+          ></span>
 
-      </span>
+          <span>
+            Scout Activity
+          </span>
 
-    </div>
-
-
-    <!-- ===================================================
-         DUPLICATE GROUP
-
-         Required for seamless marquee movement.
-         Hidden from assistive technology because
-         it repeats the exact same information.
-    ==================================================== -->
-
-    <div
-      class="activity-strip__group"
-      aria-hidden="true"
-    >
-
-      <span class="activity-strip__status">
-
-        <span class="activity-strip__status-dot"></span>
-
-        Scout activity
-
-      </span>
+        </div>
 
 
-      <span class="activity-strip__item">
+        <div class="activity-strip__item">
 
-        <strong class="activity-strip__number">
-          —
-        </strong>
+          <span class="activity-strip__number">
+            —
+          </span>
 
-        Repositories investigated
+          <span>
+            Repositories investigated
+          </span>
 
-      </span>
-
-
-      <span class="activity-strip__item">
-
-        <strong class="activity-strip__number">
-          —
-        </strong>
-
-        DIDs resolved
-
-      </span>
+        </div>
 
 
-      <span class="activity-strip__item">
+        <div class="activity-strip__item">
 
-        <strong class="activity-strip__number">
-          —
-        </strong>
+          <span class="activity-strip__number">
+            —
+          </span>
 
-        Evidence receipts confirmed
+          <span>
+            DIDs resolved
+          </span>
 
-      </span>
-
-
-      <span class="activity-strip__item">
-
-        <strong class="activity-strip__number">
-          —
-        </strong>
-
-        Supported sources established
-
-      </span>
+        </div>
 
 
-      <span
-        class="
-          activity-strip__item
-          activity-strip__updated
-        "
-      >
+        <div class="activity-strip__item">
 
-        <span class="activity-strip__pulse"></span>
+          <span class="activity-strip__number">
+            —
+          </span>
 
-        Live feed pending
+          <span>
+            Evidence receipts confirmed
+          </span>
 
-      </span>
+        </div>
+
+
+        <div class="activity-strip__item">
+
+          <span class="activity-strip__number">
+            —
+          </span>
+
+          <span>
+            Supported sources established
+          </span>
+
+        </div>
+
+
+        <div
+          class="
+            activity-strip__item
+            activity-strip__updated
+          "
+        >
+
+          <span
+            class="activity-strip__pulse"
+          ></span>
+
+          <span>
+            Live feed pending
+          </span>
+
+        </div>
+
+      </div>
 
     </div>
 
