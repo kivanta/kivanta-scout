@@ -30,11 +30,20 @@ async function supportedDiscoveryRunner() {
         reason: "v1_source_requirements_established",
 
         repository: {
+          repositoryId: 123456789,
+
           fullName: "example/scout-tool",
 
           defaultBranch: "main",
 
           archived: false,
+
+          /*
+           * Frozen candidate snapshot.
+           */
+          commitSha: "1111111111111111111111111111111111111111",
+
+          treeSha: "2222222222222222222222222222222222222222",
         },
 
         tree: {
@@ -72,6 +81,8 @@ async function fixtureCheck1Runner() {
     title: "What does this tool actually do?",
 
     conclusion: "Controlled fixture reached Check 1.",
+
+    evidence: [],
   };
 }
 
@@ -82,6 +93,8 @@ async function fixtureCheck2Runner() {
     title: "Your Key, Password & Sensitive Information",
 
     conclusion: "Controlled fixture reached Check 2.",
+
+    evidence: [],
   };
 }
 
@@ -92,6 +105,8 @@ async function fixtureCheck3Runner() {
     title: "Where Does It Connect?",
 
     conclusion: "Controlled fixture reached Check 3.",
+
+    evidence: [],
   };
 }
 
@@ -102,6 +117,8 @@ async function fixtureCheck4Runner() {
     title: "Does It Match the Official Technocore Reference?",
 
     conclusion: "Controlled fixture reached Check 4.",
+
+    evidence: [],
   };
 }
 
@@ -114,6 +131,8 @@ async function fixtureCheck5Runner({ priorChecks }) {
     conclusion: "Controlled fixture reached Check 5.",
 
     priorCheckCount: priorChecks.length,
+
+    evidence: [],
   };
 }
 
@@ -160,9 +179,11 @@ async function methodologyMustNotRun() {
 }
 
 /*
- * TEST 1:
+ * TEST 1
+ *
  * Supported discovery reaches
- * Methodology 1.0.
+ * Methodology 1.0 using a frozen
+ * repository snapshot.
  */
 
 console.log("SUPPORTED END-TO-END:");
@@ -179,7 +200,8 @@ console.dir(
 );
 
 /*
- * TEST 2:
+ * TEST 2
+ *
  * Ambiguous discovery stops before
  * Methodology 1.0.
  */

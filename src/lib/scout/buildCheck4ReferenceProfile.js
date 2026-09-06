@@ -1,7 +1,9 @@
 import { referenceRegistry } from "./referenceRegistry.js";
+
 import { collectCheck1Evidence } from "./collectCheck1Evidence.js";
 import { extractCheck1Observations } from "./extractCheck1Observations.js";
 import { summarizeCheck1Observations } from "./summarizeCheck1Observations.js";
+
 import { deriveCheck4BehaviorProfile } from "./deriveCheck4BehaviorProfile.js";
 
 export async function buildCheck4ReferenceProfile({
@@ -9,8 +11,13 @@ export async function buildCheck4ReferenceProfile({
 } = {}) {
   const registry = referenceRegistry.technocore;
 
+  /*
+   * Check 4 requires a configured,
+   * immutable authoritative reference.
+   */
   if (
     !registry?.sourceRepo ||
+    !registry.sourceRepo.commitSha ||
     !Array.isArray(registry.repoSurfaces) ||
     registry.repoSurfaces.length === 0
   ) {
@@ -25,10 +32,19 @@ export async function buildCheck4ReferenceProfile({
     paths: registry.repoSurfaces,
   };
 
+  /*
+   * IMPORTANT:
+   *
+   * We deliberately use the pinned commit SHA,
+   * not the moving "main" branch.
+   *
+   * This keeps Technocore Reference 1.0
+   * reproducible for historical Scout reviews.
+   */
   const evidence = await evidenceCollector({
     owner: registry.sourceRepo.owner,
     repo: registry.sourceRepo.repo,
-    branch: "main",
+    branch: registry.sourceRepo.commitSha,
     evidencePlan: evidencePlan,
   });
 
@@ -61,11 +77,17 @@ export async function buildCheck4ReferenceProfile({
     authority: {
       registryVersion: registry.version,
 
+      repositoryId: registry.sourceRepo.repositoryId,
+
       owner: registry.sourceRepo.owner,
 
       repo: registry.sourceRepo.repo,
 
       canonicalUrl: registry.sourceRepo.canonicalUrl,
+
+      commitSha: registry.sourceRepo.commitSha,
+
+      treeSha: registry.sourceRepo.treeSha,
 
       surfaces: registry.repoSurfaces,
     },
