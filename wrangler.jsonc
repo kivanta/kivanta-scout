@@ -1,0 +1,23 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"compatibility_date": "2026-09-03",
+	"compatibility_flags": [
+		"global_fetch_strictly_public"
+	],
+	"name": "kivanta-scout",
+	"main": "@astrojs/cloudflare/entrypoints/server",
+	"assets": {
+		"directory": "./dist",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "kivanta-scout-db",
+			"database_id": "0dc24955-34d7-49c2-9c6c-0376a1941b35"
+		}
+	]
+}
