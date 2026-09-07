@@ -1,21 +1,25 @@
 import assert from "node:assert/strict";
+
 import { readFileSync } from "node:fs";
+
 import { dirname, resolve } from "node:path";
+
 import { fileURLToPath } from "node:url";
+
 import { DatabaseSync } from "node:sqlite";
 
 import { createD1InvestigationRepository } from "./d1InvestigationRepository.js";
 
 /*
- * =========================================================
+ * =================================================
  * LOCAL D1 TEST WRAPPER
- * =========================================================
+ * =================================================
  *
- * Cloudflare gives us a D1 binding in production.
+ * Cloudflare provides a D1 binding in production.
  *
- * For this test, we create a small wrapper around
- * Node's in-memory SQLite database that exposes the
- * D1 methods our repository uses:
+ * For this deterministic local test we create an
+ * in-memory SQLite wrapper exposing the D1 methods
+ * used by the repository:
  *
  * - prepare()
  * - bind()
@@ -23,14 +27,16 @@ import { createD1InvestigationRepository } from "./d1InvestigationRepository.js"
  * - run()
  * - batch()
  *
- * Nothing here touches the real Cloudflare database.
- * =========================================================
+ * Nothing here touches the real Cloudflare D1
+ * database.
  */
 
 class TestD1Statement {
   constructor(database, sql) {
     this.database = database;
+
     this.sql = sql;
+
     this.values = [];
   }
 
@@ -79,11 +85,12 @@ class TestD1Database {
   /*
    * D1 batch() behaves transactionally.
    *
-   * If any statement fails, all earlier
-   * writes in the batch are rolled back.
+   * If one statement fails, every statement in
+   * the batch must roll back.
    */
+
   async batch(statements) {
-    this.database.exec("BEGIN IMMEDIATE TRANSACTION;");
+    this.database.exec("BEGIN");
 
     try {
       const results = [];
@@ -92,11 +99,11 @@ class TestD1Database {
         results.push(statement.runInsideTransaction());
       }
 
-      this.database.exec("COMMIT;");
+      this.database.exec("COMMIT");
 
       return results;
     } catch (error) {
-      this.database.exec("ROLLBACK;");
+      this.database.exec("ROLLBACK");
 
       throw error;
     }
@@ -104,9 +111,9 @@ class TestD1Database {
 }
 
 /*
- * =========================================================
- * LOAD SCOUT'S REAL D1 MIGRATION
- * =========================================================
+ * =================================================
+ * DATABASE SETUP
+ * =================================================
  */
 
 const currentFile = fileURLToPath(import.meta.url);
@@ -120,95 +127,103 @@ const migrationPath = resolve(
 
 const migrationSql = readFileSync(migrationPath, "utf8");
 
-/*
- * Temporary in-memory database.
- *
- * It disappears when this test finishes.
- */
 const sqlite = new DatabaseSync(":memory:");
 
 sqlite.exec(migrationSql);
 
 const db = new TestD1Database(sqlite);
 
-/*
- * Create Scout's real repository adapter
- * using our temporary D1-compatible binding.
- */
 const repository = createD1InvestigationRepository(db);
 
 /*
- * =========================================================
- * INVESTIGATION FIXTURE
- * =========================================================
+ * =================================================
+ * FIXTURES
+ * =================================================
  */
 
-function createFixture(investigationId, createdAt) {
-  return {
-    investigationId: investigationId,
+const reviewKey = {
+  provider: "github",
 
-    createdAt: createdAt,
+  repositoryId: "123456789",
+
+  commitSha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+
+  methodologyId: "kivanta-scout-methodology",
+
+  methodologyVersion: "1.0",
+};
+
+const frozenTarget = {
+  frozenAt: "2026-09-06T15:00:00.000Z",
+
+  source: {
+    repositoryId: "123456789",
+
+    owner: "kivanta",
+
+    repo: "fixture-agent",
+
+    canonicalUrl: "https://github.com/kivanta/fixture-agent",
+
+    defaultBranch: "main",
+
+    commitSha: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+
+    treeSha: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  },
+
+  methodology: {
+    id: "kivanta-scout-methodology",
+
+    version: "1.0",
+  },
+};
+
+function createInvestigation({ investigationId, createdAt } = {}) {
+  return {
+    investigationId,
+
+    createdAt,
 
     updatedAt: createdAt,
 
     reviewKey: {
-      provider: "github",
-
-      repositoryId: 123456789,
-
-      commitSha: "1111111111111111111111111111111111111111",
-
-      methodologyId: "kivanta-scout-methodology",
-
-      methodologyVersion: "1.0",
+      ...reviewKey,
     },
+
+    lifecycleState: "CREATED",
 
     target: {
-      frozenAt: "2026-09-06T12:00:00.000Z",
-
-      source: {
-        repositoryId: 123456789,
-
-        owner: "example",
-
-        repo: "scout-tool",
-
-        canonicalUrl: "https://github.com/example/scout-tool",
-
-        defaultBranch: "main",
-
-        commitSha: "1111111111111111111111111111111111111111",
-
-        treeSha: "2222222222222222222222222222222222222222",
-      },
-
-      methodology: {
-        id: "kivanta-scout-methodology",
-
-        version: "1.0",
-      },
+      ...frozenTarget,
     },
+
+    failureReason: null,
   };
 }
 
 /*
- * =========================================================
+ * =================================================
  * TEST 1
- * FIRST INVESTIGATION CLAIM
- * =========================================================
+ * FIRST ACTIVE CLAIM
+ * =================================================
  */
 
-const firstInvestigation = createFixture(
-  "inv_test_001",
-  "2026-09-06T15:00:00.000Z",
-);
+const firstInvestigation = createInvestigation({
+  investigationId: "inv_test_001",
+
+  createdAt: "2026-09-06T15:00:00.000Z",
+});
 
 const firstClaim =
   await repository.claimActiveInvestigation(firstInvestigation);
 
 assert.equal(firstClaim.status, "investigation_claimed");
 
+assert.equal(firstClaim.reason, null);
+
 assert.equal(firstClaim.joinedExisting, false);
+
+assert.equal(firstClaim.investigation.investigationId, "inv_test_001");
 
 assert.equal(firstClaim.investigation.lifecycleState, "CREATED");
 
@@ -220,18 +235,24 @@ console.log({
   joinedExisting: firstClaim.joinedExisting,
 
   investigationId: firstClaim.investigation.investigationId,
-
-  lifecycleState: firstClaim.investigation.lifecycleState,
 });
 
 /*
- * =========================================================
+ * =================================================
  * TEST 2
- * GET INVESTIGATION
- * =========================================================
+ * GET INVESTIGATION — FOUND ENVELOPE
+ * =================================================
  */
 
-const storedInvestigation = await repository.getInvestigation("inv_test_001");
+const storedResult = await repository.getInvestigation("inv_test_001");
+
+assert.equal(storedResult.status, "investigation_found");
+
+assert.equal(storedResult.reason, null);
+
+assert.ok(storedResult.investigation);
+
+const storedInvestigation = storedResult.investigation;
 
 assert.equal(storedInvestigation.investigationId, "inv_test_001");
 
@@ -239,9 +260,18 @@ assert.equal(storedInvestigation.lifecycleState, "CREATED");
 
 assert.equal(storedInvestigation.reviewKey.methodologyVersion, "1.0");
 
+assert.equal(storedInvestigation.reviewKey.repositoryId, "123456789");
+
+assert.equal(
+  storedInvestigation.target.source.commitSha,
+  "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+);
+
 console.log("\n===== GET INVESTIGATION =====");
 
 console.log({
+  status: storedResult.status,
+
   investigationId: storedInvestigation.investigationId,
 
   lifecycleState: storedInvestigation.lifecycleState,
@@ -250,33 +280,69 @@ console.log({
 });
 
 /*
- * =========================================================
+ * =================================================
  * TEST 3
- * DUPLICATE ACTIVE REVIEW
- * =========================================================
- *
- * This investigation has a different ID,
- * but the SAME:
- *
- * repository
- * commit
- * methodology
- *
- * Scout must join the already-active
- * investigation instead of duplicating work.
- * =========================================================
+ * MISSING INVESTIGATION ENVELOPE
+ * =================================================
  */
 
-const duplicateInvestigation = createFixture(
-  "inv_test_002",
-  "2026-09-06T15:05:00.000Z",
-);
+const missingResult = await repository.getInvestigation("inv_missing");
+
+assert.equal(missingResult.status, "investigation_not_found");
+
+assert.equal(missingResult.reason, null);
+
+assert.equal(missingResult.investigation, null);
+
+console.log("\n===== MISSING INVESTIGATION =====");
+
+console.log({
+  status: missingResult.status,
+
+  investigation: missingResult.investigation,
+});
+
+/*
+ * =================================================
+ * TEST 4
+ * INVALID INVESTIGATION QUERY
+ * =================================================
+ */
+
+const invalidQueryResult = await repository.getInvestigation("");
+
+assert.equal(invalidQueryResult.status, "investigation_query_failed");
+
+assert.equal(invalidQueryResult.reason, "investigation_id_required");
+
+assert.equal(invalidQueryResult.investigation, null);
+
+/*
+ * =================================================
+ * TEST 5
+ * DUPLICATE ACTIVE CLAIM
+ * =================================================
+ *
+ * Same exact review key.
+ *
+ * The second D1 batch should fail on the unique
+ * active claim, roll back, and return the existing
+ * investigation instead.
+ */
+
+const duplicateInvestigation = createInvestigation({
+  investigationId: "inv_test_002",
+
+  createdAt: "2026-09-06T15:05:00.000Z",
+});
 
 const duplicateClaim = await repository.claimActiveInvestigation(
   duplicateInvestigation,
 );
 
 assert.equal(duplicateClaim.status, "investigation_claimed");
+
+assert.equal(duplicateClaim.reason, "active_investigation_exists");
 
 assert.equal(duplicateClaim.joinedExisting, true);
 
@@ -286,10 +352,12 @@ assert.equal(duplicateClaim.investigation.investigationId, "inv_test_001");
  * Because D1 batch() rolled back,
  * inv_test_002 must NOT exist.
  */
-const rolledBackInvestigation =
-  await repository.getInvestigation("inv_test_002");
 
-assert.equal(rolledBackInvestigation, null);
+const rolledBackResult = await repository.getInvestigation("inv_test_002");
+
+assert.equal(rolledBackResult.status, "investigation_not_found");
+
+assert.equal(rolledBackResult.investigation, null);
 
 console.log("\n===== DUPLICATE CLAIM =====");
 
@@ -300,17 +368,35 @@ console.log({
 
   returnedInvestigation: duplicateClaim.investigation.investigationId,
 
-  duplicateRowPersisted: rolledBackInvestigation !== null,
+  duplicateRowPersisted: rolledBackResult.status !== "investigation_not_found",
 });
 
 /*
- * =========================================================
- * TEST 4
- * OUTBOX CREATED
- * =========================================================
+ * =================================================
+ * TEST 6
+ * ACTIVE CLAIM COUNT
+ * =================================================
  */
 
-const outboxRow = await db
+const activeClaimCount = sqlite
+  .prepare(
+    `
+      SELECT COUNT(*) AS count
+      FROM active_review_claims
+      `,
+  )
+  .get();
+
+assert.equal(Number(activeClaimCount.count), 1);
+
+/*
+ * =================================================
+ * TEST 7
+ * OUTBOX CREATION
+ * =================================================
+ */
+
+const outboxRow = sqlite
   .prepare(
     `
       SELECT
@@ -321,11 +407,12 @@ const outboxRow = await db
 
       FROM investigation_dispatch_outbox
 
-      WHERE investigation_id = ?1
+      WHERE investigation_id = ?
       `,
   )
-  .bind("inv_test_001")
-  .first();
+  .get("inv_test_001");
+
+assert.ok(outboxRow);
 
 assert.equal(outboxRow.investigation_id, "inv_test_001");
 
@@ -333,45 +420,126 @@ assert.equal(outboxRow.event_type, "INVESTIGATION_REQUESTED");
 
 assert.equal(outboxRow.dispatch_state, "PENDING");
 
-assert.equal(outboxRow.attempt_count, 0);
+assert.equal(Number(outboxRow.attempt_count), 0);
+
+/*
+ * Duplicate batch rollback means there must be
+ * no outbox record for inv_test_002.
+ */
+
+const duplicateOutboxRow = sqlite
+  .prepare(
+    `
+      SELECT investigation_id
+
+      FROM investigation_dispatch_outbox
+
+      WHERE investigation_id = ?
+      `,
+  )
+  .get("inv_test_002");
+
+assert.equal(duplicateOutboxRow, undefined);
 
 console.log("\n===== OUTBOX =====");
 
-console.log(outboxRow);
+console.log({
+  investigationId: outboxRow.investigation_id,
+
+  eventType: outboxRow.event_type,
+
+  dispatchState: outboxRow.dispatch_state,
+
+  duplicateOutboxExists: Boolean(duplicateOutboxRow),
+});
 
 /*
- * =========================================================
- * TEST 5
+ * =================================================
+ * TEST 8
  * UPDATE INVESTIGATION
- * =========================================================
+ * =================================================
  */
 
-const updateResult = await repository.updateInvestigation("inv_test_001", {
-  lifecycleState: "PREPARING_REVIEW",
+const updateResult = await repository.updateInvestigation(
+  "inv_test_001",
 
-  updatedAt: "2026-09-06T15:10:00.000Z",
+  {
+    lifecycleState: "PREPARING_REVIEW",
 
-  failureReason: null,
-});
+    updatedAt: "2026-09-06T15:10:00.000Z",
+
+    failureReason: null,
+  },
+);
 
 assert.equal(updateResult.status, "investigation_updated");
 
+assert.equal(updateResult.reason, null);
+
+assert.ok(updateResult.investigation);
+
 assert.equal(updateResult.investigation.lifecycleState, "PREPARING_REVIEW");
+
+assert.equal(updateResult.investigation.updatedAt, "2026-09-06T15:10:00.000Z");
 
 console.log("\n===== UPDATE INVESTIGATION =====");
 
 console.log({
   status: updateResult.status,
 
-  investigationId: updateResult.investigation.investigationId,
-
   lifecycleState: updateResult.investigation.lifecycleState,
+
+  updatedAt: updateResult.investigation.updatedAt,
 });
 
 /*
- * =========================================================
- * FINAL RESULT
- * =========================================================
+ * =================================================
+ * TEST 9
+ * GET UPDATED INVESTIGATION
+ * =================================================
+ */
+
+const updatedStoredResult = await repository.getInvestigation("inv_test_001");
+
+assert.equal(updatedStoredResult.status, "investigation_found");
+
+assert.equal(
+  updatedStoredResult.investigation.lifecycleState,
+  "PREPARING_REVIEW",
+);
+
+assert.equal(
+  updatedStoredResult.investigation.updatedAt,
+  "2026-09-06T15:10:00.000Z",
+);
+
+/*
+ * =================================================
+ * TEST 10
+ * UPDATE MISSING INVESTIGATION
+ * =================================================
+ */
+
+const missingUpdateResult = await repository.updateInvestigation(
+  "inv_missing",
+
+  {
+    lifecycleState: "PREPARING_REVIEW",
+
+    updatedAt: "2026-09-06T15:20:00.000Z",
+  },
+);
+
+assert.equal(missingUpdateResult.status, "investigation_not_updated");
+
+assert.equal(missingUpdateResult.reason, "investigation_not_found");
+
+assert.equal(missingUpdateResult.investigation, null);
+
+/*
+ * =================================================
+ * FINAL
+ * =================================================
  */
 
 console.log("\n===== D1 REPOSITORY TEST PASSED =====");
@@ -379,7 +547,9 @@ console.log("\n===== D1 REPOSITORY TEST PASSED =====");
 console.log({
   firstClaim: true,
 
-  retrieval: true,
+  retrievalEnvelope: true,
+
+  missingEnvelope: true,
 
   duplicateProtection: true,
 
