@@ -7,7 +7,7 @@
 
   "name": "kivanta-scout",
 
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "./src/worker.js",
 
   "assets": {
     "directory": "./dist",
