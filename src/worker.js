@@ -22,6 +22,10 @@
  *    ↓
  * real D1 adapters
  *    ↓
+ * hardened GitHub request boundary
+ *    ↓
+ * frozen Scout Methodology 1.0
+ *    ↓
  * handleCloudflareInvestigationQueueBatch()
  *    ↓
  * Scout investigation execution pipeline
@@ -42,11 +46,13 @@
  *
  * This file contains:
  *
- * - no Methodology logic
+ * - no Methodology rules
  * - no SQL
  * - no ACK / RETRY business policy
  * - no recovery-selection SQL
  * - no publication logic
+ *
+ * It only composes tested runtime boundaries.
  */
 
 import { handle } from "@astrojs/cloudflare/handler";
@@ -60,6 +66,22 @@ import { createD1InvestigationExecutionRepository } from "./infrastructure/cloud
 import { handleCloudflareInvestigationQueueBatch } from "./infrastructure/cloudflare/queue/handleCloudflareInvestigationQueueBatch.js";
 
 import { handleCloudflareScheduledRecovery } from "./infrastructure/cloudflare/scheduled/handleCloudflareScheduledRecovery.js";
+
+/*
+ * Application composition boundaries.
+ */
+
+import { handleInvestigationQueueDelivery } from "./application/investigations/handleInvestigationQueueDelivery.js";
+
+import { executePreparedScoutInvestigation } from "./application/investigations/executePreparedScoutInvestigation.js";
+
+/*
+ * Hardened GitHub runtime composition.
+ */
+
+import { createHardenedGitHubRequest } from "./infrastructure/github/createHardenedGitHubRequest.js";
+
+import { createGitHubMethodologyRunner } from "./infrastructure/github/createGitHubMethodologyRunner.js";
 
 export default {
   /*
@@ -105,7 +127,9 @@ export default {
     let executionRepository;
 
     /*
-     * Build Scout's real Cloudflare D1 adapters.
+     * =================================================
+     * Compose authoritative D1 adapters
+     * =================================================
      */
 
     try {
@@ -134,30 +158,156 @@ export default {
     }
 
     /*
-     * Delegate all per-message execution and
-     * ACK / RETRY translation to the tested
-     * Cloudflare Queue adapter.
+     * =================================================
+     * Compose hardened GitHub execution
+     * =================================================
+     *
+     * GITHUB_TOKEN is optional.
+     *
+     * If no Cloudflare secret has been configured,
+     * Scout still uses the hardened request boundary
+     * but GitHub API requests remain unauthenticated.
+     *
+     * The token itself never enters:
+     *
+     * - investigation state
+     * - Queue bodies
+     * - Methodology results
+     * - D1
+     * - logs
      */
 
-    const result = await handleCloudflareInvestigationQueueBatch({
-      batch,
+    let deliveryHandler;
 
-      investigationRepository,
+    try {
+      /*
+       * One hardened request boundary owns:
+       *
+       * - GitHub host allowlisting
+       * - HTTPS enforcement
+       * - request timeout
+       * - response-size limits
+       * - REST API headers
+       * - optional API authentication
+       */
 
-      executionLease,
+      const githubRequest = createHardenedGitHubRequest({
+        token: env?.GITHUB_TOKEN ?? null,
+      });
 
-      executionRepository,
+      /*
+       * Bind that exact request boundary through:
+       *
+       * frozen repository verification
+       * commit verification
+       * tree verification
+       * Technocore evidence
+       * Check 1 file evidence
+       * Check 2 file evidence
+       * Check 3 file evidence
+       */
 
-      now: () => new Date().toISOString(),
-    });
+      const githubMethodologyRunner = createGitHubMethodologyRunner({
+        request: githubRequest,
+      });
+
+      /*
+       * Bind the hardened Methodology runner into
+       * Scout's existing durable execution service.
+       *
+       * executePreparedScoutInvestigation() still
+       * owns no Cloudflare env knowledge.
+       */
+
+      const scoutExecutor = async (input) => {
+        return executePreparedScoutInvestigation(
+          input,
+
+          {
+            methodologyRunner: githubMethodologyRunner,
+          },
+        );
+      };
+
+      /*
+       * Bind that Scout executor into the existing
+       * neutral Queue delivery application boundary.
+       *
+       * ACK / RETRY policy remains entirely inside:
+       *
+       * handleInvestigationQueueDelivery()
+       */
+
+      deliveryHandler = async (input) => {
+        return handleInvestigationQueueDelivery(
+          input,
+
+          {
+            scoutExecutor,
+          },
+        );
+      };
+    } catch {
+      /*
+       * Production GitHub composition must fail
+       * closed.
+       *
+       * Do not fall back silently to an unhardened
+       * execution path.
+       */
+
+      batch.retryAll();
+
+      console.error({
+        status: "scout_queue_runtime_not_ready",
+
+        reason: "github_runtime_composition_failed",
+
+        messageCount: batch?.messages?.length ?? 0,
+      });
+
+      return;
+    }
+
+    /*
+     * =================================================
+     * Delegate Queue batch
+     * =================================================
+     *
+     * All per-message preparation, execution,
+     * durable outcome handling, and ACK / RETRY
+     * translation remain in the already-tested
+     * application + Cloudflare Queue boundaries.
+     */
+
+    const result = await handleCloudflareInvestigationQueueBatch(
+      {
+        batch,
+
+        investigationRepository,
+
+        executionLease,
+
+        executionRepository,
+
+        now: () => new Date().toISOString(),
+      },
+
+      {
+        deliveryHandler,
+      },
+    );
 
     /*
      * Bounded operational logging only.
      *
-     * Never log raw Queue bodies,
-     * source code,
-     * Methodology evidence,
-     * or persisted outcomes.
+     * Never log:
+     *
+     * - raw Queue bodies
+     * - GitHub credentials
+     * - source code
+     * - Methodology evidence
+     * - persisted outcomes
      */
 
     console.log({
@@ -257,9 +407,6 @@ export default {
      *
      * Those may contain per-record operational
      * details.
-     *
-     * Log only the bounded summaries produced by
-     * the scheduled recovery boundary.
      */
 
     console.log({
