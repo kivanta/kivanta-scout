@@ -9,22 +9,33 @@
 
   "main": "./src/worker.js",
 
+  /*
+   * ------------------------------------------------
+   * Static Astro assets
+   * ------------------------------------------------
+   */
+
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
   },
+
+  /*
+   * ------------------------------------------------
+   * Observability
+   * ------------------------------------------------
+   */
 
   "observability": {
     "enabled": true,
   },
 
   /*
-   * Cloudflare D1
-   *
-   * Authoritative persistent state for
-   * investigations, active claims,
-   * dispatch intents, and later results.
+   * ------------------------------------------------
+   * Authoritative D1
+   * ------------------------------------------------
    */
+
   "d1_databases": [
     {
       "binding": "DB",
@@ -34,16 +45,30 @@
   ],
 
   /*
-   * Cloudflare Queue — PRODUCER ONLY
+   * ------------------------------------------------
+   * Investigation Queue
+   * ------------------------------------------------
    *
-   * Scout can send investigation jobs
-   * into the Queue through this binding.
+   * The same Queue is used for:
    *
-   * We deliberately do NOT configure the
-   * consumer yet. The consumer will be
-   * attached only after Scout has a real
-   * queue() handler.
+   * producer
+   *    investigation dispatch / recovery
+   *
+   * consumer
+   *    durable investigation execution
+   *
+   *
+   * V1 deliberately processes conservatively:
+   *
+   * - one message per batch
+   * - one concurrent consumer
+   * - bounded retry attempts
+   *
+   * Durable Scout recovery remains responsible for
+   * restoring work that becomes stranded after
+   * Queue delivery failure.
    */
+
   "queues": {
     "producers": [
       {
@@ -51,5 +76,39 @@
         "binding": "INVESTIGATION_QUEUE",
       },
     ],
+
+    "consumers": [
+      {
+        "queue": "kivanta-scout-investigations",
+
+        "max_batch_size": 1,
+
+        "max_batch_timeout": 5,
+
+        "max_retries": 5,
+
+        "max_concurrency": 1,
+
+        "retry_delay": 60,
+      },
+    ],
+  },
+
+  /*
+   * ------------------------------------------------
+   * Scheduled recovery
+   * ------------------------------------------------
+   *
+   * Every five minutes:
+   *
+   * 1. retry pending dispatch
+   * 2. recover stale QUEUED investigations
+   * 3. recover stranded PREPARING_REVIEW work
+   *
+   * Cron becomes active ONLY after a real deploy.
+   */
+
+  "triggers": {
+    "crons": ["*/5 * * * *"],
   },
 }
