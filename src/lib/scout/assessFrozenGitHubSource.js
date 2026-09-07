@@ -47,6 +47,21 @@ import { evaluateSourceSupport } from "./evaluateSourceSupport.js";
  * inspect repository at frozen commit only
  *      ↓
  * rebuild derived Scout source assessment
+ *
+ *
+ * Runtime hardening:
+ *
+ * Production callers may inject a hardened GitHub
+ * request function.
+ *
+ * This keeps:
+ *
+ * - Cloudflare env
+ * - GitHub credentials
+ * - timeout policy
+ * - response-size policy
+ *
+ * outside Methodology/domain logic.
  */
 
 function isNonEmptyString(value) {
@@ -82,6 +97,17 @@ function normalizeGitObjectId(value) {
 export async function assessFrozenGitHubSource(
   target,
   {
+    /*
+     * Request boundary.
+     *
+     * Existing callers remain compatible because
+     * global fetch remains the default.
+     *
+     * Production Queue execution can inject Scout's
+     * hardened GitHub request function here.
+     */
+    request = globalThis.fetch,
+
     repoGetter = getGitHubRepo,
 
     commitGetter = getGitHubCommit,
@@ -150,7 +176,7 @@ export async function assessFrozenGitHubSource(
    * The stable GitHub repository ID is authoritative.
    */
 
-  const repository = await repoGetter(owner, repo);
+  const repository = await repoGetter(owner, repo, request);
 
   if (repository?.status !== "repo_found") {
     return {
@@ -191,7 +217,7 @@ export async function assessFrozenGitHubSource(
    * during execution.
    */
 
-  const commit = await commitGetter(owner, repo, frozenCommitSha);
+  const commit = await commitGetter(owner, repo, frozenCommitSha, request);
 
   if (commit?.status !== "commit_found") {
     return {
@@ -211,7 +237,7 @@ export async function assessFrozenGitHubSource(
 
       expectedCommitSha: frozenCommitSha,
 
-      observedCommitSha: observedCommitSha,
+      observedCommitSha,
     };
   }
 
@@ -238,7 +264,7 @@ export async function assessFrozenGitHubSource(
 
       expectedTreeSha: frozenTreeSha,
 
-      observedTreeSha: observedTreeSha,
+      observedTreeSha,
     };
   }
 
@@ -249,7 +275,7 @@ export async function assessFrozenGitHubSource(
    * =================================================
    */
 
-  const tree = await treeGetter(owner, repo, frozenCommitSha);
+  const tree = await treeGetter(owner, repo, frozenCommitSha, request);
 
   if (tree?.status !== "tree_found") {
     return {
@@ -274,6 +300,7 @@ export async function assessFrozenGitHubSource(
 
   const technocoreEvidence = await technocoreDetector({
     owner,
+
     repo,
 
     /*
@@ -286,6 +313,12 @@ export async function assessFrozenGitHubSource(
     branch: frozenCommitSha,
 
     items: tree.items,
+
+    /*
+     * Use the same injected GitHub request boundary
+     * for raw.githubusercontent.com reads.
+     */
+    request,
   });
 
   const toolIdentity = toolIdentifier(tree.items, technocoreEvidence);
