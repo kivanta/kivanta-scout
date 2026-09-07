@@ -1,43 +1,68 @@
 /*
  * Handle Cloudflare Scheduled Recovery Test
  *
- * Tests:
+ * Tests the Cloudflare composition boundary that
+ * runs all THREE Scout recovery jobs:
  *
- *   handleCloudflareScheduledRecovery()
+ *
+ * JOB 1
+ * CREATED + PENDING outbox
+ *        ↓
+ * pending dispatch recovery
+ *
+ *
+ * JOB 2
+ * stale QUEUED + DISPATCHED outbox
+ *        ↓
+ * stale queued recovery
+ *
+ *
+ * JOB 3
+ * stranded PREPARING_REVIEW
+ *        ↓
+ * execution recovery
  *
  *
  * We verify:
  *
  * 1. missing composition dependency is rejected
  * 2. invalid timestamp is rejected
- * 3. adapter construction failure is rejected
+ * 3. adapter composition failure is rejected
  *
  * Successful composition:
  *
- * 4. D1 binding reaches outbox factory
- * 5. D1 binding reaches execution-recovery factory
- * 6. Queue binding reaches Queue factory
- * 7. pending-dispatch service receives real adapters
- * 8. stranded-recovery service receives real adapters
- * 9. timestamp is forwarded
- * 10. dispatch limit is forwarded
- * 11. recovery limit is forwarded
- * 12. both successful sweeps → scheduled_recovery_complete
+ * 4. D1 reaches outbox factory
+ * 5. D1 reaches queued-recovery factory
+ * 6. D1 reaches execution-recovery factory
+ * 7. Queue binding reaches Queue factory
  *
- * Independence / failure handling:
+ * 8. dispatch service receives outbox + Queue
+ * 9. stale QUEUED service receives queued adapter + Queue
+ * 10. execution recovery receives execution adapter + Queue
  *
- * 13. dispatch throw does not stop execution recovery
- * 14. execution recovery throw does not erase dispatch result
- * 15. dispatch partial → scheduled_recovery_partial
- * 16. execution recovery partial → scheduled_recovery_partial
- * 17. one failed sweep → scheduled_recovery_partial
- * 18. both failed sweeps → scheduled_recovery_failed
+ * 11. current timestamp reaches all three jobs
+ * 12. dispatch limit is forwarded
+ * 13. queued recovery limit is forwarded
+ * 14. queued stale grace is forwarded
+ * 15. execution recovery limit is forwarded
  *
- * Summary:
+ * 16. all three complete => scheduled_recovery_complete
+ * 17. bounded summaries are preserved
+ * 18. full immediate results are preserved
  *
- * 19. bounded dispatch counters are preserved
- * 20. bounded recovery counters are preserved
- * 21. full immediate results remain available
+ * Independence:
+ *
+ * 19. dispatch throw does not stop jobs 2 or 3
+ * 20. queued recovery throw does not stop jobs 1 or 3
+ * 21. execution recovery throw does not erase jobs 1 or 2
+ *
+ * Partial/failure classification:
+ *
+ * 22. dispatch partial => scheduled partial
+ * 23. queued recovery partial => scheduled partial
+ * 24. execution recovery partial => scheduled partial
+ * 25. one failed sweep => scheduled partial
+ * 26. all three failed => scheduled failed
  */
 
 import assert from "node:assert/strict";
@@ -46,45 +71,46 @@ import { handleCloudflareScheduledRecovery } from "./handleCloudflareScheduledRe
 
 /*
  * =================================================
- * SHARED FIXTURES
+ * Shared fixtures
  * =================================================
  */
 
-const NOW = "2026-09-07T18:45:00.000Z";
+const NOW = "2026-09-07T19:30:00.000Z";
 
 const db = {
   fixture: "db",
 };
 
 const queueBinding = {
-  fixture: "queueBinding",
+  fixture: "queue-binding",
 };
 
 const outbox = {
-  fixture: "outbox",
+  fixture: "dispatch-outbox",
+};
+
+const queuedRecovery = {
+  fixture: "queued-recovery",
 };
 
 const executionRecovery = {
-  fixture: "executionRecovery",
+  fixture: "execution-recovery",
 };
 
 const queue = {
-  fixture: "queue",
+  fixture: "application-queue",
 };
 
 /*
- * ------------------------------------------------
- * Default successful application results
- * ------------------------------------------------
+ * =================================================
+ * Result fixture helpers
+ * =================================================
  */
 
 function createDispatchSuccess({
   checked = 2,
-
-  dispatched = 1,
-
-  retriesScheduled = 1,
-
+  dispatched = 2,
+  retriesScheduled = 0,
   stateErrors = 0,
 } = {}) {
   return {
@@ -104,24 +130,43 @@ function createDispatchSuccess({
   };
 }
 
-function createRecoverySuccess({
-  checked = 3,
-
+function createQueuedRecoverySuccess({
+  checked = 2,
   requeued = 2,
+  queueFailures = 0,
+  stateFailures = 0,
+  invalidRecords = 0,
+  staleBefore = "2026-09-07T19:00:00.000Z",
+} = {}) {
+  return {
+    status: "stale_queued_recovery_complete",
 
-  queueFailures = 1,
+    reason: null,
 
+    now: NOW,
+
+    staleBefore,
+
+    checked,
+
+    requeued,
+
+    queueFailures,
+
+    stateFailures,
+
+    invalidRecords,
+
+    results: [],
+  };
+}
+
+function createExecutionRecoverySuccess({
+  checked = 2,
+  requeued = 2,
+  queueFailures = 0,
   invalidRecords = 0,
 } = {}) {
-  /*
-   * For testing the composition boundary,
-   * we allow these counters independently of
-   * the status.
-   *
-   * The application service itself already has
-   * its own detailed tests.
-   */
-
   return {
     status: "recovery_sweep_complete",
 
@@ -158,7 +203,7 @@ const missingDependencyResult = await handleCloudflareScheduledRecovery(
   },
 
   {
-    dispatchService: null,
+    staleQueuedRecoveryService: null,
   },
 );
 
@@ -194,13 +239,17 @@ const invalidTimestampResult = await handleCloudflareScheduledRecovery(
   {
     dispatchOutboxFactory: () => outbox,
 
+    queuedRecoveryFactory: () => queuedRecovery,
+
     executionRecoveryFactory: () => executionRecovery,
 
     queueFactory: () => queue,
 
     dispatchService: async () => createDispatchSuccess(),
 
-    strandedRecoveryService: async () => createRecoverySuccess(),
+    staleQueuedRecoveryService: async () => createQueuedRecoverySuccess(),
+
+    strandedRecoveryService: async () => createExecutionRecoverySuccess(),
   },
 );
 
@@ -231,8 +280,10 @@ const adapterFailureResult = await handleCloudflareScheduledRecovery(
   },
 
   {
-    dispatchOutboxFactory: () => {
-      throw new Error("fixture adapter failure");
+    dispatchOutboxFactory: () => outbox,
+
+    queuedRecoveryFactory: () => {
+      throw new Error("fixture queued adapter failure");
     },
 
     executionRecoveryFactory: () => executionRecovery,
@@ -241,7 +292,9 @@ const adapterFailureResult = await handleCloudflareScheduledRecovery(
 
     dispatchService: async () => createDispatchSuccess(),
 
-    strandedRecoveryService: async () => createRecoverySuccess(),
+    staleQueuedRecoveryService: async () => createQueuedRecoverySuccess(),
+
+    strandedRecoveryService: async () => createExecutionRecoverySuccess(),
   },
 );
 
@@ -258,22 +311,26 @@ assert.equal(
 
 /*
  * =================================================
- * TEST 4–12
- * Successful composition + wiring
+ * TEST 4–18
+ * Successful three-job composition
  * =================================================
  */
 
-console.log("\n===== SUCCESSFUL SCHEDULED RECOVERY =====");
+console.log("\n===== SUCCESSFUL THREE-JOB SCHEDULED RECOVERY =====");
 
 const outboxFactoryInputs = [];
 
-const recoveryFactoryInputs = [];
+const queuedRecoveryFactoryInputs = [];
+
+const executionRecoveryFactoryInputs = [];
 
 const queueFactoryInputs = [];
 
 const dispatchInputs = [];
 
-const strandedRecoveryInputs = [];
+const queuedRecoveryInputs = [];
+
+const executionRecoveryInputs = [];
 
 const expectedDispatchResult = createDispatchSuccess({
   checked: 4,
@@ -285,14 +342,28 @@ const expectedDispatchResult = createDispatchSuccess({
   stateErrors: 0,
 });
 
-const expectedExecutionRecoveryResult = createRecoverySuccess({
+const expectedQueuedRecoveryResult = createQueuedRecoverySuccess({
   checked: 5,
 
   requeued: 4,
 
   queueFailures: 0,
 
-  invalidRecords: 1,
+  stateFailures: 1,
+
+  invalidRecords: 0,
+
+  staleBefore: "2026-09-07T19:00:00.000Z",
+});
+
+const expectedExecutionRecoveryResult = createExecutionRecoverySuccess({
+  checked: 6,
+
+  requeued: 5,
+
+  queueFailures: 1,
+
+  invalidRecords: 0,
 });
 
 const successfulResult = await handleCloudflareScheduledRecovery(
@@ -305,7 +376,11 @@ const successfulResult = await handleCloudflareScheduledRecovery(
 
     dispatchLimit: 11,
 
-    recoveryLimit: 12,
+    queuedRecoveryLimit: 12,
+
+    queuedStaleGraceMs: 30 * 60 * 1000,
+
+    recoveryLimit: 13,
   },
 
   {
@@ -315,8 +390,14 @@ const successfulResult = await handleCloudflareScheduledRecovery(
       return outbox;
     },
 
+    queuedRecoveryFactory: (receivedDb) => {
+      queuedRecoveryFactoryInputs.push(receivedDb);
+
+      return queuedRecovery;
+    },
+
     executionRecoveryFactory: (receivedDb) => {
-      recoveryFactoryInputs.push(receivedDb);
+      executionRecoveryFactoryInputs.push(receivedDb);
 
       return executionRecovery;
     },
@@ -333,8 +414,14 @@ const successfulResult = await handleCloudflareScheduledRecovery(
       return expectedDispatchResult;
     },
 
+    staleQueuedRecoveryService: async (input) => {
+      queuedRecoveryInputs.push(input);
+
+      return expectedQueuedRecoveryResult;
+    },
+
     strandedRecoveryService: async (input) => {
-      strandedRecoveryInputs.push(input);
+      executionRecoveryInputs.push(input);
 
       return expectedExecutionRecoveryResult;
     },
@@ -351,22 +438,32 @@ console.dir(dispatchInputs, {
   depth: null,
 });
 
-console.log("\n===== STRANDED RECOVERY INPUT =====");
+console.log("\n===== STALE QUEUED SERVICE INPUT =====");
 
-console.dir(strandedRecoveryInputs, {
+console.dir(queuedRecoveryInputs, {
+  depth: null,
+});
+
+console.log("\n===== EXECUTION RECOVERY SERVICE INPUT =====");
+
+console.dir(executionRecoveryInputs, {
   depth: null,
 });
 
 /*
  * =================================================
- * TEST 13
- * Dispatch throws — execution recovery still runs
+ * TEST 19
+ * Dispatch throws
+ *
+ * Jobs 2 + 3 must still run.
  * =================================================
  */
 
-console.log("\n===== DISPATCH THROW =====");
+console.log("\n===== DISPATCH THROW INDEPENDENCE =====");
 
-let recoveryAfterDispatchThrowCalls = 0;
+let queuedAfterDispatchThrowCalls = 0;
+
+let executionAfterDispatchThrowCalls = 0;
 
 const dispatchThrowResult = await handleCloudflareScheduledRecovery(
   {
@@ -380,25 +477,33 @@ const dispatchThrowResult = await handleCloudflareScheduledRecovery(
   {
     dispatchOutboxFactory: () => outbox,
 
+    queuedRecoveryFactory: () => queuedRecovery,
+
     executionRecoveryFactory: () => executionRecovery,
 
     queueFactory: () => queue,
 
     dispatchService: async () => {
-      throw new Error("fixture dispatch exception");
+      throw new Error("fixture dispatch throw");
     },
 
-    strandedRecoveryService: async () => {
-      recoveryAfterDispatchThrowCalls += 1;
+    staleQueuedRecoveryService: async () => {
+      queuedAfterDispatchThrowCalls += 1;
 
-      return createRecoverySuccess({
+      return createQueuedRecoverySuccess({
         checked: 1,
 
         requeued: 1,
+      });
+    },
 
-        queueFailures: 0,
+    strandedRecoveryService: async () => {
+      executionAfterDispatchThrowCalls += 1;
 
-        invalidRecords: 0,
+      return createExecutionRecoverySuccess({
+        checked: 1,
+
+        requeued: 1,
       });
     },
   },
@@ -410,16 +515,20 @@ console.dir(dispatchThrowResult, {
 
 /*
  * =================================================
- * TEST 14
- * Execution recovery throws
+ * TEST 20
+ * Stale QUEUED recovery throws
+ *
+ * Jobs 1 + 3 must still complete.
  * =================================================
  */
 
-console.log("\n===== EXECUTION RECOVERY THROW =====");
+console.log("\n===== STALE QUEUED THROW INDEPENDENCE =====");
 
-let dispatchBeforeRecoveryThrowCalls = 0;
+let dispatchBeforeQueuedThrowCalls = 0;
 
-const recoveryThrowResult = await handleCloudflareScheduledRecovery(
+let executionAfterQueuedThrowCalls = 0;
+
+const queuedThrowResult = await handleCloudflareScheduledRecovery(
   {
     db,
 
@@ -431,37 +540,108 @@ const recoveryThrowResult = await handleCloudflareScheduledRecovery(
   {
     dispatchOutboxFactory: () => outbox,
 
+    queuedRecoveryFactory: () => queuedRecovery,
+
     executionRecoveryFactory: () => executionRecovery,
 
     queueFactory: () => queue,
 
     dispatchService: async () => {
-      dispatchBeforeRecoveryThrowCalls += 1;
+      dispatchBeforeQueuedThrowCalls += 1;
 
       return createDispatchSuccess({
         checked: 1,
 
         dispatched: 1,
-
-        retriesScheduled: 0,
-
-        stateErrors: 0,
       });
     },
 
+    staleQueuedRecoveryService: async () => {
+      throw new Error("fixture stale queued throw");
+    },
+
     strandedRecoveryService: async () => {
-      throw new Error("fixture recovery exception");
+      executionAfterQueuedThrowCalls += 1;
+
+      return createExecutionRecoverySuccess({
+        checked: 1,
+
+        requeued: 1,
+      });
     },
   },
 );
 
-console.dir(recoveryThrowResult, {
+console.dir(queuedThrowResult, {
   depth: null,
 });
 
 /*
  * =================================================
- * TEST 15
+ * TEST 21
+ * Execution recovery throws
+ *
+ * Jobs 1 + 2 must remain successful.
+ * =================================================
+ */
+
+console.log("\n===== EXECUTION RECOVERY THROW INDEPENDENCE =====");
+
+let dispatchBeforeExecutionThrowCalls = 0;
+
+let queuedBeforeExecutionThrowCalls = 0;
+
+const executionThrowResult = await handleCloudflareScheduledRecovery(
+  {
+    db,
+
+    queueBinding,
+
+    now: NOW,
+  },
+
+  {
+    dispatchOutboxFactory: () => outbox,
+
+    queuedRecoveryFactory: () => queuedRecovery,
+
+    executionRecoveryFactory: () => executionRecovery,
+
+    queueFactory: () => queue,
+
+    dispatchService: async () => {
+      dispatchBeforeExecutionThrowCalls += 1;
+
+      return createDispatchSuccess({
+        checked: 1,
+
+        dispatched: 1,
+      });
+    },
+
+    staleQueuedRecoveryService: async () => {
+      queuedBeforeExecutionThrowCalls += 1;
+
+      return createQueuedRecoverySuccess({
+        checked: 1,
+
+        requeued: 1,
+      });
+    },
+
+    strandedRecoveryService: async () => {
+      throw new Error("fixture execution recovery throw");
+    },
+  },
+);
+
+console.dir(executionThrowResult, {
+  depth: null,
+});
+
+/*
+ * =================================================
+ * TEST 22
  * Dispatch partial
  * =================================================
  */
@@ -480,6 +660,8 @@ const dispatchPartialResult = await handleCloudflareScheduledRecovery(
   {
     dispatchOutboxFactory: () => outbox,
 
+    queuedRecoveryFactory: () => queuedRecovery,
+
     executionRecoveryFactory: () => executionRecovery,
 
     queueFactory: () => queue,
@@ -487,7 +669,7 @@ const dispatchPartialResult = await handleCloudflareScheduledRecovery(
     dispatchService: async () => ({
       status: "dispatch_sweep_partial",
 
-      reason: "dispatch_state_errors_present",
+      reason: "one_or_more_dispatches_incomplete",
 
       checked: 2,
 
@@ -500,15 +682,18 @@ const dispatchPartialResult = await handleCloudflareScheduledRecovery(
       results: [],
     }),
 
-    strandedRecoveryService: async () =>
-      createRecoverySuccess({
+    staleQueuedRecoveryService: async () =>
+      createQueuedRecoverySuccess({
         checked: 0,
 
         requeued: 0,
+      }),
 
-        queueFailures: 0,
+    strandedRecoveryService: async () =>
+      createExecutionRecoverySuccess({
+        checked: 0,
 
-        invalidRecords: 0,
+        requeued: 0,
       }),
   },
 );
@@ -519,14 +704,14 @@ console.dir(dispatchPartialResult, {
 
 /*
  * =================================================
- * TEST 16
- * Execution recovery partial
+ * TEST 23
+ * Stale QUEUED recovery partial
  * =================================================
  */
 
-console.log("\n===== EXECUTION RECOVERY PARTIAL =====");
+console.log("\n===== STALE QUEUED PARTIAL =====");
 
-const recoveryPartialResult = await handleCloudflareScheduledRecovery(
+const queuedPartialResult = await handleCloudflareScheduledRecovery(
   {
     db,
 
@@ -538,6 +723,8 @@ const recoveryPartialResult = await handleCloudflareScheduledRecovery(
   {
     dispatchOutboxFactory: () => outbox,
 
+    queuedRecoveryFactory: () => queuedRecovery,
+
     executionRecoveryFactory: () => executionRecovery,
 
     queueFactory: () => queue,
@@ -547,10 +734,82 @@ const recoveryPartialResult = await handleCloudflareScheduledRecovery(
         checked: 0,
 
         dispatched: 0,
+      }),
 
-        retriesScheduled: 0,
+    staleQueuedRecoveryService: async () => ({
+      status: "stale_queued_recovery_partial",
 
-        stateErrors: 0,
+      reason: "one_or_more_stale_queued_recoveries_incomplete",
+
+      now: NOW,
+
+      staleBefore: "2026-09-07T19:00:00.000Z",
+
+      checked: 2,
+
+      requeued: 1,
+
+      queueFailures: 1,
+
+      stateFailures: 0,
+
+      invalidRecords: 0,
+
+      results: [],
+    }),
+
+    strandedRecoveryService: async () =>
+      createExecutionRecoverySuccess({
+        checked: 0,
+
+        requeued: 0,
+      }),
+  },
+);
+
+console.dir(queuedPartialResult, {
+  depth: null,
+});
+
+/*
+ * =================================================
+ * TEST 24
+ * Execution recovery partial
+ * =================================================
+ */
+
+console.log("\n===== EXECUTION RECOVERY PARTIAL =====");
+
+const executionPartialResult = await handleCloudflareScheduledRecovery(
+  {
+    db,
+
+    queueBinding,
+
+    now: NOW,
+  },
+
+  {
+    dispatchOutboxFactory: () => outbox,
+
+    queuedRecoveryFactory: () => queuedRecovery,
+
+    executionRecoveryFactory: () => executionRecovery,
+
+    queueFactory: () => queue,
+
+    dispatchService: async () =>
+      createDispatchSuccess({
+        checked: 0,
+
+        dispatched: 0,
+      }),
+
+    staleQueuedRecoveryService: async () =>
+      createQueuedRecoverySuccess({
+        checked: 0,
+
+        requeued: 0,
       }),
 
     strandedRecoveryService: async () => ({
@@ -571,14 +830,14 @@ const recoveryPartialResult = await handleCloudflareScheduledRecovery(
   },
 );
 
-console.dir(recoveryPartialResult, {
+console.dir(executionPartialResult, {
   depth: null,
 });
 
 /*
  * =================================================
- * TEST 17
- * One sweep fails
+ * TEST 25
+ * One failed sweep
  * =================================================
  */
 
@@ -595,6 +854,73 @@ const oneFailedResult = await handleCloudflareScheduledRecovery(
 
   {
     dispatchOutboxFactory: () => outbox,
+
+    queuedRecoveryFactory: () => queuedRecovery,
+
+    executionRecoveryFactory: () => executionRecovery,
+
+    queueFactory: () => queue,
+
+    dispatchService: async () =>
+      createDispatchSuccess({
+        checked: 1,
+
+        dispatched: 1,
+      }),
+
+    staleQueuedRecoveryService: async () => ({
+      status: "stale_queued_recovery_failed",
+
+      reason: "recoverable_queued_query_failed",
+
+      checked: 0,
+
+      requeued: 0,
+
+      queueFailures: 0,
+
+      stateFailures: 0,
+
+      invalidRecords: 0,
+
+      results: [],
+    }),
+
+    strandedRecoveryService: async () =>
+      createExecutionRecoverySuccess({
+        checked: 1,
+
+        requeued: 1,
+      }),
+  },
+);
+
+console.dir(oneFailedResult, {
+  depth: null,
+});
+
+/*
+ * =================================================
+ * TEST 26
+ * All three sweeps fail
+ * =================================================
+ */
+
+console.log("\n===== ALL THREE RECOVERY SWEEPS FAILED =====");
+
+const allFailedResult = await handleCloudflareScheduledRecovery(
+  {
+    db,
+
+    queueBinding,
+
+    now: NOW,
+  },
+
+  {
+    dispatchOutboxFactory: () => outbox,
+
+    queuedRecoveryFactory: () => queuedRecovery,
 
     executionRecoveryFactory: () => executionRecovery,
 
@@ -616,60 +942,20 @@ const oneFailedResult = await handleCloudflareScheduledRecovery(
       results: [],
     }),
 
-    strandedRecoveryService: async () =>
-      createRecoverySuccess({
-        checked: 2,
+    staleQueuedRecoveryService: async () => ({
+      status: "stale_queued_recovery_failed",
 
-        requeued: 2,
-
-        queueFailures: 0,
-
-        invalidRecords: 0,
-      }),
-  },
-);
-
-console.dir(oneFailedResult, {
-  depth: null,
-});
-
-/*
- * =================================================
- * TEST 18
- * Both sweeps fail
- * =================================================
- */
-
-console.log("\n===== BOTH RECOVERY SWEEPS FAILED =====");
-
-const bothFailedResult = await handleCloudflareScheduledRecovery(
-  {
-    db,
-
-    queueBinding,
-
-    now: NOW,
-  },
-
-  {
-    dispatchOutboxFactory: () => outbox,
-
-    executionRecoveryFactory: () => executionRecovery,
-
-    queueFactory: () => queue,
-
-    dispatchService: async () => ({
-      status: "dispatch_sweep_failed",
-
-      reason: "pending_dispatch_query_failed",
+      reason: "recoverable_queued_query_failed",
 
       checked: 0,
 
-      dispatched: 0,
+      requeued: 0,
 
-      retriesScheduled: 0,
+      queueFailures: 0,
 
-      stateErrors: 0,
+      stateFailures: 0,
+
+      invalidRecords: 0,
 
       results: [],
     }),
@@ -692,24 +978,29 @@ const bothFailedResult = await handleCloudflareScheduledRecovery(
   },
 );
 
-console.dir(bothFailedResult, {
+console.dir(allFailedResult, {
   depth: null,
 });
 
 /*
  * =================================================
- * FINAL ASSERTIONS
+ * Final assertions
  * =================================================
  */
 
 const dispatchInput = dispatchInputs[0];
 
-const strandedInput = strandedRecoveryInputs[0];
+const queuedInput = queuedRecoveryInputs[0];
+
+const executionInput = executionRecoveryInputs[0];
 
 const tests = {
   /*
+   * ---------------------------------------------
    * Validation
+   * ---------------------------------------------
    */
+
   missingDependencyRejected:
     missingDependencyResult.status === "scheduled_recovery_not_ready" &&
     missingDependencyResult.reason ===
@@ -725,58 +1016,98 @@ const tests = {
       "scheduled_recovery_adapter_composition_failed",
 
   /*
-   * Adapter factory wiring
+   * ---------------------------------------------
+   * Factory wiring
+   * ---------------------------------------------
    */
+
   outboxFactoryCalledOnce: outboxFactoryInputs.length === 1,
 
   dbForwardedToOutboxFactory: outboxFactoryInputs[0] === db,
 
-  recoveryFactoryCalledOnce: recoveryFactoryInputs.length === 1,
+  queuedRecoveryFactoryCalledOnce: queuedRecoveryFactoryInputs.length === 1,
 
-  dbForwardedToRecoveryFactory: recoveryFactoryInputs[0] === db,
+  dbForwardedToQueuedRecoveryFactory: queuedRecoveryFactoryInputs[0] === db,
+
+  executionRecoveryFactoryCalledOnce:
+    executionRecoveryFactoryInputs.length === 1,
+
+  dbForwardedToExecutionRecoveryFactory:
+    executionRecoveryFactoryInputs[0] === db,
 
   queueFactoryCalledOnce: queueFactoryInputs.length === 1,
 
   queueBindingForwarded: queueFactoryInputs[0] === queueBinding,
 
   /*
-   * Dispatch service wiring
+   * ---------------------------------------------
+   * JOB 1 wiring
+   * ---------------------------------------------
    */
+
   dispatchServiceCalledOnce: dispatchInputs.length === 1,
 
   dispatchReceivesOutbox: dispatchInput?.outbox === outbox,
 
   dispatchReceivesQueue: dispatchInput?.queue === queue,
 
-  dispatchReceivesTimestamp: dispatchInput?.now === NOW,
+  dispatchReceivesNow: dispatchInput?.now === NOW,
 
   dispatchReceivesLimit: dispatchInput?.limit === 11,
 
   /*
-   * Stranded recovery wiring
+   * ---------------------------------------------
+   * JOB 2 wiring
+   * ---------------------------------------------
    */
-  strandedRecoveryCalledOnce: strandedRecoveryInputs.length === 1,
 
-  recoveryReceivesAdapter: strandedInput?.recovery === executionRecovery,
+  queuedRecoveryServiceCalledOnce: queuedRecoveryInputs.length === 1,
 
-  recoveryReceivesSameQueue: strandedInput?.queue === queue,
+  queuedRecoveryReceivesAdapter: queuedInput?.queuedRecovery === queuedRecovery,
 
-  recoveryReceivesTimestamp: strandedInput?.now === NOW,
+  queuedRecoveryReceivesSameQueue: queuedInput?.queue === queue,
 
-  recoveryReceivesLimit: strandedInput?.limit === 12,
+  queuedRecoveryReceivesNow: queuedInput?.now === NOW,
+
+  queuedRecoveryReceivesGrace: queuedInput?.staleGraceMs === 30 * 60 * 1000,
+
+  queuedRecoveryReceivesLimit: queuedInput?.limit === 12,
 
   /*
-   * Successful aggregate
+   * ---------------------------------------------
+   * JOB 3 wiring
+   * ---------------------------------------------
    */
-  successfulSweepComplete:
+
+  executionRecoveryServiceCalledOnce: executionRecoveryInputs.length === 1,
+
+  executionRecoveryReceivesAdapter:
+    executionInput?.recovery === executionRecovery,
+
+  executionRecoveryReceivesSameQueue: executionInput?.queue === queue,
+
+  executionRecoveryReceivesNow: executionInput?.now === NOW,
+
+  executionRecoveryReceivesLimit: executionInput?.limit === 13,
+
+  /*
+   * ---------------------------------------------
+   * Successful aggregate
+   * ---------------------------------------------
+   */
+
+  successfulAggregateComplete:
     successfulResult.status === "scheduled_recovery_complete" &&
     successfulResult.reason === null,
 
   successfulTimestampPreserved: successfulResult.now === NOW,
 
   /*
+   * ---------------------------------------------
    * Bounded summaries
+   * ---------------------------------------------
    */
+
   dispatchSummaryPreserved:
     successfulResult.dispatch.status === "dispatch_sweep_complete" &&
     successfulResult.dispatch.checked === 4 &&
@@ -784,59 +1115,113 @@ const tests = {
     successfulResult.dispatch.retriesScheduled === 1 &&
     successfulResult.dispatch.stateErrors === 0,
 
+  queuedRecoverySummaryPreserved:
+    successfulResult.queuedRecovery.status ===
+      "stale_queued_recovery_complete" &&
+    successfulResult.queuedRecovery.checked === 5 &&
+    successfulResult.queuedRecovery.requeued === 4 &&
+    successfulResult.queuedRecovery.stateFailures === 1 &&
+    successfulResult.queuedRecovery.staleBefore === "2026-09-07T19:00:00.000Z",
+
   executionRecoverySummaryPreserved:
     successfulResult.executionRecovery.status === "recovery_sweep_complete" &&
-    successfulResult.executionRecovery.checked === 5 &&
-    successfulResult.executionRecovery.requeued === 4 &&
-    successfulResult.executionRecovery.queueFailures === 0 &&
-    successfulResult.executionRecovery.invalidRecords === 1,
+    successfulResult.executionRecovery.checked === 6 &&
+    successfulResult.executionRecovery.requeued === 5 &&
+    successfulResult.executionRecovery.queueFailures === 1,
+
+  /*
+   * ---------------------------------------------
+   * Full immediate results
+   * ---------------------------------------------
+   */
 
   fullDispatchResultPreserved:
     successfulResult.dispatchResult === expectedDispatchResult,
+
+  fullQueuedRecoveryResultPreserved:
+    successfulResult.queuedRecoveryResult === expectedQueuedRecoveryResult,
 
   fullExecutionRecoveryResultPreserved:
     successfulResult.executionRecoveryResult ===
     expectedExecutionRecoveryResult,
 
   /*
+   * ---------------------------------------------
    * Independence
+   * ---------------------------------------------
    */
-  recoveryStillRunsAfterDispatchThrow: recoveryAfterDispatchThrowCalls === 1,
 
-  dispatchThrowBecomesPartial:
+  queuedRunsAfterDispatchThrow: queuedAfterDispatchThrowCalls === 1,
+
+  executionRunsAfterDispatchThrow: executionAfterDispatchThrowCalls === 1,
+
+  dispatchThrowAggregatesPartial:
     dispatchThrowResult.status === "scheduled_recovery_partial" &&
     dispatchThrowResult.dispatch.reason === "scheduled_dispatch_sweep_threw" &&
+    dispatchThrowResult.queuedRecovery.status ===
+      "stale_queued_recovery_complete" &&
     dispatchThrowResult.executionRecovery.status === "recovery_sweep_complete",
 
-  dispatchStillRunsBeforeRecoveryThrow: dispatchBeforeRecoveryThrowCalls === 1,
+  dispatchRunsBeforeQueuedThrow: dispatchBeforeQueuedThrowCalls === 1,
 
-  recoveryThrowBecomesPartial:
-    recoveryThrowResult.status === "scheduled_recovery_partial" &&
-    recoveryThrowResult.dispatch.status === "dispatch_sweep_complete" &&
-    recoveryThrowResult.executionRecovery.reason ===
-      "scheduled_execution_recovery_sweep_threw",
+  executionRunsAfterQueuedThrow: executionAfterQueuedThrowCalls === 1,
+
+  queuedThrowAggregatesPartial:
+    queuedThrowResult.status === "scheduled_recovery_partial" &&
+    queuedThrowResult.queuedRecovery.reason ===
+      "scheduled_stale_queued_recovery_sweep_threw" &&
+    queuedThrowResult.dispatch.status === "dispatch_sweep_complete" &&
+    queuedThrowResult.executionRecovery.status === "recovery_sweep_complete",
+
+  dispatchRunsBeforeExecutionThrow: dispatchBeforeExecutionThrowCalls === 1,
+
+  queuedRunsBeforeExecutionThrow: queuedBeforeExecutionThrowCalls === 1,
+
+  executionThrowAggregatesPartial:
+    executionThrowResult.status === "scheduled_recovery_partial" &&
+    executionThrowResult.executionRecovery.reason ===
+      "scheduled_execution_recovery_sweep_threw" &&
+    executionThrowResult.dispatch.status === "dispatch_sweep_complete" &&
+    executionThrowResult.queuedRecovery.status ===
+      "stale_queued_recovery_complete",
 
   /*
-   * Partial sweeps
+   * ---------------------------------------------
+   * Partial classification
+   * ---------------------------------------------
    */
+
   dispatchPartialAggregatesPartial:
     dispatchPartialResult.status === "scheduled_recovery_partial" &&
     dispatchPartialResult.reason === "one_or_more_recovery_sweeps_incomplete",
 
-  recoveryPartialAggregatesPartial:
-    recoveryPartialResult.status === "scheduled_recovery_partial" &&
-    recoveryPartialResult.reason === "one_or_more_recovery_sweeps_incomplete",
+  queuedPartialAggregatesPartial:
+    queuedPartialResult.status === "scheduled_recovery_partial" &&
+    queuedPartialResult.reason === "one_or_more_recovery_sweeps_incomplete",
+
+  executionPartialAggregatesPartial:
+    executionPartialResult.status === "scheduled_recovery_partial" &&
+    executionPartialResult.reason === "one_or_more_recovery_sweeps_incomplete",
 
   /*
-   * Failed sweeps
+   * ---------------------------------------------
+   * Failure classification
+   * ---------------------------------------------
    */
+
   oneFailedSweepAggregatesPartial:
     oneFailedResult.status === "scheduled_recovery_partial",
 
-  bothFailedSweepsAggregateFailed:
-    bothFailedResult.status === "scheduled_recovery_failed" &&
-    bothFailedResult.reason === "both_recovery_sweeps_failed",
+  allFailedSweepsAggregateFailed:
+    allFailedResult.status === "scheduled_recovery_failed" &&
+    allFailedResult.reason === "all_recovery_sweeps_failed",
 };
+
+/*
+ * =================================================
+ * Pass / fail
+ * =================================================
+ */
 
 const allPassed = Object.values(tests).every(Boolean);
 

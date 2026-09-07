@@ -2,69 +2,103 @@
  * Handle Cloudflare Scheduled Recovery
  *
  * Cloudflare infrastructure composition boundary
- * for Scout's scheduled recovery sweep.
+ * for Scout's complete scheduled recovery system.
  *
  *
- * One scheduled run performs TWO independent
+ * One scheduled run performs THREE independent
  * recovery jobs:
  *
- * 1. Pending dispatch recovery
+ * 1. Pending initial dispatch recovery
  *
- *    CREATED investigation
- *          ↓
+ *    CREATED
+ *      +
  *    PENDING outbox
- *          ↓
- *    Queue send / retry
+ *      ↓
+ *    Queue dispatch / retry
  *
  *
- * 2. Stranded execution recovery
+ * 2. Stale QUEUED recovery
+ *
+ *    QUEUED
+ *      +
+ *    DISPATCHED outbox
+ *      +
+ *    stale recovery clock
+ *      +
+ *    no usable lease
+ *      +
+ *    no terminal execution
+ *      ↓
+ *    Queue re-send
+ *
+ *
+ * 3. Stranded execution recovery
  *
  *    PREPARING_REVIEW
- *          ↓
- *    lease missing / released / expired
- *          ↓
+ *      +
+ *    missing / released / expired lease
+ *      +
  *    no terminal execution
- *          ↓
+ *      ↓
  *    Queue re-send
  *
  *
  * IMPORTANT:
  *
+ * Each recovery job runs independently.
+ *
+ * Failure in one job must not prevent the
+ * remaining recovery jobs from running.
+ *
+ *
  * This file contains:
  *
- * - no SQL
  * - no Methodology logic
- * - no lease mutation logic
+ * - no direct SQL
  * - no publication logic
+ * - no execution ownership logic
  *
- * It only composes already-tested adapters and
- * application services.
+ * It only composes already-tested application
+ * services and Cloudflare adapters.
  */
 
 import { dispatchPendingInvestigations } from "../../../application/investigations/dispatchPendingInvestigations.js";
 
+import { recoverStaleQueuedInvestigations } from "../../../application/investigations/recoverStaleQueuedInvestigations.js";
+
 import { recoverStrandedInvestigations } from "../../../application/investigations/recoverStrandedInvestigations.js";
 
 import { createD1InvestigationDispatchOutbox } from "../d1/d1InvestigationDispatchOutbox.js";
+
+import { createD1InvestigationQueuedRecovery } from "../d1/d1InvestigationQueuedRecovery.js";
 
 import { createD1InvestigationExecutionRecovery } from "../d1/d1InvestigationExecutionRecovery.js";
 
 import { createCloudflareInvestigationQueue } from "../queue/cloudflareInvestigationQueue.js";
 
 /*
- * ------------------------------------------------
+ * =================================================
  * Constants
- * ------------------------------------------------
+ * =================================================
  */
 
 const DEFAULT_DISPATCH_LIMIT = 25;
 
-const DEFAULT_RECOVERY_LIMIT = 25;
+const DEFAULT_QUEUED_RECOVERY_LIMIT = 25;
+
+const DEFAULT_EXECUTION_RECOVERY_LIMIT = 25;
 
 /*
- * ------------------------------------------------
+ * Stale QUEUED grace period:
+ *
+ * 30 minutes
+ */
+const DEFAULT_QUEUED_STALE_GRACE_MS = 30 * 60 * 1000;
+
+/*
+ * =================================================
  * Helpers
- * ------------------------------------------------
+ * =================================================
  */
 
 function isValidTimestamp(value) {
@@ -76,9 +110,9 @@ function isValidTimestamp(value) {
 }
 
 /*
- * ------------------------------------------------
+ * =================================================
  * handleCloudflareScheduledRecovery
- * ------------------------------------------------
+ * =================================================
  *
  * Runtime inputs:
  *
@@ -86,18 +120,30 @@ function isValidTimestamp(value) {
  *   db,
  *   queueBinding,
  *   now,
+ *
  *   dispatchLimit,
+ *
+ *   queuedRecoveryLimit,
+ *   queuedStaleGraceMs,
+ *
  *   recoveryLimit
  * }
+ *
+ *
+ * recoveryLimit is retained for the existing
+ * PREPARING_REVIEW execution-recovery sweep.
  *
  *
  * Test seams:
  *
  * {
  *   dispatchOutboxFactory,
+ *   queuedRecoveryFactory,
  *   executionRecoveryFactory,
  *   queueFactory,
+ *
  *   dispatchService,
+ *   staleQueuedRecoveryService,
  *   strandedRecoveryService
  * }
  */
@@ -112,11 +158,17 @@ export async function handleCloudflareScheduledRecovery(
 
     dispatchLimit = DEFAULT_DISPATCH_LIMIT,
 
-    recoveryLimit = DEFAULT_RECOVERY_LIMIT,
+    queuedRecoveryLimit = DEFAULT_QUEUED_RECOVERY_LIMIT,
+
+    queuedStaleGraceMs = DEFAULT_QUEUED_STALE_GRACE_MS,
+
+    recoveryLimit = DEFAULT_EXECUTION_RECOVERY_LIMIT,
   } = {},
 
   {
     dispatchOutboxFactory = createD1InvestigationDispatchOutbox,
+
+    queuedRecoveryFactory = createD1InvestigationQueuedRecovery,
 
     executionRecoveryFactory = createD1InvestigationExecutionRecovery,
 
@@ -124,20 +176,24 @@ export async function handleCloudflareScheduledRecovery(
 
     dispatchService = dispatchPendingInvestigations,
 
+    staleQueuedRecoveryService = recoverStaleQueuedInvestigations,
+
     strandedRecoveryService = recoverStrandedInvestigations,
   } = {},
 ) {
   /*
    * =================================================
-   * Validate composition functions
+   * Validate composition dependencies
    * =================================================
    */
 
   if (
     typeof dispatchOutboxFactory !== "function" ||
+    typeof queuedRecoveryFactory !== "function" ||
     typeof executionRecoveryFactory !== "function" ||
     typeof queueFactory !== "function" ||
     typeof dispatchService !== "function" ||
+    typeof staleQueuedRecoveryService !== "function" ||
     typeof strandedRecoveryService !== "function"
   ) {
     return {
@@ -147,13 +203,15 @@ export async function handleCloudflareScheduledRecovery(
 
       dispatchResult: null,
 
+      queuedRecoveryResult: null,
+
       executionRecoveryResult: null,
     };
   }
 
   /*
    * =================================================
-   * Validate runtime timestamp
+   * Validate scheduled timestamp
    * =================================================
    */
 
@@ -165,6 +223,8 @@ export async function handleCloudflareScheduledRecovery(
 
       dispatchResult: null,
 
+      queuedRecoveryResult: null,
+
       executionRecoveryResult: null,
     };
   }
@@ -173,11 +233,13 @@ export async function handleCloudflareScheduledRecovery(
 
   /*
    * =================================================
-   * Construct Cloudflare infrastructure adapters
+   * Construct Cloudflare adapters
    * =================================================
    */
 
   let outbox;
+
+  let queuedRecovery;
 
   let executionRecovery;
 
@@ -186,14 +248,15 @@ export async function handleCloudflareScheduledRecovery(
   try {
     outbox = dispatchOutboxFactory(db);
 
+    queuedRecovery = queuedRecoveryFactory(db);
+
     executionRecovery = executionRecoveryFactory(db);
 
     queue = queueFactory(queueBinding);
   } catch {
     /*
-     * Fail closed.
-     *
-     * Do not expose arbitrary adapter exception text.
+     * Do not expose arbitrary infrastructure
+     * exception text through this boundary.
      */
 
     return {
@@ -203,19 +266,22 @@ export async function handleCloudflareScheduledRecovery(
 
       dispatchResult: null,
 
+      queuedRecoveryResult: null,
+
       executionRecoveryResult: null,
     };
   }
 
   /*
    * =================================================
-   * Recovery job 1
+   * JOB 1
    *
-   * Pending dispatch outbox
+   * Pending initial dispatch recovery
    * =================================================
    *
-   * This repairs work that was created durably but
-   * was never successfully dispatched to Queue.
+   * Repairs:
+   *
+   * CREATED + PENDING outbox
    */
 
   let dispatchResult;
@@ -250,17 +316,62 @@ export async function handleCloudflareScheduledRecovery(
 
   /*
    * =================================================
-   * Recovery job 2
+   * JOB 2
    *
-   * Stranded execution recovery
+   * Stale QUEUED recovery
    * =================================================
    *
-   * IMPORTANT:
+   * Run even if JOB 1 failed.
    *
-   * Run this even if dispatch recovery failed.
+   * Repairs work whose original Queue delivery may
+   * have disappeared before PREPARING_REVIEW.
+   */
+
+  let queuedRecoveryResult;
+
+  try {
+    queuedRecoveryResult = await staleQueuedRecoveryService({
+      queuedRecovery,
+
+      queue,
+
+      now: normalizedNow,
+
+      staleGraceMs: queuedStaleGraceMs,
+
+      limit: queuedRecoveryLimit,
+    });
+  } catch {
+    queuedRecoveryResult = {
+      status: "stale_queued_recovery_failed",
+
+      reason: "scheduled_stale_queued_recovery_sweep_threw",
+
+      checked: 0,
+
+      requeued: 0,
+
+      queueFailures: 0,
+
+      stateFailures: 0,
+
+      invalidRecords: 0,
+
+      results: [],
+    };
+  }
+
+  /*
+   * =================================================
+   * JOB 3
    *
-   * The two recovery paths repair different durable
-   * failure modes and should not block one another.
+   * Stranded PREPARING_REVIEW recovery
+   * =================================================
+   *
+   * Run even if JOB 1 or JOB 2 failed.
+   *
+   * Repairs work that had already started execution
+   * preparation but lost ownership.
    */
 
   let executionRecoveryResult;
@@ -295,7 +406,7 @@ export async function handleCloudflareScheduledRecovery(
 
   /*
    * =================================================
-   * Classify each scheduled job
+   * Classify JOB 1
    * =================================================
    */
 
@@ -304,21 +415,34 @@ export async function handleCloudflareScheduledRecovery(
 
   const dispatchPartial = dispatchResult?.status === "dispatch_sweep_partial";
 
+  const dispatchFailed = !dispatchSucceeded && !dispatchPartial;
+
+  /*
+   * =================================================
+   * Classify JOB 2
+   * =================================================
+   */
+
+  const queuedRecoverySucceeded =
+    queuedRecoveryResult?.status === "stale_queued_recovery_complete";
+
+  const queuedRecoveryPartial =
+    queuedRecoveryResult?.status === "stale_queued_recovery_partial";
+
+  const queuedRecoveryFailed =
+    !queuedRecoverySucceeded && !queuedRecoveryPartial;
+
+  /*
+   * =================================================
+   * Classify JOB 3
+   * =================================================
+   */
+
   const executionRecoverySucceeded =
     executionRecoveryResult?.status === "recovery_sweep_complete";
 
   const executionRecoveryPartial =
     executionRecoveryResult?.status === "recovery_sweep_partial";
-
-  /*
-   * A partial result means the sweep ran but one or
-   * more individual records still need later retry.
-   *
-   * A failed result means the sweep itself could not
-   * complete correctly.
-   */
-
-  const dispatchFailed = !dispatchSucceeded && !dispatchPartial;
 
   const executionRecoveryFailed =
     !executionRecoverySucceeded && !executionRecoveryPartial;
@@ -327,6 +451,20 @@ export async function handleCloudflareScheduledRecovery(
    * =================================================
    * Aggregate scheduled recovery
    * =================================================
+   *
+   * COMPLETE:
+   *
+   * all three jobs completed without partial work.
+   *
+   *
+   * FAILED:
+   *
+   * all three jobs failed at the sweep level.
+   *
+   *
+   * PARTIAL:
+   *
+   * every other combination.
    */
 
   let status;
@@ -334,18 +472,21 @@ export async function handleCloudflareScheduledRecovery(
   let reason;
 
   if (
-    !dispatchFailed &&
-    !executionRecoveryFailed &&
-    !dispatchPartial &&
-    !executionRecoveryPartial
+    dispatchSucceeded &&
+    queuedRecoverySucceeded &&
+    executionRecoverySucceeded
   ) {
     status = "scheduled_recovery_complete";
 
     reason = null;
-  } else if (dispatchFailed && executionRecoveryFailed) {
+  } else if (
+    dispatchFailed &&
+    queuedRecoveryFailed &&
+    executionRecoveryFailed
+  ) {
     status = "scheduled_recovery_failed";
 
-    reason = "both_recovery_sweeps_failed";
+    reason = "all_recovery_sweeps_failed";
   } else {
     status = "scheduled_recovery_partial";
 
@@ -354,11 +495,13 @@ export async function handleCloudflareScheduledRecovery(
 
   /*
    * =================================================
-   * Bounded summary
+   * Bounded operational summary
    * =================================================
    *
-   * Do not copy raw evidence, Queue bodies, source
-   * content, or persisted Methodology output here.
+   * No Queue bodies.
+   * No source evidence.
+   * No Methodology output.
+   * No user-provided content.
    */
 
   return {
@@ -367,6 +510,12 @@ export async function handleCloudflareScheduledRecovery(
     reason,
 
     now: normalizedNow,
+
+    /*
+     * ---------------------------------------------
+     * Initial dispatch summary
+     * ---------------------------------------------
+     */
 
     dispatch: {
       status: dispatchResult?.status ?? null,
@@ -381,6 +530,36 @@ export async function handleCloudflareScheduledRecovery(
 
       stateErrors: dispatchResult?.stateErrors ?? 0,
     },
+
+    /*
+     * ---------------------------------------------
+     * Stale QUEUED summary
+     * ---------------------------------------------
+     */
+
+    queuedRecovery: {
+      status: queuedRecoveryResult?.status ?? null,
+
+      reason: queuedRecoveryResult?.reason ?? null,
+
+      checked: queuedRecoveryResult?.checked ?? 0,
+
+      requeued: queuedRecoveryResult?.requeued ?? 0,
+
+      queueFailures: queuedRecoveryResult?.queueFailures ?? 0,
+
+      stateFailures: queuedRecoveryResult?.stateFailures ?? 0,
+
+      invalidRecords: queuedRecoveryResult?.invalidRecords ?? 0,
+
+      staleBefore: queuedRecoveryResult?.staleBefore ?? null,
+    },
+
+    /*
+     * ---------------------------------------------
+     * PREPARING_REVIEW execution summary
+     * ---------------------------------------------
+     */
 
     executionRecovery: {
       status: executionRecoveryResult?.status ?? null,
@@ -397,13 +576,16 @@ export async function handleCloudflareScheduledRecovery(
     },
 
     /*
-     * Keep full application results available to
-     * the immediate Worker caller for testing and
-     * bounded operational handling.
+     * Full immediate application results remain
+     * available to the Worker/test boundary.
      *
-     * The Worker should log only the summaries above.
+     * Worker logging should use only bounded
+     * summaries above.
      */
+
     dispatchResult,
+
+    queuedRecoveryResult,
 
     executionRecoveryResult,
   };
