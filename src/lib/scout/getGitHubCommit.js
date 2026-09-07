@@ -1,18 +1,27 @@
-/**
+/*
  * Resolve a GitHub ref to one exact commit.
  *
  * The ref may be:
- * - a branch
- * - a tag
- * - an existing commit SHA
  *
- * Scout uses this so an investigation can be
- * frozen to one exact repository snapshot.
+ * - branch
+ * - tag
+ * - existing commit SHA
+ *
+ * Production callers may inject a hardened
+ * GitHub request function.
  */
-export async function getGitHubCommit(owner, repo, ref) {
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/commits/${encodeURIComponent(ref)}`;
 
-  const response = await fetch(apiUrl);
+export async function getGitHubCommit(
+  owner,
+  repo,
+  ref,
+  request = globalThis.fetch,
+) {
+  const apiUrl =
+    `https://api.github.com/repos/${owner}/${repo}/commits/` +
+    encodeURIComponent(ref);
+
+  const response = await request(apiUrl);
 
   if (response.status === 404) {
     return {
@@ -23,6 +32,7 @@ export async function getGitHubCommit(owner, repo, ref) {
   if (!response.ok) {
     return {
       status: "github_error",
+
       httpStatus: response.status,
     };
   }
@@ -32,10 +42,8 @@ export async function getGitHubCommit(owner, repo, ref) {
   return {
     status: "commit_found",
 
-    // Exact immutable commit for this investigation.
     commitSha: data.sha,
 
-    // Git tree belonging to that exact commit.
     treeSha: data.commit?.tree?.sha || null,
   };
 }

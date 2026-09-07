@@ -1,4 +1,11 @@
-export async function detectTechnocoreEvidence({ owner, repo, branch, items }) {
+export async function detectTechnocoreEvidence({
+  owner,
+  repo,
+  branch,
+  items,
+
+  request = globalThis.fetch,
+}) {
   const sourceFiles = items
     .filter((item) => {
       if (item.type !== "blob") {
@@ -20,16 +27,19 @@ export async function detectTechnocoreEvidence({ owner, repo, branch, items }) {
   const matches = [];
 
   for (const item of sourceFiles) {
-    const rawUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${item.path}`;
+    const rawUrl =
+      `https://raw.githubusercontent.com/` +
+      `${owner}/${repo}/${branch}/${item.path}`;
 
     try {
-      const response = await fetch(rawUrl);
+      const response = await request(rawUrl);
 
       if (!response.ok) {
         continue;
       }
 
       const content = await response.text();
+
       const lower = content.toLowerCase();
 
       const signals = [];
@@ -65,10 +75,15 @@ export async function detectTechnocoreEvidence({ owner, repo, branch, items }) {
       if (signals.length > 0) {
         matches.push({
           path: item.path,
-          signals: signals,
+
+          signals,
         });
       }
     } catch {
+      /*
+       * One inaccessible source file does not abort
+       * the complete evidence scan.
+       */
       continue;
     }
   }
@@ -82,9 +97,12 @@ export async function detectTechnocoreEvidence({ owner, repo, branch, items }) {
   const established = hasHost && hasProtocol;
 
   return {
-    established: established,
+    established,
+
     sourceFileCountChecked: sourceFiles.length,
+
     signals: [...allSignals],
-    matches: matches,
+
+    matches,
   };
 }

@@ -1,7 +1,7 @@
-export async function getGitHubRepo(owner, repo) {
+export async function getGitHubRepo(owner, repo, request = globalThis.fetch) {
   const apiUrl = `https://api.github.com/repos/${owner}/${repo}`;
 
-  const response = await fetch(apiUrl);
+  const response = await request(apiUrl);
 
   if (response.status === 404) {
     return {
@@ -21,11 +21,12 @@ export async function getGitHubRepo(owner, repo) {
   return {
     status: "repo_found",
 
-    // Stable GitHub repository identity.
     repositoryId: data.id,
 
     fullName: data.full_name,
+
     defaultBranch: data.default_branch,
+
     archived: data.archived,
   };
 }
