@@ -27,6 +27,17 @@
  * Scout investigation execution pipeline
  *
  *
+ * Scheduled recovery:
+ *
+ * Cloudflare scheduled event
+ *    ↓
+ * handleCloudflareScheduledRecovery()
+ *    │
+ *    ├─ CREATED + PENDING recovery
+ *    ├─ stale QUEUED recovery
+ *    └─ stranded PREPARING_REVIEW recovery
+ *
+ *
  * IMPORTANT:
  *
  * This file contains:
@@ -34,6 +45,8 @@
  * - no Methodology logic
  * - no SQL
  * - no ACK / RETRY business policy
+ * - no recovery-selection SQL
+ * - no publication logic
  */
 
 import { handle } from "@astrojs/cloudflare/handler";
@@ -45,6 +58,8 @@ import { createD1InvestigationExecutionLease } from "./infrastructure/cloudflare
 import { createD1InvestigationExecutionRepository } from "./infrastructure/cloudflare/d1/d1InvestigationExecutionRepository.js";
 
 import { handleCloudflareInvestigationQueueBatch } from "./infrastructure/cloudflare/queue/handleCloudflareInvestigationQueueBatch.js";
+
+import { handleCloudflareScheduledRecovery } from "./infrastructure/cloudflare/scheduled/handleCloudflareScheduledRecovery.js";
 
 export default {
   /*
@@ -157,6 +172,148 @@ export default {
       retriedCount: result.retriedCount,
 
       failedCount: result.failedCount,
+    });
+  },
+
+  /*
+   * =================================================
+   * Cloudflare Scheduled Recovery
+   * =================================================
+   *
+   * This handler is inert until a Cron Trigger is
+   * configured in Wrangler / Cloudflare.
+   *
+   * We are only wiring the runtime handler here.
+   *
+   * We are NOT enabling the schedule yet.
+   */
+
+  async scheduled(controller, env, _ctx) {
+    /*
+     * Use Cloudflare's scheduled event time when
+     * available.
+     *
+     * Fall back to the current runtime clock if the
+     * handler is invoked somewhere that does not
+     * provide scheduledTime.
+     */
+
+    const scheduledTime = Number.isFinite(controller?.scheduledTime)
+      ? controller.scheduledTime
+      : Date.now();
+
+    const now = new Date(scheduledTime).toISOString();
+
+    /*
+     * The scheduled recovery boundary validates
+     * and composes its own real D1 + Queue adapters.
+     *
+     * All three recovery jobs run independently:
+     *
+     * 1. CREATED + PENDING
+     * 2. stale QUEUED
+     * 3. stranded PREPARING_REVIEW
+     */
+
+    let result;
+
+    try {
+      result = await handleCloudflareScheduledRecovery({
+        db: env?.DB,
+
+        queueBinding: env?.INVESTIGATION_QUEUE,
+
+        now,
+      });
+    } catch {
+      /*
+       * Unexpected boundary failure.
+       *
+       * Keep the operational log bounded and do
+       * not expose raw exception information.
+       */
+
+      console.error({
+        status: "scout_scheduled_recovery_failed",
+
+        reason: "scheduled_recovery_boundary_threw",
+
+        now,
+      });
+
+      return;
+    }
+
+    /*
+     * Bounded scheduled-recovery logging.
+     *
+     * IMPORTANT:
+     *
+     * Do not log:
+     *
+     * - dispatchResult
+     * - queuedRecoveryResult
+     * - executionRecoveryResult
+     *
+     * Those may contain per-record operational
+     * details.
+     *
+     * Log only the bounded summaries produced by
+     * the scheduled recovery boundary.
+     */
+
+    console.log({
+      status: result.status,
+
+      reason: result.reason,
+
+      now: result.now,
+
+      dispatch: {
+        status: result.dispatch?.status ?? null,
+
+        reason: result.dispatch?.reason ?? null,
+
+        checked: result.dispatch?.checked ?? 0,
+
+        dispatched: result.dispatch?.dispatched ?? 0,
+
+        retriesScheduled: result.dispatch?.retriesScheduled ?? 0,
+
+        stateErrors: result.dispatch?.stateErrors ?? 0,
+      },
+
+      queuedRecovery: {
+        status: result.queuedRecovery?.status ?? null,
+
+        reason: result.queuedRecovery?.reason ?? null,
+
+        checked: result.queuedRecovery?.checked ?? 0,
+
+        requeued: result.queuedRecovery?.requeued ?? 0,
+
+        queueFailures: result.queuedRecovery?.queueFailures ?? 0,
+
+        stateFailures: result.queuedRecovery?.stateFailures ?? 0,
+
+        invalidRecords: result.queuedRecovery?.invalidRecords ?? 0,
+
+        staleBefore: result.queuedRecovery?.staleBefore ?? null,
+      },
+
+      executionRecovery: {
+        status: result.executionRecovery?.status ?? null,
+
+        reason: result.executionRecovery?.reason ?? null,
+
+        checked: result.executionRecovery?.checked ?? 0,
+
+        requeued: result.executionRecovery?.requeued ?? 0,
+
+        queueFailures: result.executionRecovery?.queueFailures ?? 0,
+
+        invalidRecords: result.executionRecovery?.invalidRecords ?? 0,
+      },
     });
   },
 };
