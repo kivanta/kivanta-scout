@@ -4,7 +4,6 @@
  * Production composition boundary for Scout's
  * hardened GitHub reads.
  *
- *
  * One injected request function is propagated to:
  *
  * frozen source assessment
@@ -17,7 +16,6 @@
  *      ├─ Check 1 file evidence
  *      ├─ Check 2 file evidence
  *      └─ Check 3 file evidence
- *
  *
  * IMPORTANT:
  *
@@ -62,7 +60,6 @@ function createCompositionError(code) {
  * request
  *
  *   Scout's hardened GitHub request function.
- *
  *
  * The second argument contains dependency seams
  * used by tests.
