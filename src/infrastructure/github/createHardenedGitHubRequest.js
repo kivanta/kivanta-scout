@@ -12,6 +12,7 @@
  * - bounded request timeout
  * - bounded response body
  * - current GitHub REST API headers
+ * - fixed GitHub User-Agent
  * - optional server-side GitHub token
  *
  *
@@ -45,6 +46,8 @@ const DEFAULT_API_VERSION = "2026-03-10";
 const DEFAULT_TIMEOUT_MS = 8_000;
 
 const DEFAULT_MAX_BYTES = 8 * 1024 * 1024;
+
+const DEFAULT_USER_AGENT = "Kivanta-Scout/1.0";
 
 /*
  * ------------------------------------------------
@@ -309,6 +312,18 @@ export function createHardenedGitHubRequest({
       if (!requestHeaders.has("Accept")) {
         requestHeaders.set("Accept", "application/vnd.github+json");
       }
+
+      /*
+       * GitHub REST requires a valid User-Agent.
+       *
+       * Set it here rather than relying on Node,
+       * Cloudflare, or another runtime to provide one.
+       *
+       * Set it unconditionally so callers cannot
+       * replace Scout's application identity.
+       */
+
+      requestHeaders.set("User-Agent", DEFAULT_USER_AGENT);
 
       requestHeaders.set("X-GitHub-Api-Version", normalizedApiVersion);
 
