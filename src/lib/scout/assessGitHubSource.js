@@ -7,12 +7,19 @@ import { detectTechnocoreEvidence } from "./detectTechnocoreEvidence.js";
 import { identifySingleTool } from "./identifySingleTool.js";
 import { evaluateSourceSupport } from "./evaluateSourceSupport.js";
 
-export async function assessGitHubSource(owner, repo) {
+export async function assessGitHubSource(
+  owner,
+  repo,
+  { request = globalThis.fetch } = {},
+) {
   /*
    * Step 1
    * Get the repository identity.
+   *
+   * Production discovery injects Scout's
+   * hardened GitHub request boundary.
    */
-  const repository = await getGitHubRepo(owner, repo);
+  const repository = await getGitHubRepo(owner, repo, request);
 
   if (repository.status !== "repo_found") {
     return {
@@ -26,7 +33,12 @@ export async function assessGitHubSource(owner, repo) {
    * Resolve the moving default branch
    * to one exact immutable commit.
    */
-  const commit = await getGitHubCommit(owner, repo, repository.defaultBranch);
+  const commit = await getGitHubCommit(
+    owner,
+    repo,
+    repository.defaultBranch,
+    request,
+  );
 
   if (commit.status !== "commit_found") {
     return {
@@ -40,7 +52,7 @@ export async function assessGitHubSource(owner, repo) {
    * Read the repository tree at the
    * exact frozen commit — not "main".
    */
-  const tree = await getGitHubTree(owner, repo, commit.commitSha);
+  const tree = await getGitHubTree(owner, repo, commit.commitSha, request);
 
   if (tree.status !== "tree_found") {
     return {
@@ -56,53 +68,57 @@ export async function assessGitHubSource(owner, repo) {
   const python = detectPythonSurfaces(tree.items);
 
   const technocoreEvidence = await detectTechnocoreEvidence({
-    owner: owner,
-    repo: repo,
+    owner,
+    repo,
 
-    // Existing functions accept a Git ref here.
-    // We use the immutable commit SHA.
+    /*
+     * Existing functions accept a Git ref.
+     * Use the immutable commit SHA.
+     */
     branch: commit.commitSha,
 
     items: tree.items,
+
+    /*
+     * Technocore evidence file reads must
+     * use the same hardened GitHub boundary.
+     */
+    request,
   });
 
   const toolIdentity = identifySingleTool(tree.items, technocoreEvidence);
 
   const support = evaluateSourceSupport({
     repo: repository,
-    tree: tree,
-    python: python,
-    technocoreEvidence: technocoreEvidence,
-    toolIdentity: toolIdentity,
+    tree,
+    python,
+    technocoreEvidence,
+    toolIdentity,
   });
 
   return {
     ...support,
 
     repository: {
-      // Stable GitHub repository identity.
       repositoryId: repository.repositoryId,
 
       fullName: repository.fullName,
 
-      // Human-readable branch from which
-      // this snapshot was resolved.
       defaultBranch: repository.defaultBranch,
 
       archived: repository.archived,
 
-      // Immutable investigation snapshot.
       commitSha: commit.commitSha,
 
       treeSha: commit.treeSha,
     },
 
-    tree: tree,
+    tree,
 
-    python: python,
+    python,
 
-    technocoreEvidence: technocoreEvidence,
+    technocoreEvidence,
 
-    toolIdentity: toolIdentity,
+    toolIdentity,
   };
 }

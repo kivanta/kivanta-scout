@@ -2,7 +2,10 @@ import { classifyInput } from "./classifyInput.js";
 import { normalizeGitHubRepo } from "./normalizeGitHubRepo.js";
 import { getGitHubRepo } from "./getGitHubRepo.js";
 
-export async function discoverInput(input) {
+export async function discoverInput(
+  input,
+  { request = globalThis.fetch } = {},
+) {
   const classified = classifyInput(input);
 
   if (classified.type === "github_repo") {
@@ -16,7 +19,19 @@ export async function discoverInput(input) {
       };
     }
 
-    const githubResult = await getGitHubRepo(repository.owner, repository.repo);
+    /*
+     * GitHub discovery must use the request
+     * boundary supplied by the runtime.
+     *
+     * Production will inject Scout's hardened
+     * GitHub request here.
+     */
+    const githubResult = await getGitHubRepo(
+      repository.owner,
+      repository.repo,
+      request,
+    );
+
     if (githubResult.status !== "repo_found") {
       return {
         status: githubResult.status,
@@ -27,6 +42,7 @@ export async function discoverInput(input) {
         canonicalUrl: repository.canonicalUrl,
       };
     }
+
     return {
       status: githubResult.status,
       inputType: classified.type,
@@ -80,11 +96,9 @@ export async function discoverInput(input) {
     };
   }
 
-  if (classified.type === "unknown") {
-    return {
-      status: "unsupported_input",
-      inputType: classified.type,
-      value: classified.value,
-    };
-  }
+  return {
+    status: "unsupported_input",
+    inputType: classified.type,
+    value: classified.value,
+  };
 }
