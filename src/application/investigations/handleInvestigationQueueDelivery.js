@@ -19,38 +19,69 @@
  *   queue_delivery_retry
  *
  *
- * The future Cloudflare Queue adapter will translate
- * that decision into the actual Queue API call.
- *
- *
  * Flow:
  *
  * Queue message
  *      ↓
+ * terminal-execution preflight
+ *      │
+ *      ├─ terminal execution already exists
+ *      │      ↓
+ *      │   reconcile parent lifecycle
+ *      │      ↓
+ *      │   ACK without rerunning Methodology
+ *      │
+ *      └─ no terminal execution
+ *             ↓
  * processQueuedInvestigation()
- *      ↓
- * ACK permanent / duplicate conditions
- * RETRY transient state failures
- * CONTINUE when PREPARING_REVIEW + lease acquired
- *      ↓
+ *             ↓
  * executePreparedScoutInvestigation()
- *      ↓
- * ACK only when the durable execution outcome exists
- * RETRY when authoritative execution state was not
- * durably recorded
+ *             ↓
+ * persist terminal execution
+ *             ↓
+ * reconcile parent lifecycle
+ *             ↓
+ * ACK
  *
  *
  * IMPORTANT TRUST RULE:
  *
- * A Methodology failure may be ACKed only when its
- * FAILED execution outcome was successfully persisted.
+ * A Queue delivery may ACK a terminal execution
+ * only after:
  *
- * A failure that was NOT durably recorded must RETRY.
+ * 1. the execution outcome is durable
+ *
+ * AND
+ *
+ * 2. the parent investigation lifecycle is
+ *    durably reconciled.
+ *
+ *
+ * If execution persistence succeeded but parent
+ * lifecycle reconciliation did not, the Queue
+ * delivery RETRIES.
+ *
+ * On that retry, terminal-execution preflight
+ * discovers the existing durable outcome and
+ * reconciles the parent WITHOUT creating another
+ * Methodology execution attempt.
  */
 
 import { processQueuedInvestigation } from "./processQueuedInvestigation.js";
 
 import { executePreparedScoutInvestigation } from "./executePreparedScoutInvestigation.js";
+
+/*
+ * ------------------------------------------------
+ * Constants
+ * ------------------------------------------------
+ */
+
+const TERMINAL_EXECUTION_STATUSES = new Set(["COMPLETE", "PARTIAL", "FAILED"]);
+
+const SUPPORTED_MESSAGE_VERSION = 1;
+
+const SUPPORTED_MESSAGE_TYPE = "investigation_requested";
 
 /*
  * ------------------------------------------------
@@ -105,11 +136,35 @@ function cleanString(value) {
   return normalized.length > 0 ? normalized : null;
 }
 
+function isValidTimestamp(value) {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0 &&
+    !Number.isNaN(Date.parse(value))
+  );
+}
+
 function getInvestigationId(message, result) {
   return (
     cleanString(result?.investigationId) ||
     cleanString(message?.investigationId)
   );
+}
+
+function isSupportedInvestigationMessage(message) {
+  return (
+    message &&
+    typeof message === "object" &&
+    message.version === SUPPORTED_MESSAGE_VERSION &&
+    message.type === SUPPORTED_MESSAGE_TYPE &&
+    cleanString(message.investigationId) !== null
+  );
+}
+
+function normalizeTerminalExecutionStatus(value) {
+  const normalized = cleanString(value)?.toUpperCase() ?? null;
+
+  return TERMINAL_EXECUTION_STATUSES.has(normalized) ? normalized : null;
 }
 
 /*
@@ -184,6 +239,349 @@ function createRetryDecision({
 
 /*
  * ------------------------------------------------
+ * Terminal execution projection
+ * ------------------------------------------------
+ *
+ * Convert execution-layer return values into the
+ * small shape required to reconcile the parent
+ * investigation.
+ */
+
+function getTerminalExecutionFromResult(result) {
+  if (!result || typeof result !== "object") {
+    return null;
+  }
+
+  let durableStatus = normalizeTerminalExecutionStatus(result.executionStatus);
+
+  let execution = result.execution ?? null;
+
+  /*
+   * prepared_execution_failed carries its durable
+   * execution inside outcomeResult.execution.
+   */
+  if (
+    result.status === "prepared_execution_failed" &&
+    result.outcomeResult?.status === "execution_outcome_recorded"
+  ) {
+    durableStatus = "FAILED";
+
+    execution = result.outcomeResult.execution ?? execution;
+  }
+
+  if (!durableStatus) {
+    return null;
+  }
+
+  return {
+    executionId:
+      cleanString(execution?.executionId) || cleanString(result.executionId),
+
+    executionStatus: durableStatus,
+
+    completedAt: cleanString(execution?.completedAt),
+
+    failureReason:
+      durableStatus === "FAILED"
+        ? cleanString(execution?.failureReason) ||
+          cleanString(result.reason) ||
+          "execution_failed"
+        : null,
+  };
+}
+
+/*
+ * ------------------------------------------------
+ * Parent lifecycle reconciliation
+ * ------------------------------------------------
+ *
+ * COMPLETE execution → COMPLETE investigation
+ * PARTIAL execution  → PARTIAL investigation
+ * FAILED execution   → FAILED investigation
+ *
+ *
+ * This is intentionally separate from publication.
+ *
+ * Publication remains a later stage.
+ */
+
+async function reconcileTerminalInvestigation({
+  investigationRepository,
+
+  investigationId,
+
+  terminalExecution,
+
+  fallbackUpdatedAt,
+}) {
+  const terminalStatus = normalizeTerminalExecutionStatus(
+    terminalExecution?.executionStatus,
+  );
+
+  if (!terminalStatus) {
+    return {
+      status: "terminal_reconciliation_not_ready",
+
+      reason: "terminal_execution_status_required",
+    };
+  }
+
+  if (
+    !investigationRepository ||
+    typeof investigationRepository.updateInvestigation !== "function"
+  ) {
+    return {
+      status: "terminal_reconciliation_not_ready",
+
+      reason: "investigation_repository_update_required",
+    };
+  }
+
+  const executionCompletedAt = cleanString(terminalExecution?.completedAt);
+
+  const updatedAt = isValidTimestamp(executionCompletedAt)
+    ? executionCompletedAt
+    : fallbackUpdatedAt;
+
+  if (!isValidTimestamp(updatedAt)) {
+    return {
+      status: "terminal_reconciliation_not_ready",
+
+      reason: "valid_terminal_reconciliation_timestamp_required",
+    };
+  }
+
+  const failureReason =
+    terminalStatus === "FAILED"
+      ? cleanString(terminalExecution?.failureReason) || "execution_failed"
+      : null;
+
+  let updateResult;
+
+  try {
+    updateResult = await investigationRepository.updateInvestigation(
+      investigationId,
+      {
+        lifecycleState: terminalStatus,
+
+        updatedAt,
+
+        failureReason,
+      },
+    );
+  } catch {
+    return {
+      status: "terminal_reconciliation_failed",
+
+      reason: "investigation_terminal_update_threw",
+    };
+  }
+
+  if (updateResult?.status !== "investigation_updated") {
+    return {
+      status: "terminal_reconciliation_failed",
+
+      reason: "investigation_terminal_state_not_recorded",
+
+      updateResult,
+    };
+  }
+
+  return {
+    status: "terminal_reconciliation_complete",
+
+    reason: null,
+
+    investigation: updateResult.investigation ?? null,
+
+    lifecycleState: terminalStatus,
+  };
+}
+
+/*
+ * ------------------------------------------------
+ * Existing terminal execution preflight
+ * ------------------------------------------------
+ *
+ * This closes the at-least-once retry gap:
+ *
+ * terminal execution persisted
+ *        ↓
+ * parent lifecycle write failed
+ *        ↓
+ * Queue delivery retries
+ *        ↓
+ * DO NOT run Methodology again
+ *        ↓
+ * reconcile existing terminal execution
+ */
+
+async function checkExistingTerminalExecution({
+  message,
+
+  investigationRepository,
+
+  executionRepository,
+
+  preparationNow,
+}) {
+  /*
+   * Older test doubles and lower-level callers may
+   * not expose the new investigation-scoped read.
+   *
+   * Production D1 does.
+   *
+   * When the capability is absent, return "not
+   * enabled" and preserve the existing execution
+   * flow.
+   */
+  if (
+    !executionRepository ||
+    typeof executionRepository.getLatestExecutionForInvestigation !== "function"
+  ) {
+    return {
+      status: "terminal_preflight_not_enabled",
+
+      reason: null,
+    };
+  }
+
+  /*
+   * Invalid Queue messages still belong to the
+   * normal Queue-message validation path.
+   *
+   * Do not reconcile based on malformed messages.
+   */
+  if (!isSupportedInvestigationMessage(message)) {
+    return {
+      status: "terminal_preflight_not_applicable",
+
+      reason: null,
+    };
+  }
+
+  const investigationId = cleanString(message.investigationId);
+
+  let latestExecutionResult;
+
+  try {
+    latestExecutionResult =
+      await executionRepository.getLatestExecutionForInvestigation(
+        investigationId,
+      );
+  } catch {
+    return {
+      status: "terminal_preflight_failed",
+
+      reason: "latest_execution_query_threw",
+
+      investigationId,
+    };
+  }
+
+  if (latestExecutionResult?.status === "execution_query_failed") {
+    return {
+      status: "terminal_preflight_failed",
+
+      reason: latestExecutionResult.reason || "latest_execution_query_failed",
+
+      investigationId,
+    };
+  }
+
+  if (latestExecutionResult?.status === "execution_not_found") {
+    return {
+      status: "terminal_preflight_clear",
+
+      reason: null,
+
+      investigationId,
+    };
+  }
+
+  if (latestExecutionResult?.status !== "execution_found") {
+    return {
+      status: "terminal_preflight_failed",
+
+      reason: "unrecognized_latest_execution_result",
+
+      investigationId,
+    };
+  }
+
+  const execution = latestExecutionResult.execution;
+
+  const terminalStatus = normalizeTerminalExecutionStatus(
+    execution?.executionStatus,
+  );
+
+  /*
+   * RUNNING is historical/incomplete work.
+   *
+   * It does not block normal lease-based recovery.
+   */
+  if (!terminalStatus) {
+    return {
+      status: "terminal_preflight_clear",
+
+      reason: null,
+
+      investigationId,
+
+      latestExecutionStatus: cleanString(execution?.executionStatus),
+    };
+  }
+
+  /*
+   * A durable terminal execution already exists.
+   *
+   * Reconcile the parent before any lease can be
+   * acquired for a new attempt.
+   */
+
+  const reconciliation = await reconcileTerminalInvestigation({
+    investigationRepository,
+
+    investigationId,
+
+    terminalExecution: execution,
+
+    fallbackUpdatedAt: preparationNow,
+  });
+
+  if (reconciliation.status !== "terminal_reconciliation_complete") {
+    return {
+      status: "terminal_preflight_failed",
+
+      reason: reconciliation.reason || "terminal_reconciliation_failed",
+
+      investigationId,
+
+      executionId: cleanString(execution?.executionId),
+
+      durableExecutionStatus: terminalStatus,
+
+      reconciliation,
+    };
+  }
+
+  return {
+    status: "terminal_preflight_reconciled",
+
+    reason: null,
+
+    investigationId,
+
+    executionId: cleanString(execution?.executionId),
+
+    durableExecutionStatus: terminalStatus,
+
+    reconciliation,
+  };
+}
+
+/*
+ * ------------------------------------------------
  * Execution result classification
  * ------------------------------------------------
  */
@@ -226,23 +624,8 @@ function classifyExecutionResult({
    * Methodology / preparation failure
    * =================================================
    *
-   * executePreparedInvestigation() may return:
-   *
-   *   prepared_execution_failed
-   *
-   * for a legitimate operational failure.
-   *
-   * But ACK is safe ONLY if its FAILED outcome was
-   * successfully recorded in the authoritative
-   * execution repository.
-   *
-   * This distinction prevents losing work when:
-   *
-   *   Methodology fails
-   *       ↓
-   *   D1 outcome write also fails
-   *
-   * In that situation, retry is required.
+   * A Methodology failure may ACK only when its
+   * FAILED execution outcome is durable.
    */
 
   if (result.status === "prepared_execution_failed") {
@@ -278,7 +661,7 @@ function classifyExecutionResult({
 
   /*
    * =================================================
-   * Authoritative state write failed
+   * Authoritative execution state write failed
    * =================================================
    */
 
@@ -327,9 +710,6 @@ function classifyExecutionResult({
    * =================================================
    *
    * Fail safe.
-   *
-   * We retry rather than silently ACK an execution
-   * state this Queue boundary does not understand.
    */
 
   return createRetryDecision({
@@ -349,25 +729,6 @@ function classifyExecutionResult({
  * ------------------------------------------------
  * handleInvestigationQueueDelivery
  * ------------------------------------------------
- *
- * Runtime dependencies:
- *
- * message
- * investigationRepository
- * executionLease
- * executionRepository
- *
- *
- * Optional deterministic controls:
- *
- * now
- * leaseDurationMs
- * createLeaseToken
- * createExecutionId
- * startedAt
- *
- *
- * Dependency seams in second argument are for tests.
  */
 
 export async function handleInvestigationQueueDelivery(
@@ -423,11 +784,6 @@ export async function handleInvestigationQueueDelivery(
    * =================================================
    * Resolve preparation timestamp
    * =================================================
-   *
-   * processQueuedInvestigation() expects a concrete
-   * timestamp string.
-   *
-   * The execution layer expects now() as a function.
    */
 
   let preparationNow;
@@ -439,6 +795,62 @@ export async function handleInvestigationQueueDelivery(
       reason: "queue_runtime_clock_failed",
 
       investigationId: getInvestigationId(message, null),
+    });
+  }
+
+  /*
+   * =================================================
+   * Terminal execution preflight
+   * =================================================
+   *
+   * IMPORTANT:
+   *
+   * This runs BEFORE processQueuedInvestigation(),
+   * therefore BEFORE acquiring another execution
+   * lease.
+   *
+   * That is what prevents a retry from turning a
+   * terminal attempt 1 into an unnecessary attempt 2.
+   */
+
+  const terminalPreflight = await checkExistingTerminalExecution({
+    message,
+
+    investigationRepository,
+
+    executionRepository,
+
+    preparationNow,
+  });
+
+  if (terminalPreflight.status === "terminal_preflight_failed") {
+    return createRetryDecision({
+      reason: terminalPreflight.reason,
+
+      investigationId:
+        terminalPreflight.investigationId ?? getInvestigationId(message, null),
+
+      executionStatus: "terminal_execution_preflight",
+
+      executionId: terminalPreflight.executionId ?? null,
+
+      durableExecutionStatus: terminalPreflight.durableExecutionStatus ?? null,
+    });
+  }
+
+  if (terminalPreflight.status === "terminal_preflight_reconciled") {
+    return createAckDecision({
+      reason: "terminal_execution_reconciled",
+
+      investigationId: terminalPreflight.investigationId,
+
+      preparationStatus: "terminal_execution_preflight",
+
+      executionStatus: "terminal_execution_reconciliation",
+
+      executionId: terminalPreflight.executionId,
+
+      durableExecutionStatus: terminalPreflight.durableExecutionStatus,
     });
   }
 
@@ -465,11 +877,6 @@ export async function handleInvestigationQueueDelivery(
       createLeaseToken,
     });
   } catch {
-    /*
-     * Do not expose arbitrary exception text through
-     * the Queue decision boundary.
-     */
-
     return createRetryDecision({
       reason: "queued_investigation_processing_threw",
 
@@ -534,10 +941,6 @@ export async function handleInvestigationQueueDelivery(
    * =================================================
    * Execute prepared Scout investigation
    * =================================================
-   *
-   * The execution lease acquired by
-   * processQueuedInvestigation() remains active and
-   * is carried into this call.
    */
 
   let executionResult;
@@ -554,24 +957,9 @@ export async function handleInvestigationQueueDelivery(
 
       startedAt,
 
-      /*
-       * Reuse the runtime clock function when one
-       * was supplied.
-       *
-       * If the caller supplied a concrete timestamp
-       * instead, provide a function returning that
-       * timestamp so the lower layer retains its
-       * expected function contract.
-       */
       now: typeof now === "function" ? now : () => preparationNow,
     });
   } catch {
-    /*
-     * No durable outcome is known to exist.
-     *
-     * Retry the delivery.
-     */
-
     return createRetryDecision({
       reason: "scout_execution_threw",
 
@@ -583,7 +971,7 @@ export async function handleInvestigationQueueDelivery(
 
   /*
    * =================================================
-   * Translate Scout execution into Queue decision
+   * Classify durable execution result
    * =================================================
    */
 
@@ -592,6 +980,80 @@ export async function handleInvestigationQueueDelivery(
 
     investigationId,
   });
+
+  /*
+   * =================================================
+   * Reconcile terminal parent lifecycle
+   * =================================================
+   *
+   * Enable this hardened reconciliation when the
+   * execution repository supports the new
+   * investigation-scoped latest-execution read.
+   *
+   * Production D1 supports it.
+   *
+   * This compatibility gate lets older isolated test
+   * doubles continue exercising the legacy decision
+   * classification without pretending they provide
+   * durable terminal-history capability.
+   */
+
+  const terminalReconciliationEnabled =
+    typeof executionRepository?.getLatestExecutionForInvestigation ===
+    "function";
+
+  if (
+    terminalReconciliationEnabled &&
+    decision.status === "queue_delivery_ack"
+  ) {
+    const terminalExecution = getTerminalExecutionFromResult(executionResult);
+
+    if (terminalExecution) {
+      const reconciliation = await reconcileTerminalInvestigation({
+        investigationRepository,
+
+        investigationId,
+
+        terminalExecution,
+
+        fallbackUpdatedAt: preparationNow,
+      });
+
+      /*
+       * Execution is durable, but parent lifecycle
+       * is not.
+       *
+       * RETRY rather than ACK.
+       *
+       * The retry will hit terminal preflight first
+       * and will therefore NOT execute Methodology
+       * again.
+       */
+      if (reconciliation.status !== "terminal_reconciliation_complete") {
+        return createRetryDecision({
+          reason:
+            reconciliation.reason ||
+            "investigation_terminal_state_not_recorded",
+
+          investigationId,
+
+          preparationStatus: preparationResult.status,
+
+          executionStatus: decision.executionStatus,
+
+          executionId: decision.executionId,
+
+          durableExecutionStatus: decision.durableExecutionStatus,
+        });
+      }
+    }
+  }
+
+  /*
+   * =================================================
+   * Final Queue decision
+   * =================================================
+   */
 
   return {
     ...decision,

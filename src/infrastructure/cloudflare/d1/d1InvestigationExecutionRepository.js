@@ -140,6 +140,7 @@ function serializeAnalysisOutcome(value) {
   if (value === undefined || value === null) {
     return {
       ok: true,
+
       json: null,
     };
   }
@@ -150,21 +151,49 @@ function serializeAnalysisOutcome(value) {
     if (typeof json !== "string") {
       return {
         ok: false,
+
         json: null,
       };
     }
 
     return {
       ok: true,
+
       json,
     };
   } catch {
     return {
       ok: false,
+
       json: null,
     };
   }
 }
+
+/*
+ * Common execution projection.
+ *
+ * Keeping the columns identical between:
+ *
+ * - getExecution()
+ * - getLatestExecutionForInvestigation()
+ *
+ * reduces the chance of the two read paths
+ * returning different execution shapes.
+ */
+const EXECUTION_SELECT_COLUMNS = `
+  execution_id,
+  investigation_id,
+  lease_token,
+  attempt,
+  execution_status,
+  started_at,
+  completed_at,
+  analysis_outcome_json,
+  failure_reason,
+  created_at,
+  updated_at
+`;
 
 /*
  * ------------------------------------------------
@@ -201,20 +230,14 @@ export function createD1InvestigationExecutionRepository(db) {
         .prepare(
           `
           SELECT
-            execution_id,
-            investigation_id,
-            lease_token,
-            attempt,
-            execution_status,
-            started_at,
-            completed_at,
-            analysis_outcome_json,
-            failure_reason,
-            created_at,
-            updated_at
+            ${EXECUTION_SELECT_COLUMNS}
+
           FROM investigation_executions
+
           WHERE execution_id = ?
-        `,
+
+          LIMIT 1
+          `,
         )
         .bind(normalizedExecutionId)
         .first();
@@ -241,6 +264,102 @@ export function createD1InvestigationExecutionRepository(db) {
         status: "execution_query_failed",
 
         reason: "d1_execution_query_failed",
+
+        execution: null,
+
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /*
+   * ------------------------------------------------
+   * getLatestExecutionForInvestigation
+   * ------------------------------------------------
+   *
+   * Read the newest durable execution attempt for
+   * one investigation.
+   *
+   *
+   * Why this exists:
+   *
+   * Cloudflare Queues are at-least-once.
+   *
+   * It is possible for:
+   *
+   *   execution outcome persisted
+   *        ↓
+   *   parent investigation finalization fails
+   *        ↓
+   *   Queue message is delivered again
+   *
+   *
+   * Before a retry is allowed to create a new
+   * execution attempt, Scout needs to know whether
+   * a terminal execution already exists.
+   *
+   *
+   * COMPLETE / PARTIAL / FAILED are durable.
+   *
+   * A later application boundary may reconcile the
+   * parent investigation from that durable fact
+   * rather than running Methodology again.
+   */
+
+  async function getLatestExecutionForInvestigation(investigationId) {
+    if (!isNonEmptyString(investigationId)) {
+      return {
+        status: "execution_query_failed",
+
+        reason: "investigation_id_required",
+
+        execution: null,
+      };
+    }
+
+    const normalizedInvestigationId = investigationId.trim();
+
+    try {
+      const row = await db
+        .prepare(
+          `
+          SELECT
+            ${EXECUTION_SELECT_COLUMNS}
+
+          FROM investigation_executions
+
+          WHERE investigation_id = ?
+
+          ORDER BY attempt DESC
+
+          LIMIT 1
+          `,
+        )
+        .bind(normalizedInvestigationId)
+        .first();
+
+      if (!row) {
+        return {
+          status: "execution_not_found",
+
+          reason: null,
+
+          execution: null,
+        };
+      }
+
+      return {
+        status: "execution_found",
+
+        reason: null,
+
+        execution: mapExecutionRow(row),
+      };
+    } catch (error) {
+      return {
+        status: "execution_query_failed",
+
+        reason: "d1_latest_investigation_execution_query_failed",
 
         execution: null,
 
@@ -281,8 +400,17 @@ export function createD1InvestigationExecutionRepository(db) {
    */
 
   async function createExecution(input = {}) {
-    const { executionId, investigationId, leaseToken, attempt, startedAt } =
-      input;
+    const {
+      executionId,
+
+      investigationId,
+
+      leaseToken,
+
+      attempt,
+
+      startedAt,
+    } = input;
 
     if (!isNonEmptyString(executionId)) {
       return {
@@ -363,27 +491,38 @@ export function createD1InvestigationExecutionRepository(db) {
 
           WHERE EXISTS (
             SELECT 1
+
             FROM investigation_execution_leases
+
             WHERE investigation_id = ?
               AND lease_token = ?
               AND attempt = ?
               AND released_at IS NULL
               AND expires_at > ?
           )
-        `,
+          `,
         )
         .bind(
           normalizedExecutionId,
+
           normalizedInvestigationId,
+
           normalizedLeaseToken,
+
           attempt,
+
           startedAt,
+
           startedAt,
+
           startedAt,
 
           normalizedInvestigationId,
+
           normalizedLeaseToken,
+
           attempt,
+
           startedAt,
         )
         .run();
@@ -480,11 +619,17 @@ export function createD1InvestigationExecutionRepository(db) {
   async function recordExecutionOutcome(input = {}) {
     const {
       executionId,
+
       investigationId,
+
       leaseToken,
+
       executionStatus,
+
       completedAt,
+
       analysisOutcome = null,
+
       failureReason = null,
     } = input;
 
@@ -542,6 +687,7 @@ export function createD1InvestigationExecutionRepository(db) {
         .prepare(
           `
           UPDATE investigation_executions
+
           SET
             execution_status = ?,
             completed_at = ?,
@@ -556,7 +702,10 @@ export function createD1InvestigationExecutionRepository(db) {
 
             AND EXISTS (
               SELECT 1
-              FROM investigation_execution_leases AS lease
+
+              FROM investigation_execution_leases
+                AS lease
+
               WHERE
                 lease.investigation_id =
                   investigation_executions.investigation_id
@@ -571,17 +720,23 @@ export function createD1InvestigationExecutionRepository(db) {
 
                 AND lease.expires_at > ?
             )
-        `,
+          `,
         )
         .bind(
           executionStatus,
+
           completedAt,
+
           serializedOutcome.json,
+
           boundedFailureReason,
+
           completedAt,
 
           normalizedExecutionId,
+
           normalizedInvestigationId,
+
           normalizedLeaseToken,
 
           completedAt,
@@ -656,7 +811,11 @@ export function createD1InvestigationExecutionRepository(db) {
 
   return {
     createExecution,
+
     getExecution,
+
+    getLatestExecutionForInvestigation,
+
     recordExecutionOutcome,
   };
 }
