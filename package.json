@@ -10,7 +10,9 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "generate-types": "wrangler types"
+    "generate-types": "wrangler types",
+    "format:file": "prettier --write",
+    "format:check:file": "prettier --check"
   },
   "dependencies": {
     "@astrojs/cloudflare": "^14.3.0",
@@ -20,5 +22,9 @@
   },
   "allowScripts": {
     "esbuild": true
+  },
+  "devDependencies": {
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^1.0.0"
   }
 }
