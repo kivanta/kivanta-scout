@@ -1,0 +1,74 @@
+---
+/* ========================================
+   KIVANTA SCOUT — RESULT REGION
+
+   Hidden by default.
+
+   JavaScript will reveal this region only
+   after a visitor starts an investigation.
+
+   Keeping it hidden during the idle state
+   preserves the locked opening viewport:
+   Navbar + Hero + Activity Strip.
+======================================== */
+
+import "../styles/scout-result.css";
+---
+
+<section
+  class="scout-result"
+  id="scout-result"
+  aria-labelledby="scout-result-title"
+  hidden
+>
+
+  <div class="scout-result__inner">
+
+    <!-- ==================================
+         LIVE STATUS
+    =================================== -->
+
+    <div
+      class="scout-result__status"
+      id="scout-result-status"
+      role="status"
+      aria-live="polite"
+    >
+
+      <p class="scout-result__eyebrow">
+        SCOUT INVESTIGATION
+      </p>
+
+      <h2
+        class="scout-result__title"
+        id="scout-result-title"
+      >
+        Investigating public evidence
+      </h2>
+
+      <p
+        class="scout-result__message"
+        id="scout-result-message"
+      >
+        Scout is preparing the investigation.
+      </p>
+
+    </div>
+
+
+    <!-- ==================================
+         RESULT CONTENT
+
+         Populated only with the approved
+         public result API projection.
+    =================================== -->
+
+    <div
+      class="scout-result__content"
+      id="scout-result-content"
+      hidden
+    ></div>
+
+  </div>
+
+</section>
