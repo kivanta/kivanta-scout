@@ -7,6 +7,8 @@
  * - Check 1 evidence
  * - Check 2 evidence
  * - Check 3 evidence
+ * - Check 4 target evidence
+ * - Check 4 official-reference evidence
  *
  * No real network calls.
  */
@@ -33,6 +35,10 @@ let check2ReceivedRequest = false;
 
 let check3ReceivedRequest = false;
 
+let check4TargetReceivedRequest = false;
+
+let check4ReferenceReceivedRequest = false;
+
 let frozenSourceAssessorPreserved = false;
 
 let returnedRunnerExecuted = false;
@@ -55,6 +61,11 @@ const fakeFrozenSourceAssessor = async (
   };
 };
 
+/*
+ * Generic evidence collector used by
+ * Checks 1–3.
+ */
+
 function createFakeEvidenceCollector(setObserved) {
   return async ({ request }) => {
     setObserved(request === injectedRequest);
@@ -68,6 +79,11 @@ function createFakeEvidenceCollector(setObserved) {
     };
   };
 }
+
+/*
+ * Generic fake Check runner used by
+ * Checks 1–3.
+ */
 
 function createFakeCheckRunner() {
   return async ({ evidenceCollector }) => {
@@ -91,6 +107,122 @@ function createFakeCheckRunner() {
   };
 }
 
+/*
+ * ------------------------------------------------
+ * Check 4 fake evidence collector
+ * ------------------------------------------------
+ *
+ * Check 4 must prove the request boundary reaches:
+ *
+ * - target repository evidence
+ * - official Technocore reference evidence
+ */
+
+const fakeCheck4EvidenceCollector = async ({ owner, repo, request }) => {
+  if (owner === "kivanta" && repo === "example") {
+    check4TargetReceivedRequest = request === injectedRequest;
+  }
+
+  if (owner === "flop-labs" && repo === "technocore-chat") {
+    check4ReferenceReceivedRequest = request === injectedRequest;
+  }
+
+  return {
+    status: "evidence_collected",
+
+    fileCount: 0,
+
+    files: [],
+  };
+};
+
+/*
+ * ------------------------------------------------
+ * Check 4 fake reference-profile builder
+ * ------------------------------------------------
+ *
+ * The production builder receives an evidence
+ * collector.
+ *
+ * We invoke that collector against a fake version
+ * of the official reference repository to confirm
+ * the hardened request remains attached.
+ */
+
+const fakeCheck4ReferenceProfileBuilder = async ({ evidenceCollector }) => {
+  await evidenceCollector({
+    owner: "flop-labs",
+
+    repo: "technocore-chat",
+
+    branch: "reference-commit",
+
+    evidencePlan: {
+      status: "evidence_plan_ready",
+
+      paths: ["SKILL.md"],
+    },
+  });
+
+  return {
+    status: "reference_profile_ready",
+
+    authority: {
+      repositoryId: 1332656411,
+    },
+
+    profile: {
+      status: "behavior_profile_ready",
+
+      behaviors: {},
+    },
+  };
+};
+
+/*
+ * ------------------------------------------------
+ * Check 4 fake runner
+ * ------------------------------------------------
+ *
+ * The real runCheck4() receives:
+ *
+ * targetEvidenceCollector
+ * referenceProfileBuilder
+ *
+ * Exercise both seams.
+ */
+
+const fakeCheck4Runner = async ({
+  targetEvidenceCollector,
+  referenceProfileBuilder,
+}) => {
+  await targetEvidenceCollector({
+    owner: "kivanta",
+
+    repo: "example",
+
+    branch: "abc123",
+
+    evidencePlan: {
+      status: "evidence_plan_ready",
+
+      paths: ["main.py"],
+    },
+  });
+
+  await referenceProfileBuilder();
+
+  return {
+    status: "PASS",
+  };
+};
+
+/*
+ * ------------------------------------------------
+ * Fake Methodology runner
+ * ------------------------------------------------
+ */
+
 const fakeMethodologyRunner = async (
   owner,
   repo,
@@ -103,6 +235,8 @@ const fakeMethodologyRunner = async (
     check2Runner,
 
     check3Runner,
+
+    check4Runner,
   },
 ) => {
   frozenSourceAssessorPreserved = typeof sourceAssessor === "function";
@@ -125,12 +259,24 @@ const fakeMethodologyRunner = async (
     repo,
   });
 
+  await check4Runner({
+    owner,
+
+    repo,
+  });
+
   return {
     status: "methodology_run",
 
     executionStatus: "complete",
   };
 };
+
+/*
+ * ------------------------------------------------
+ * Fake frozen Methodology runner
+ * ------------------------------------------------
+ */
 
 const fakeFrozenMethodologyRunner = async (
   input,
@@ -186,6 +332,8 @@ const runner = createGitHubMethodologyRunner(
 
     check3Runner: createFakeCheckRunner(),
 
+    check4Runner: fakeCheck4Runner,
+
     check1EvidenceCollector: createFakeEvidenceCollector((value) => {
       check1ReceivedRequest = value;
     }),
@@ -197,6 +345,10 @@ const runner = createGitHubMethodologyRunner(
     check3EvidenceCollector: createFakeEvidenceCollector((value) => {
       check3ReceivedRequest = value;
     }),
+
+    check4EvidenceCollector: fakeCheck4EvidenceCollector,
+
+    check4ReferenceProfileBuilder: fakeCheck4ReferenceProfileBuilder,
   },
 );
 
@@ -240,6 +392,20 @@ results.push(
 
 results.push(
   check("Check 3 evidence receives hardened request", check3ReceivedRequest),
+);
+
+results.push(
+  check(
+    "Check 4 target evidence receives hardened request",
+    check4TargetReceivedRequest,
+  ),
+);
+
+results.push(
+  check(
+    "Check 4 reference evidence receives hardened request",
+    check4ReferenceReceivedRequest,
+  ),
 );
 
 results.push(

@@ -15,7 +15,10 @@
  * Methodology checks
  *      ├─ Check 1 file evidence
  *      ├─ Check 2 file evidence
- *      └─ Check 3 file evidence
+ *      ├─ Check 3 file evidence
+ *      └─ Check 4 file evidence
+ *           ├─ target repository
+ *           └─ official Technocore reference
  *
  * IMPORTANT:
  *
@@ -33,10 +36,13 @@ import { runMethodology } from "../../lib/scout/runMethodology.js";
 import { runCheck1 } from "../../lib/scout/runCheck1.js";
 import { runCheck2 } from "../../lib/scout/runCheck2.js";
 import { runCheck3 } from "../../lib/scout/runCheck3.js";
+import { runCheck4 } from "../../lib/scout/runCheck4.js";
 
 import { collectCheck1Evidence } from "../../lib/scout/collectCheck1Evidence.js";
 import { collectCheck2Evidence } from "../../lib/scout/collectCheck2Evidence.js";
 import { collectCheck3Evidence } from "../../lib/scout/collectCheck3Evidence.js";
+
+import { buildCheck4ReferenceProfile } from "../../lib/scout/buildCheck4ReferenceProfile.js";
 
 /*
  * ------------------------------------------------
@@ -81,11 +87,24 @@ export function createGitHubMethodologyRunner(
 
     check3Runner = runCheck3,
 
+    check4Runner = runCheck4,
+
     check1EvidenceCollector = collectCheck1Evidence,
 
     check2EvidenceCollector = collectCheck2Evidence,
 
     check3EvidenceCollector = collectCheck3Evidence,
+
+    /*
+     * Check 4 uses the same Check 1-style
+     * behavior evidence for:
+     *
+     * - the candidate repository
+     * - the official Technocore reference
+     */
+    check4EvidenceCollector = collectCheck1Evidence,
+
+    check4ReferenceProfileBuilder = buildCheck4ReferenceProfile,
   } = {},
 ) {
   /*
@@ -182,6 +201,53 @@ export function createGitHubMethodologyRunner(
 
   /*
    * =================================================
+   * Bind Check 4 evidence
+   * =================================================
+   *
+   * Check 4 has two GitHub evidence paths:
+   *
+   * 1. Candidate repository behavior
+   * 2. Official Technocore reference behavior
+   *
+   * Both must use the same hardened request
+   * boundary as the rest of production Scout.
+   */
+
+  const check4EvidenceCollectorWithRequest = async (input) => {
+    return check4EvidenceCollector({
+      ...input,
+
+      request,
+    });
+  };
+
+  /*
+   * The normal Check 4 reference-profile builder
+   * accepts an evidenceCollector dependency.
+   *
+   * We inject our request-bound collector so the
+   * pinned official Technocore reference does not
+   * fall back to global fetch.
+   */
+
+  const check4ReferenceProfileBuilderWithRequest = async () => {
+    return check4ReferenceProfileBuilder({
+      evidenceCollector: check4EvidenceCollectorWithRequest,
+    });
+  };
+
+  const check4RunnerWithRequest = async (input) => {
+    return check4Runner({
+      ...input,
+
+      targetEvidenceCollector: check4EvidenceCollectorWithRequest,
+
+      referenceProfileBuilder: check4ReferenceProfileBuilderWithRequest,
+    });
+  };
+
+  /*
+   * =================================================
    * Bind existing Methodology 1.0 engine
    * =================================================
    *
@@ -189,7 +255,7 @@ export function createGitHubMethodologyRunner(
    * sourceAssessor closure here.
    *
    * We preserve that closure exactly and only add
-   * the hardened Check 1–3 runners.
+   * hardened Check 1–4 runners.
    */
 
   const methodologyRunnerWithRequest = async (
@@ -209,6 +275,8 @@ export function createGitHubMethodologyRunner(
         check2Runner: check2RunnerWithRequest,
 
         check3Runner: check3RunnerWithRequest,
+
+        check4Runner: check4RunnerWithRequest,
       },
     );
   };
