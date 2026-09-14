@@ -1,3 +1,41 @@
+/*
+ * =========================================================
+ * KIVANTA SCOUT
+ * CHECK 2 OBSERVATION EXTRACTOR
+ * =========================================================
+ *
+ * Check 2:
+ *
+ * "Your Key, Password & Sensitive Information"
+ *
+ *
+ * PURPOSE
+ *
+ * Inspect the collected Check 2 source evidence for
+ * materially important sensitive-information behavior.
+ *
+ *
+ * IMPORTANT
+ *
+ * The evidence collection state is preserved here.
+ *
+ * That distinction matters because:
+ *
+ * - evidence_collected means every planned evidence file
+ *   was successfully inspected
+ *
+ * - evidence_partial means at least one planned evidence
+ *   file could not be inspected
+ *
+ * Scout may use complete evidence to make a scoped negative
+ * observation such as:
+ *
+ * "No materially important sensitive-information handling
+ * was observed within the inspected source scope."
+ *
+ * Partial evidence cannot support that same conclusion.
+ */
+
 const SENSITIVE_TERMS =
   /\b(private[_-]?key|secret|password|passwd|token|credential|seed|mnemonic|api[_-]?key)\b/i;
 
@@ -70,19 +108,43 @@ function nearbySensitiveLine(lines, startIndex, distance = 4) {
 }
 
 export function extractCheck2Observations(evidence) {
-  if (
-    evidence.status !== "evidence_collected" &&
-    evidence.status !== "evidence_partial"
-  ) {
+  const evidenceStatus = evidence?.status ?? null;
+
+  const supportedEvidenceState =
+    evidenceStatus === "evidence_collected" ||
+    evidenceStatus === "evidence_partial";
+
+  /*
+   * -------------------------------------------------------
+   * EVIDENCE NOT AVAILABLE
+   * -------------------------------------------------------
+   */
+
+  if (!supportedEvidenceState) {
     return {
       status: "observations_not_available",
+
+      evidenceStatus,
+
+      evidenceComplete: false,
+
+      observationCount: 0,
+
       observations: [],
     };
   }
 
+  /*
+   * -------------------------------------------------------
+   * INSPECT AVAILABLE FILES
+   * -------------------------------------------------------
+   */
+
   const observations = [];
 
-  for (const file of evidence.files) {
+  const files = Array.isArray(evidence.files) ? evidence.files : [];
+
+  for (const file of files) {
     if (file.status !== "file_found" || !file.content) {
       continue;
     }
@@ -102,7 +164,14 @@ export function extractCheck2Observations(evidence) {
         }
 
         let sensitive = lineIsSensitive;
+
         let label = rule.label;
+
+        /*
+         * Storage, transmission, and exposure behavior can
+         * be materially sensitive even when the sensitive
+         * identifier appears on a nearby line.
+         */
 
         if (
           (rule.category === "transmission" ||
@@ -119,22 +188,40 @@ export function extractCheck2Observations(evidence) {
 
         observations.push({
           path: file.path,
+
           line: index + 1,
+
           category: rule.category,
-          label: label,
-          sensitive: sensitive,
+
+          label,
+
+          sensitive,
+
           excerpt: safeExcerpt(line, sensitive),
         });
       }
     });
   }
 
+  /*
+   * -------------------------------------------------------
+   * RESULT
+   * -------------------------------------------------------
+   *
+   * Preserve evidence completeness even when there are
+   * zero observations.
+   */
+
   return {
     status:
       observations.length > 0 ? "observations_found" : "no_observations_found",
 
+    evidenceStatus,
+
+    evidenceComplete: evidenceStatus === "evidence_collected",
+
     observationCount: observations.length,
 
-    observations: observations,
+    observations,
   };
 }
