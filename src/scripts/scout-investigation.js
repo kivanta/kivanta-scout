@@ -110,6 +110,47 @@ async function fetchJson(url, options = {}) {
 
 /*
  * ---------------------------------------------------------
+ * RESULT AUTO-SCROLL
+ * ---------------------------------------------------------
+ *
+ * When a completed Methodology result is rendered below the
+ * Activity Strip, move the visitor directly to the existing
+ * SCOUT INVESTIGATION region.
+ *
+ * Respect the visitor's reduced-motion preference:
+ *
+ * - normal preference -> smooth scroll
+ * - reduced motion    -> immediate scroll
+ *
+ * Keyboard focus is intentionally left unchanged.
+ */
+
+function scrollResultIntoView() {
+  if (!resultRegion) {
+    return;
+  }
+
+  const prefersReducedMotion =
+    window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true;
+
+  /*
+   * Wait until the browser has incorporated the newly
+   * rendered result into layout before scrolling.
+   */
+
+  window.requestAnimationFrame(() => {
+    resultRegion.scrollIntoView({
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+
+      block: "start",
+
+      inline: "nearest",
+    });
+  });
+}
+
+/*
+ * ---------------------------------------------------------
  * FORM STATE
  * ---------------------------------------------------------
  */
@@ -429,6 +470,15 @@ function renderPublicResult(result) {
     resultMessage.textContent =
       "The result below reflects only what Scout established from the frozen public evidence.";
   }
+
+  /*
+   * The final result now exists in layout.
+   *
+   * Move the visitor from the opening viewport directly to
+   * the existing SCOUT INVESTIGATION result region.
+   */
+
+  scrollResultIntoView();
 }
 
 /*
