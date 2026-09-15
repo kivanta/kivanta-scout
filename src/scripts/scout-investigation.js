@@ -113,7 +113,7 @@ async function fetchJson(url, options = {}) {
  * RESULT AUTO-SCROLL
  * ---------------------------------------------------------
  *
- * When a completed Methodology result is rendered below the
+ * When a terminal Scout outcome is rendered below the
  * Activity Strip, move the visitor directly to the existing
  * SCOUT INVESTIGATION region.
  *
@@ -225,6 +225,16 @@ function showFinalMessage(title, message) {
   if (resultMessage) {
     resultMessage.textContent = message;
   }
+
+  /*
+   * Any terminal visitor outcome lives in the same
+   * SCOUT INVESTIGATION region.
+   *
+   * Move the visitor to that final outcome just as we do
+   * for a completed Methodology result.
+   */
+
+  scrollResultIntoView();
 }
 
 /*
@@ -315,7 +325,7 @@ function showLifecycleState(lifecycleState) {
  * RESULT RENDERING
  * ---------------------------------------------------------
  *
- * This first visitor-facing version renders:
+ * This visitor-facing version renders:
  *
  * - overall Methodology status
  * - methodology identity
@@ -325,10 +335,6 @@ function showLifecycleState(lifecycleState) {
  * - five check statuses
  * - established conclusions
  * - limitations when present
- *
- *
- * Detailed evidence-reference presentation comes in the
- * next UI checkpoint.
  */
 
 function renderPublicResult(result) {
