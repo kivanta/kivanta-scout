@@ -13,7 +13,6 @@ import "../styles/global.css";
 
 import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
-import ActivityStrip from "../components/ActivityStrip.astro";
 import HowItWorks from "../components/HowItWorks.astro";
 import MethodologyPreview from "../components/MethodologyPreview.astro";
 import PrinciplesTrust from "../components/PrinciplesTrust.astro";
@@ -69,11 +68,19 @@ import ScoutResult from "../components/ScoutResult.astro";
       <Hero />
 
 
-      <!-- Live Scout activity -->
-      <ActivityStrip />
+      <!--
+        Activity Strip is intentionally not rendered
+        for the public launch.
+
+        The component remains available and can be
+        re-enabled once verified production activity
+        metrics are connected.
+      -->
+
 
       <!-- Scout investigation result — hidden until used -->
       <ScoutResult />
+
 
       <!-- How Scout Works — locked -->
       <HowItWorks />
@@ -89,13 +96,14 @@ import ScoutResult from "../components/ScoutResult.astro";
     </main>
 
 
-      <!-- ==================================
+    <!-- ==================================
          FOOTER
     ================================== -->
 
     <Footer />
 
-        <!-- ==================================
+
+    <!-- ==================================
          SCOUT INVESTIGATION WORKFLOW
     ================================== -->
 

@@ -8,9 +8,9 @@ import "../styles/footer.css";
 
 /*
    Add Kivanta's verified public Technocore DID
-   here before launch.
+   here before launch if one is established.
 
-   Never invent a DID for the prototype.
+   Never invent a DID.
 */
 
 const publicDid = "";
@@ -88,7 +88,17 @@ const publicDid = "";
 
         <a
           class="site-footer__link"
+          href="/privacy"
+        >
+          Privacy
+        </a>
+
+
+        <a
+          class="site-footer__link"
           href="https://github.com/kivanta/kivanta-scout"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           GitHub ↗
         </a>
@@ -132,13 +142,14 @@ const publicDid = "";
 
       <div class="site-footer__reference">
 
-        <span>
-          Official Technocore reference
-        </span>
-
-        <span class="site-footer__reference-pending">
-          Link reserved
-        </span>
+        <a
+          class="site-footer__link"
+          href="https://technocore.chat"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Official Technocore reference ↗
+        </a>
 
       </div>
 
@@ -177,9 +188,23 @@ const publicDid = "";
     <div class="site-footer__bottom">
 
       <p>
-        Built by Kivanta.
+        Built by
+        {" "}
+        <a
+          class="site-footer__link"
+          href="https://x.com/KivantaETH"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          kivanta.eth
+        </a>.
         Scout reports what it can establish from public evidence
         and keeps limitations visible.
+      </p>
+
+
+      <p>
+        © 2026 Kivanta Scout.
       </p>
 
     </div>
