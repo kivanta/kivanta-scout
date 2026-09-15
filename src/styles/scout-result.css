@@ -1,144 +1,356 @@
 /* ========================================
    KIVANTA SCOUT — RESULT REGION
-======================================== */
 
+   Visitor-facing presentation for the
+   approved public investigation result.
+
+   This section remains hidden until Scout
+   is used, preserving the locked opening
+   viewport.
+======================================== */
 
 /* ========================================
-   1. HIDDEN STATE
+   1. HIDDEN STATES
 ======================================== */
 
-.scout-result[hidden] {
-  display:
-    none;
+.scout-result[hidden],
+.scout-result__content[hidden] {
+  display: none;
 }
-
 
 /* ========================================
    2. RESULT SECTION
 ======================================== */
 
 .scout-result {
-  width:
-    100%;
-
-  padding:
-    clamp(3rem, 7vw, 6rem)
-    clamp(1.25rem, 5vw, 4rem);
-
-  border-top:
-    1px solid
-    rgba(120, 220, 248, 0.1);
-
-  border-bottom:
-    1px solid
-    rgba(120, 220, 248, 0.1);
+  position: relative;
+  width: 100%;
+  padding: clamp(3.5rem, 7vw, 6rem) var(--page-gutter);
+  overflow: hidden;
+  border-top: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+  background:
+    radial-gradient(
+      circle at 12% 10%,
+      rgba(110, 231, 162, 0.04),
+      transparent 30rem
+    ),
+    radial-gradient(
+      circle at 88% 24%,
+      rgba(120, 220, 248, 0.04),
+      transparent 28rem
+    ),
+    var(--surface-page);
 }
-
 
 /* ========================================
    3. INNER WIDTH
 ======================================== */
 
 .scout-result__inner {
-  width:
-    min(100%, 74rem);
-
-  margin-inline:
-    auto;
+  width: min(100%, var(--page-width));
+  margin-inline: auto;
 }
 
-
 /* ========================================
-   4. STATUS
+   4. STATUS INTRO
 ======================================== */
 
 .scout-result__status {
-  max-width:
-    46rem;
+  max-width: 48rem;
 }
-
 
 /* ========================================
    5. EYEBROW
 ======================================== */
 
 .scout-result__eyebrow {
-  margin:
-    0
-    0
-    0.75rem;
-
-  color:
-    rgba(143, 179, 190, 0.9);
-
-  font-size:
-    0.72rem;
-
-  font-weight:
-    700;
-
-  letter-spacing:
-    0.12em;
-
-  text-transform:
-    uppercase;
+  margin: 0 0 0.8rem;
+  color: var(--identity-scout-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
 }
-
 
 /* ========================================
    6. TITLE
 ======================================== */
 
 .scout-result__title {
-  margin:
-    0;
-
-  color:
-    var(--text-primary);
-
-  font-size:
-    clamp(1.6rem, 4vw, 2.5rem);
-
-  line-height:
-    1.08;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(1.75rem, 4vw, 2.65rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
 }
-
 
 /* ========================================
    7. MESSAGE
 ======================================== */
 
 .scout-result__message {
-  margin:
-    0.9rem
-    0
-    0;
-
-  max-width:
-    42rem;
-
-  color:
-    rgba(195, 220, 216, 0.9);
-
-  font-size:
-    0.9rem;
-
-  line-height:
-    1.65;
+  max-width: 44rem;
+  margin: 1rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+  line-height: 1.7;
 }
-
 
 /* ========================================
    8. RESULT CONTENT
 ======================================== */
 
 .scout-result__content {
-  margin-top:
-    2rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
 }
 
+/* ========================================
+   9. SUMMARY CARD
+======================================== */
 
-.scout-result__content[hidden] {
-  display:
-    none;
+.scout-result__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: 1rem;
+  background:
+    linear-gradient(135deg, rgba(120, 220, 248, 0.025), transparent 45%),
+    var(--surface-primary);
+}
+
+/* ========================================
+   10. OVERALL RESULT
+======================================== */
+
+.scout-result__overall {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 1.4rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.scout-result__overall-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ========================================
+   11. SUMMARY METADATA
+======================================== */
+
+.scout-result__metadata-row {
+  min-width: 0;
+  margin: 0;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.scout-result__metadata-row:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.scout-result__metadata-row:nth-child(even) {
+  border-right: 1px solid var(--border-subtle);
+}
+
+.scout-result__metadata-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ========================================
+   12. CHECKS HEADING
+======================================== */
+
+.scout-result__checks-title {
+  margin: clamp(2.75rem, 5vw, 4rem) 0 1.25rem;
+  color: var(--text-primary);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+/* ========================================
+   13. CHECKS STACK
+======================================== */
+
+.scout-result__checks {
+  display: grid;
+  gap: 0.8rem;
+}
+
+/* ========================================
+   14. CHECK CARD
+======================================== */
+
+.scout-result__check {
+  position: relative;
+  padding: clamp(1.2rem, 3vw, 1.55rem);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.9rem;
+  background: var(--surface-primary);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .scout-result__check:hover {
+    border-color: var(--border-default);
+    background: var(--surface-raised);
+    transform: translateY(-1px);
+  }
+}
+
+/* ========================================
+   15. CHECK HEADING
+======================================== */
+
+.scout-result__check-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.25rem;
+}
+
+/* ========================================
+   16. CHECK TITLE
+======================================== */
+
+.scout-result__check-title {
+  max-width: 48rem;
+  margin: 0;
+  color: var(--text-primary);
+  font-size: clamp(0.98rem, 2vw, 1.08rem);
+  font-weight: 620;
+  line-height: 1.45;
+}
+
+/* ========================================
+   17. STATUS BADGE
+======================================== */
+
+.scout-result__check-status {
+  flex: 0 0 auto;
+  padding: 0.34rem 0.55rem;
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  background: var(--surface-control);
+  color: var(--palette-cyan-300);
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+/* ========================================
+   18. CHECK CONCLUSION
+======================================== */
+
+.scout-result__check-conclusion {
+  max-width: 54rem;
+  margin: 1rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.68;
+}
+
+/* ========================================
+   19. CHECK LIMITATION
+======================================== */
+
+.scout-result__check-limitation {
+  max-width: 54rem;
+  margin: 1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.scout-result__check-limitation strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ========================================
+   20. BUSY STATE
+======================================== */
+
+.scout-result[aria-busy="true"] .scout-result__eyebrow {
+  opacity: 0.85;
+}
+
+/* ========================================
+   21. TABLET
+======================================== */
+
+@media (max-width: 760px) {
+  .scout-result__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .scout-result__metadata-row {
+    border-right: 0;
+  }
+
+  .scout-result__metadata-row:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .scout-result__metadata-row:last-child {
+    border-bottom: 0;
+  }
+}
+
+/* ========================================
+   22. MOBILE
+======================================== */
+
+@media (max-width: 520px) {
+  .scout-result {
+    padding-top: 3rem;
+    padding-bottom: 3.5rem;
+  }
+
+  .scout-result__overall,
+  .scout-result__metadata-row {
+    padding-inline: 1.1rem;
+  }
+
+  .scout-result__check-heading {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .scout-result__check-status {
+    align-self: flex-start;
+  }
+}
+
+/* ========================================
+   23. REDUCED MOTION
+======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .scout-result__check {
+    transition: none;
+  }
+
+  .scout-result__check:hover {
+    transform: none;
+  }
 }
