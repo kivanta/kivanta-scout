@@ -16,6 +16,8 @@
  * - retrieve investigations through a stable
  *   application-level result envelope
  * - update basic lifecycle state
+ * - release active-review claims when an
+ *   investigation becomes terminal
  *
  *
  * IMPORTANT CONTRACT:
@@ -43,6 +45,16 @@
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim().length > 0;
 }
+
+/*
+ * Terminal investigations no longer represent
+ * active work.
+ *
+ * Their active-review claim must therefore be
+ * released when the terminal transition is written.
+ */
+
+const TERMINAL_LIFECYCLE_STATES = new Set(["COMPLETE", "PARTIAL", "FAILED"]);
 
 /*
  * Convert one D1 row back into the
@@ -556,6 +568,15 @@ export function createD1InvestigationRepository(db) {
    *
    * Update the small set of investigation fields
    * currently owned by the application.
+   *
+   * Active lifecycle transitions update only the
+   * investigation row.
+   *
+   * Terminal lifecycle transitions additionally
+   * release the active-review claim in the same
+   * D1 batch so completed or failed work cannot
+   * block a future investigation of the same exact
+   * review identity.
    */
 
   async function updateInvestigation(investigationId, changes = {}) {
@@ -587,32 +608,67 @@ export function createD1InvestigationRepository(db) {
 
     const failureReason = changes.failureReason ?? null;
 
+    const investigationUpdateStatement = db
+      .prepare(
+        `
+          UPDATE investigations
+
+          SET
+            lifecycle_state = ?1,
+            updated_at = ?2,
+            failure_reason = ?3
+
+          WHERE investigation_id = ?4
+          `,
+      )
+      .bind(
+        lifecycleState,
+
+        updatedAt,
+
+        failureReason,
+
+        normalizedInvestigationId,
+      );
+
     let result;
 
     try {
-      result = await db
-        .prepare(
-          `
-            UPDATE investigations
+      if (TERMINAL_LIFECYCLE_STATES.has(lifecycleState)) {
+        /*
+         * Terminal transition:
+         *
+         * 1. persist terminal lifecycle
+         * 2. release active-review claim
+         *
+         * D1 batch keeps these writes atomic.
+         */
 
-            SET
-              lifecycle_state = ?1,
-              updated_at = ?2,
-              failure_reason = ?3
+        const batchResults = await db.batch([
+          investigationUpdateStatement,
 
-            WHERE investigation_id = ?4
-            `,
-        )
-        .bind(
-          lifecycleState,
+          db
+            .prepare(
+              `
+                DELETE FROM active_review_claims
 
-          updatedAt,
+                WHERE investigation_id = ?1
+                `,
+            )
+            .bind(normalizedInvestigationId),
+        ]);
 
-          failureReason,
+        result = batchResults?.[0] ?? null;
+      } else {
+        /*
+         * Non-terminal transition:
+         *
+         * Keep the active-review claim because this
+         * investigation still represents active work.
+         */
 
-          normalizedInvestigationId,
-        )
-        .run();
+        result = await investigationUpdateStatement.run();
+      }
     } catch (error) {
       return {
         status: "investigation_not_updated",

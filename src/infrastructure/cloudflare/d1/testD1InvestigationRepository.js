@@ -201,6 +201,33 @@ function createInvestigation({ investigationId, createdAt } = {}) {
   };
 }
 
+function getActiveClaimCount() {
+  const row = sqlite
+    .prepare(
+      `
+        SELECT COUNT(*) AS count
+        FROM active_review_claims
+        `,
+    )
+    .get();
+
+  return Number(row.count);
+}
+
+function getActiveClaimInvestigationId() {
+  const row = sqlite
+    .prepare(
+      `
+        SELECT investigation_id
+        FROM active_review_claims
+        LIMIT 1
+        `,
+    )
+    .get();
+
+  return row?.investigation_id ?? null;
+}
+
 /*
  * =================================================
  * TEST 1
@@ -227,6 +254,10 @@ assert.equal(firstClaim.investigation.investigationId, "inv_test_001");
 
 assert.equal(firstClaim.investigation.lifecycleState, "CREATED");
 
+assert.equal(getActiveClaimCount(), 1);
+
+assert.equal(getActiveClaimInvestigationId(), "inv_test_001");
+
 console.log("\n===== FIRST CLAIM =====");
 
 console.log({
@@ -235,6 +266,8 @@ console.log({
   joinedExisting: firstClaim.joinedExisting,
 
   investigationId: firstClaim.investigation.investigationId,
+
+  activeClaims: getActiveClaimCount(),
 });
 
 /*
@@ -267,18 +300,6 @@ assert.equal(
   "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
 );
 
-console.log("\n===== GET INVESTIGATION =====");
-
-console.log({
-  status: storedResult.status,
-
-  investigationId: storedInvestigation.investigationId,
-
-  lifecycleState: storedInvestigation.lifecycleState,
-
-  commitSha: storedInvestigation.reviewKey.commitSha,
-});
-
 /*
  * =================================================
  * TEST 3
@@ -293,14 +314,6 @@ assert.equal(missingResult.status, "investigation_not_found");
 assert.equal(missingResult.reason, null);
 
 assert.equal(missingResult.investigation, null);
-
-console.log("\n===== MISSING INVESTIGATION =====");
-
-console.log({
-  status: missingResult.status,
-
-  investigation: missingResult.investigation,
-});
 
 /*
  * =================================================
@@ -323,11 +336,11 @@ assert.equal(invalidQueryResult.investigation, null);
  * DUPLICATE ACTIVE CLAIM
  * =================================================
  *
- * Same exact review key.
+ * Same exact review key while inv_test_001 is still
+ * active.
  *
- * The second D1 batch should fail on the unique
- * active claim, roll back, and return the existing
- * investigation instead.
+ * The second D1 batch must fail on the unique active
+ * claim, roll back, and return inv_test_001.
  */
 
 const duplicateInvestigation = createInvestigation({
@@ -348,50 +361,29 @@ assert.equal(duplicateClaim.joinedExisting, true);
 
 assert.equal(duplicateClaim.investigation.investigationId, "inv_test_001");
 
-/*
- * Because D1 batch() rolled back,
- * inv_test_002 must NOT exist.
- */
-
 const rolledBackResult = await repository.getInvestigation("inv_test_002");
 
 assert.equal(rolledBackResult.status, "investigation_not_found");
 
 assert.equal(rolledBackResult.investigation, null);
 
-console.log("\n===== DUPLICATE CLAIM =====");
+assert.equal(getActiveClaimCount(), 1);
+
+assert.equal(getActiveClaimInvestigationId(), "inv_test_001");
+
+console.log("\n===== DUPLICATE ACTIVE CLAIM =====");
 
 console.log({
-  status: duplicateClaim.status,
-
   joinedExisting: duplicateClaim.joinedExisting,
 
   returnedInvestigation: duplicateClaim.investigation.investigationId,
 
-  duplicateRowPersisted: rolledBackResult.status !== "investigation_not_found",
+  activeClaims: getActiveClaimCount(),
 });
 
 /*
  * =================================================
  * TEST 6
- * ACTIVE CLAIM COUNT
- * =================================================
- */
-
-const activeClaimCount = sqlite
-  .prepare(
-    `
-      SELECT COUNT(*) AS count
-      FROM active_review_claims
-      `,
-  )
-  .get();
-
-assert.equal(Number(activeClaimCount.count), 1);
-
-/*
- * =================================================
- * TEST 7
  * OUTBOX CREATION
  * =================================================
  */
@@ -422,11 +414,6 @@ assert.equal(outboxRow.dispatch_state, "PENDING");
 
 assert.equal(Number(outboxRow.attempt_count), 0);
 
-/*
- * Duplicate batch rollback means there must be
- * no outbox record for inv_test_002.
- */
-
 const duplicateOutboxRow = sqlite
   .prepare(
     `
@@ -441,28 +428,15 @@ const duplicateOutboxRow = sqlite
 
 assert.equal(duplicateOutboxRow, undefined);
 
-console.log("\n===== OUTBOX =====");
-
-console.log({
-  investigationId: outboxRow.investigation_id,
-
-  eventType: outboxRow.event_type,
-
-  dispatchState: outboxRow.dispatch_state,
-
-  duplicateOutboxExists: Boolean(duplicateOutboxRow),
-});
-
 /*
  * =================================================
- * TEST 8
- * UPDATE INVESTIGATION
+ * TEST 7
+ * NON-TERMINAL UPDATE KEEPS CLAIM
  * =================================================
  */
 
-const updateResult = await repository.updateInvestigation(
+const activeUpdateResult = await repository.updateInvestigation(
   "inv_test_001",
-
   {
     lifecycleState: "PREPARING_REVIEW",
 
@@ -472,61 +446,266 @@ const updateResult = await repository.updateInvestigation(
   },
 );
 
-assert.equal(updateResult.status, "investigation_updated");
+assert.equal(activeUpdateResult.status, "investigation_updated");
 
-assert.equal(updateResult.reason, null);
+assert.equal(activeUpdateResult.reason, null);
 
-assert.ok(updateResult.investigation);
+assert.equal(
+  activeUpdateResult.investigation.lifecycleState,
+  "PREPARING_REVIEW",
+);
 
-assert.equal(updateResult.investigation.lifecycleState, "PREPARING_REVIEW");
+assert.equal(getActiveClaimCount(), 1);
 
-assert.equal(updateResult.investigation.updatedAt, "2026-09-06T15:10:00.000Z");
+assert.equal(getActiveClaimInvestigationId(), "inv_test_001");
 
-console.log("\n===== UPDATE INVESTIGATION =====");
+console.log("\n===== NON-TERMINAL UPDATE =====");
 
 console.log({
-  status: updateResult.status,
+  lifecycleState: activeUpdateResult.investigation.lifecycleState,
 
-  lifecycleState: updateResult.investigation.lifecycleState,
+  activeClaims: getActiveClaimCount(),
 
-  updatedAt: updateResult.investigation.updatedAt,
+  activeInvestigation: getActiveClaimInvestigationId(),
+});
+
+/*
+ * =================================================
+ * TEST 8
+ * COMPLETE RELEASES CLAIM
+ * =================================================
+ */
+
+const completeResult = await repository.updateInvestigation("inv_test_001", {
+  lifecycleState: "COMPLETE",
+
+  updatedAt: "2026-09-06T15:15:00.000Z",
+
+  failureReason: null,
+});
+
+assert.equal(completeResult.status, "investigation_updated");
+
+assert.equal(completeResult.reason, null);
+
+assert.equal(completeResult.investigation.lifecycleState, "COMPLETE");
+
+assert.equal(getActiveClaimCount(), 0);
+
+assert.equal(getActiveClaimInvestigationId(), null);
+
+console.log("\n===== COMPLETE RELEASE =====");
+
+console.log({
+  lifecycleState: completeResult.investigation.lifecycleState,
+
+  activeClaims: getActiveClaimCount(),
 });
 
 /*
  * =================================================
  * TEST 9
- * GET UPDATED INVESTIGATION
+ * SAME REVIEW CAN BE CLAIMED AFTER COMPLETE
  * =================================================
+ *
+ * This is the regression that failed in production:
+ *
+ * terminal investigation
+ *      ↓
+ * old claim remained
+ *      ↓
+ * identical future request joined old result
+ *
+ * After COMPLETE the exact same review identity must
+ * be claimable again as fresh work.
  */
 
-const updatedStoredResult = await repository.getInvestigation("inv_test_001");
+const afterCompleteInvestigation = createInvestigation({
+  investigationId: "inv_test_003",
 
-assert.equal(updatedStoredResult.status, "investigation_found");
+  createdAt: "2026-09-06T15:20:00.000Z",
+});
 
-assert.equal(
-  updatedStoredResult.investigation.lifecycleState,
-  "PREPARING_REVIEW",
+const afterCompleteClaim = await repository.claimActiveInvestigation(
+  afterCompleteInvestigation,
 );
 
-assert.equal(
-  updatedStoredResult.investigation.updatedAt,
-  "2026-09-06T15:10:00.000Z",
-);
+assert.equal(afterCompleteClaim.status, "investigation_claimed");
+
+assert.equal(afterCompleteClaim.reason, null);
+
+assert.equal(afterCompleteClaim.joinedExisting, false);
+
+assert.equal(afterCompleteClaim.investigation.investigationId, "inv_test_003");
+
+assert.equal(getActiveClaimCount(), 1);
+
+assert.equal(getActiveClaimInvestigationId(), "inv_test_003");
+
+console.log("\n===== RECLAIM AFTER COMPLETE =====");
+
+console.log({
+  joinedExisting: afterCompleteClaim.joinedExisting,
+
+  investigationId: afterCompleteClaim.investigation.investigationId,
+
+  activeClaims: getActiveClaimCount(),
+});
 
 /*
  * =================================================
  * TEST 10
+ * PARTIAL RELEASES CLAIM
+ * =================================================
+ */
+
+const partialResult = await repository.updateInvestigation("inv_test_003", {
+  lifecycleState: "PARTIAL",
+
+  updatedAt: "2026-09-06T15:25:00.000Z",
+
+  failureReason: null,
+});
+
+assert.equal(partialResult.status, "investigation_updated");
+
+assert.equal(partialResult.reason, null);
+
+assert.equal(partialResult.investigation.lifecycleState, "PARTIAL");
+
+assert.equal(getActiveClaimCount(), 0);
+
+assert.equal(getActiveClaimInvestigationId(), null);
+
+console.log("\n===== PARTIAL RELEASE =====");
+
+console.log({
+  lifecycleState: partialResult.investigation.lifecycleState,
+
+  activeClaims: getActiveClaimCount(),
+});
+
+/*
+ * =================================================
+ * TEST 11
+ * SAME REVIEW CAN BE CLAIMED AFTER PARTIAL
+ * =================================================
+ */
+
+const afterPartialInvestigation = createInvestigation({
+  investigationId: "inv_test_004",
+
+  createdAt: "2026-09-06T15:30:00.000Z",
+});
+
+const afterPartialClaim = await repository.claimActiveInvestigation(
+  afterPartialInvestigation,
+);
+
+assert.equal(afterPartialClaim.status, "investigation_claimed");
+
+assert.equal(afterPartialClaim.reason, null);
+
+assert.equal(afterPartialClaim.joinedExisting, false);
+
+assert.equal(afterPartialClaim.investigation.investigationId, "inv_test_004");
+
+assert.equal(getActiveClaimCount(), 1);
+
+assert.equal(getActiveClaimInvestigationId(), "inv_test_004");
+
+/*
+ * =================================================
+ * TEST 12
+ * FAILED RELEASES CLAIM
+ * =================================================
+ */
+
+const failedResult = await repository.updateInvestigation("inv_test_004", {
+  lifecycleState: "FAILED",
+
+  updatedAt: "2026-09-06T15:35:00.000Z",
+
+  failureReason: "methodology_execution_failed",
+});
+
+assert.equal(failedResult.status, "investigation_updated");
+
+assert.equal(failedResult.reason, null);
+
+assert.equal(failedResult.investigation.lifecycleState, "FAILED");
+
+assert.equal(
+  failedResult.investigation.failureReason,
+  "methodology_execution_failed",
+);
+
+assert.equal(getActiveClaimCount(), 0);
+
+assert.equal(getActiveClaimInvestigationId(), null);
+
+console.log("\n===== FAILED RELEASE =====");
+
+console.log({
+  lifecycleState: failedResult.investigation.lifecycleState,
+
+  failureReason: failedResult.investigation.failureReason,
+
+  activeClaims: getActiveClaimCount(),
+});
+
+/*
+ * =================================================
+ * TEST 13
+ * SAME REVIEW CAN BE CLAIMED AFTER FAILED
+ * =================================================
+ */
+
+const afterFailedInvestigation = createInvestigation({
+  investigationId: "inv_test_005",
+
+  createdAt: "2026-09-06T15:40:00.000Z",
+});
+
+const afterFailedClaim = await repository.claimActiveInvestigation(
+  afterFailedInvestigation,
+);
+
+assert.equal(afterFailedClaim.status, "investigation_claimed");
+
+assert.equal(afterFailedClaim.reason, null);
+
+assert.equal(afterFailedClaim.joinedExisting, false);
+
+assert.equal(afterFailedClaim.investigation.investigationId, "inv_test_005");
+
+assert.equal(getActiveClaimCount(), 1);
+
+assert.equal(getActiveClaimInvestigationId(), "inv_test_005");
+
+console.log("\n===== RECLAIM AFTER FAILED =====");
+
+console.log({
+  joinedExisting: afterFailedClaim.joinedExisting,
+
+  investigationId: afterFailedClaim.investigation.investigationId,
+
+  activeClaims: getActiveClaimCount(),
+});
+
+/*
+ * =================================================
+ * TEST 14
  * UPDATE MISSING INVESTIGATION
  * =================================================
  */
 
 const missingUpdateResult = await repository.updateInvestigation(
   "inv_missing",
-
   {
     lifecycleState: "PREPARING_REVIEW",
 
-    updatedAt: "2026-09-06T15:20:00.000Z",
+    updatedAt: "2026-09-06T15:45:00.000Z",
   },
 );
 
@@ -551,13 +730,21 @@ console.log({
 
   missingEnvelope: true,
 
-  duplicateProtection: true,
+  duplicateProtectionWhileActive: true,
 
   batchRollback: true,
 
   outboxCreation: true,
 
-  lifecycleUpdate: true,
+  nonTerminalClaimPreserved: true,
+
+  completeClaimReleased: true,
+
+  partialClaimReleased: true,
+
+  failedClaimReleased: true,
+
+  reclaimAfterTerminalState: true,
 });
 
 sqlite.close();
